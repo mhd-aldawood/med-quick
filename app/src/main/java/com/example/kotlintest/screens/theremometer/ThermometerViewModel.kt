@@ -14,37 +14,33 @@ import com.contec.htd.code.connect.ContecSdk
 import com.contec.spo2.code.tools.Utils
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.R
-import com.example.kotlintest.util.BluetoothRepository
+import com.example.kotlintest.core.model.ConnectionState
+import com.example.kotlintest.core.model.DeviceManager
+import com.example.kotlintest.core.model.DeviceOperation
+import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-val values = listOf("HC-08", "TEMP04", "TEMP05")
 
 data class ThermometerState(
     val temp: Float = 33F,
-    val title: String = "Thermometer",
-    val titleIcon: Int = R.drawable.ic_bluetooth_on,
-    val cancelIcon: Int = R.drawable.ic_cancel,//TODO use  class to gather these information
-    val cancelText: String = "Cancel",
-
-
-    val shouldRequestBluetooth: Boolean = true,
-
-    val discoveredBluetoothDevices: List<String> = mutableListOf(),
-    val deviceArrayList: List<BluetoothDevice> = mutableListOf(),//todo make class to manage callback of the device
-    val isConnected: Boolean = false,
+    val headerDataSection: HeaderDataSection = HeaderDataSection(
+        title = "Thermometer",
+        titleIcon = R.drawable.ic_bluetooth_on,
+        cancelIcon = R.drawable.ic_cancel,
+        cancelText = "Cancel"
+    ),
     val normalRange: String = "Normal 36.1 - 37.2",
-
-    val stringBuffer: StringBuffer = StringBuffer(),
-)
+    )
 
 sealed class ThermometerAction {
-    data object CheckBluetooth : ThermometerAction()
-    data object BluetoothRequestFinished : ThermometerAction()
+    data object ConnectToDevice : ThermometerAction()
 }
 
 sealed class ThermometerEvents {
@@ -55,20 +51,20 @@ sealed class ThermometerEvents {
 @HiltViewModel
 class ThermometerViewModel @Inject constructor(
     private val sdk: ContecSdk,
-    private val bluetoothRepository: BluetoothRepository
+    private val deviceManager: DeviceManager
 ) :
     BaseViewModel<ThermometerState, ThermometerEvents, ThermometerAction>(
         initialState = ThermometerState()
-    ) {
+    ), DeviceOperation {
+
+    init {
+        deviceManager.setDeviceModels(DeviceCategory.Thermometer)
+    }
+
     private val TAG = "ThermometerViewModel"
     override fun handleAction(action: ThermometerAction) {
         when (action) {
-            ThermometerAction.CheckBluetooth -> checkBluetooth()
-            ThermometerAction.BluetoothRequestFinished -> mutableState.update {
-                it.copy(
-                    shouldRequestBluetooth = false
-                )
-            }
+            ThermometerAction.ConnectToDevice -> ConnectToDevice()
         }
 
     }
@@ -101,56 +97,53 @@ class ThermometerViewModel @Inject constructor(
     var mBluetoothSearchCallback: BluetoothSearchCallback = object : BluetoothSearchCallback {
         @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onContecDeviceFound(device: BluetoothDevice, rssi: Int, record: ByteArray?) {
-            var manufactorSpecificString = ""
+            viewModelScope.launch(Dispatchers.Default) {
+                var manufactorSpecificString = ""
 
-            if (record != null) {
-                val manufactorSpecificBytes: ByteArray? = getManufacturerSpecificData(record)
+                if (record != null) {
+                    val manufactorSpecificBytes: ByteArray? = getManufacturerSpecificData(record)
 
 
-                if (manufactorSpecificBytes != null) {
-                    manufactorSpecificString = String(manufactorSpecificBytes)
+                    if (manufactorSpecificBytes != null) {
+                        manufactorSpecificString = String(manufactorSpecificBytes)
+                    }
                 }
-            }
 
-            Logger.e(TAG, "device.getName()" + device.getName())
-            Logger.e(TAG, "String(record!!)" + Utils.bytesToHexString(record))
-            Logger.e(TAG, "manufactorSpecificString" + manufactorSpecificString)
+                Logger.e(TAG, "device.getName()" + device.getName())
+                Logger.e(TAG, "String(record!!)" + Utils.bytesToHexString(record))
+                Logger.e(TAG, "manufactorSpecificString" + manufactorSpecificString)
 
-            val stringBuffer = StringBuffer()
-            stringBuffer.append(device.getName() + "\n")
+                val stringBuffer = StringBuffer()
+                stringBuffer.append(device.getName() + "\n")
 
-            if (manufactorSpecificString != null) {
-                if (manufactorSpecificString.contains("DT") && manufactorSpecificString.contains("DATA")) {
-                    val index = manufactorSpecificString.indexOf("DT")
-                    val date = manufactorSpecificString.substring(index + 2, index + 8)
-                    stringBuffer.append(
-                        (manufactorSpecificString + "\n"
-                                + "有数据, " + "当前时间为" + date)
-                    )
-                } else if (manufactorSpecificString.contains("DT")) {
-                    val index = manufactorSpecificString.indexOf("DT")
-                    val date = manufactorSpecificString.substring(index + 2, index + 8)
-                    stringBuffer.append(
-                        (manufactorSpecificString + "\n"
-                                + "没有数据, " + "当前时间为" + date)
-                    )
-                } else if (manufactorSpecificString.contains("DATA")) {
-                    stringBuffer.append(
-                        (manufactorSpecificString + "\n"
-                                + "有数据，没有时间")
-                    )
+                if (manufactorSpecificString != null) {
+                    if (manufactorSpecificString.contains("DT") && manufactorSpecificString.contains("DATA")) {
+                        val index = manufactorSpecificString.indexOf("DT")
+                        val date = manufactorSpecificString.substring(index + 2, index + 8)
+                        stringBuffer.append(
+                            (manufactorSpecificString + "\n"
+                                    + "有数据, " + "当前时间为" + date)
+                        )
+                    } else if (manufactorSpecificString.contains("DT")) {
+                        val index = manufactorSpecificString.indexOf("DT")
+                        val date = manufactorSpecificString.substring(index + 2, index + 8)
+                        stringBuffer.append(
+                            (manufactorSpecificString + "\n"
+                                    + "没有数据, " + "当前时间为" + date)
+                        )
+                    } else if (manufactorSpecificString.contains("DATA")) {
+                        stringBuffer.append(
+                            (manufactorSpecificString + "\n"
+                                    + "有数据，没有时间")
+                        )
+                    }
                 }
-            }
 
-            if (values.any { device.name.startsWith(it) })
-            if (device.name.equals("TEMP05"))
-//                &&
-//                !mutableState.value.deviceArrayList.contains(device)
-            {
-                mutableState.update { it.copy(deviceArrayList = it.deviceArrayList + device) }
-                mutableState.update { it.copy(discoveredBluetoothDevices = it.discoveredBluetoothDevices + stringBuffer.toString()) }
-                sdk.connect(device, callback, mOnOperateListener)
-//                                    sdk.startRealtime(startRealtimeCallback)
+                if (deviceManager.getDeviceModels().any { device.name.startsWith(it) })
+                    {
+                        sdk.connect(device, callback, mOnOperateListener)
+    //                                    sdk.startRealtime(startRealtimeCallback)
+                    }
             }
         }
 
@@ -158,16 +151,15 @@ class ThermometerViewModel @Inject constructor(
             override fun onConnectStatus(status: Int) {
                 Logger.i(TAG, "onConnectStatus: ${status}")
                 if (status == com.contec.spo2.code.bean.SdkConstants.CONNECT_CONNECTED) {
-                    viewModelScope.launch {
-                        mutableState.update { it.copy(isConnected = true) }
-                        mutableState.value.stringBuffer.setLength(0)
+                    viewModelScope.launch(Dispatchers.IO) {
+                        deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Connected)
                         sdk.stopBluetoothSearch()
                         delay(1000)
                     }
                 }
 
                 if (status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECTED || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_EXCEPTION || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_SERVICE_UNFOUND || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_NOTIFY_FAIL) {
-                    mutableState.update { it.copy(isConnected = false) }
+                    deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Disconnecting)
                 }
             }
         }
@@ -265,13 +257,11 @@ class ThermometerViewModel @Inject constructor(
     }
 
 
-    private fun checkBluetooth() {
-        if (mutableState.value.shouldRequestBluetooth) {
-            if (bluetoothRepository.isBluetoothEnabled()) {
-                sdk.init(false)
-                sdk.startBluetoothSearch(mBluetoothSearchCallback, 1000)
+    override fun ConnectToDevice() {
+        if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
+            sdk.init(false)
+            sdk.startBluetoothSearch(mBluetoothSearchCallback, 2000000)
 
-            }
         } else {
             sendEvent(ThermometerEvents.ShowMsg("Please enable bluetooth"))
         }

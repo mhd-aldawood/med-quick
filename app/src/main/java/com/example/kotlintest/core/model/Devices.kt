@@ -37,8 +37,10 @@ class DeviceManager @Inject constructor(val bluetoothRepositoryImpl: BluetoothRe
             DeviceCategory.HemoglobinTestingSystem -> TODO()
             DeviceCategory.LipidTestingSystem -> TODO()
             DeviceCategory.PulseOximeter -> listOf("SpO208", "SpO201", "SpO202", "SpO206", "SpO209", "SpO210", "SpO212", "SpO213")
+            DeviceCategory.Thermometer -> listOf("HC-08", "TEMP04", "TEMP05")
+
             DeviceCategory.Spirometer -> TODO()
-            DeviceCategory.Thermometer -> TODO()
+
             DeviceCategory.UrineAnalyzer -> TODO()
             DeviceCategory.WhiteBloodCellAnalyzer -> TODO()
         }

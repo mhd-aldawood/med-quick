@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.theremometer.screencomponent
+package com.example.kotlintest.screens.theremometer.views
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

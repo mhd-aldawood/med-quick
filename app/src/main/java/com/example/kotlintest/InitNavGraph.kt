@@ -86,14 +86,26 @@ fun InitNavGraph(
         composable(NavDestination.THERMOMETER_SCREEN) {
             val thermometerViewModel: ThermometerViewModel = hiltViewModel()
             val uiState by thermometerViewModel.stateFlow.collectAsStateWithLifecycle()
-            DeviceMainScreen(
-                title = uiState.title,
-                titleIcon = uiState.titleIcon,
-                cancelIcon = uiState.cancelIcon,
-                cancelText = uiState.cancelText,
-                onCancelClick = { navController.popBackStack() },
-            ) {
-                ThermometerScreen(thermometerViewModel, uiState)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PermissionGate(
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                ) {
+                    DeviceMainScreen(
+                        title = uiState.headerDataSection.title,
+                        titleIcon = uiState.headerDataSection.titleIcon,
+                        cancelIcon = uiState.headerDataSection.cancelIcon,
+                        cancelText = uiState.headerDataSection.cancelText,
+                        onCancelClick = { navController.popBackStack() },
+                    ) {
+                        ThermometerScreen(thermometerViewModel, uiState)
+                    }
+                }
             }
         }
         composable(NavDestination.TONOMETER_SCREEN) {

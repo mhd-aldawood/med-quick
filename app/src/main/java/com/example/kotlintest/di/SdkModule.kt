@@ -15,13 +15,13 @@ import javax.inject.Singleton
 @dagger.Module
 @InstallIn(SingletonComponent::class)//TODO replace for ViewmodelComponent
 object SdkModule {
-    @Singleton
-    @Provides
-    fun provideThermometerContecSdk(
-        @ApplicationContext context: Context
-    ): ContecSdk {
-        return ContecSdk(context)
-    }
+//    @Singleton
+//    @Provides
+//    fun provideThermometerContecSdk(
+//        @ApplicationContext context: Context
+//    ): ContecSdk {
+//        return ContecSdk(context)
+//    }
 
 //    @Singleton
 //    @Provides
