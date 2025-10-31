@@ -5,7 +5,6 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import com.contec.bp.code.connect.ContecSdk
 import com.example.kotlintest.core.PermissionManager
 import com.example.kotlintest.di.ReviewWaveFactory
-import com.example.kotlintest.screens.ecg.ReviewWave
 import com.example.kotlintest.screens.ecg.model.ReviewWaveController
 
 /*

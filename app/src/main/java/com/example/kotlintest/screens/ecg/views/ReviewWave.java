@@ -1,11 +1,10 @@
-package com.example.kotlintest.screens.ecg;
+package com.example.kotlintest.screens.ecg.views;
 
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,24 +12,23 @@ import android.graphics.Paint.FontMetrics;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.os.Handler;
 import android.os.Process;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.ViewConfiguration;
 
 
 /**
  * 波形
  */
-public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
+public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
+{
 
     private static final String TAG = ReviewWave.class.getSimpleName();
     // 病例对应的是多少导联：12或18
-    private int mLeadCount = 12;
+    private int mLeadCount = 6;//12;
 
     // 每毫米8个像素
     private float perMillmeter = 8;
@@ -44,7 +42,10 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
     private int mLeadNameWidth;
     private float perColumnWidth;
 
-
+    private float amplitudeScale = 1.0f; // 1.0 = current size, 0.5 = half height
+    public void setAmplitudeScale(float scale) {
+        this.amplitudeScale = Math.max(0f, scale);
+    }
     private int maxHeight;
     private int mViewWidth;
     private int mViewHeight;
@@ -82,7 +83,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
             .getMetrics(dm);
         float scaledDensity = dm.scaledDensity;// 缩放密度
 
-        mLeadNames = new String[]{"I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"};
+        mLeadNames = new String[]{"I", "II", "III", "aVR", "aVL", "aVF",};// "V1", "V2", "V3", "V4", "V5", "V6"};
 //        perMillmeter = dm.densityDpi / 25.4f;
         perMillmeter = 0.014f * 200
         * dm.widthPixels / (20.5f * 25);
@@ -196,7 +197,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
         i--;
         continue;
     }
-        mCurYs[i] = mCenterLineYs[i] - val * 0.001f * gain * perMillmeter;
+        mCurYs[i] = mCenterLineYs[i] - val * 0.001f * gain * perMillmeter* amplitudeScale;
         //两次锁屏连接处多画一个点，避免锁屏时精度损失造成的波形不连续
         if (j == 0) {
             if (startX == mLeadNameWidth) {
@@ -236,7 +237,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
      * 平均排序
      */
     public void meanSort() {
-
+        mRow=mLeadCount;
         maxHeight = mViewHeight;
         float perLeadHeight;
         int allRow = mRow + mDisplayRhythmLeadCount;
@@ -288,7 +289,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    private int mRow = 12;
+    private int mRow = 6;
     private int mColumn = 1;
     private int mDisplayRhythmLeadCount = 0;
 
