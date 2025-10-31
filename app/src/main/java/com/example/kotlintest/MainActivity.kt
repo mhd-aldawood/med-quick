@@ -67,7 +67,7 @@ class MainActivity : ComponentActivity() {
                     LocalReviewWaveController provides reviewWaveController,
                     LocalPermissionManager provides permissionManager
                 ) {
-                    InitNavGraph(startDestination = NavDestination.ECG_SCREEN)
+                    InitNavGraph(startDestination = NavDestination.PULSE_OXIMETER_SCREEN)
                 }
             }
         }

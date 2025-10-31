@@ -23,11 +23,11 @@ object SdkModule {
         return ContecSdk(context)
     }
 
-    @Singleton
-    @Provides
-    fun providePulseOximeterContecSdk(
-        @ApplicationContext context: Context
-    ): com.contec.spo2.code.connect.ContecSdk = com.contec.spo2.code.connect.ContecSdk(context)
+//    @Singleton
+//    @Provides
+//    fun providePulseOximeterContecSdk(
+//        @ApplicationContext context: Context
+//    ): com.contec.spo2.code.connect.ContecSdk = com.contec.spo2.code.connect.ContecSdk(context)
 
 
     @Singleton

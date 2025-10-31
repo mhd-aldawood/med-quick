@@ -70,10 +70,10 @@ fun InitNavGraph(
                     )
                 ) {
                     DeviceMainScreen(
-                        title = uiState.pulseOximeterDataHolder.title,
-                        titleIcon = uiState.pulseOximeterDataHolder.titleIcon,
-                        cancelIcon = uiState.pulseOximeterDataHolder.cancelIcon,
-                        cancelText = uiState.pulseOximeterDataHolder.cancelText,
+                        title = uiState.headerDataSection.title,
+                        titleIcon = uiState.headerDataSection.titleIcon,
+                        cancelIcon = uiState.headerDataSection.cancelIcon,
+                        cancelText = uiState.headerDataSection.cancelText,
                         onCancelClick = { navController.popBackStack() },
                     ) {
                         PulseOximeterScreen(pulseOximeterViewModel, uiState)

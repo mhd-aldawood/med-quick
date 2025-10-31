@@ -19,53 +19,49 @@ import com.contec.spo2.code.connect.ContecSdk
 import com.contec.spo2.code.tools.Utils
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.R
+import com.example.kotlintest.core.model.ConnectionState
+import com.example.kotlintest.core.model.DeviceManager
+import com.example.kotlintest.core.model.DeviceOperation
+import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.screens.home.DeviceCategory
+import com.example.kotlintest.screens.pulseoximeter.model.PulseOximeterCard
 import com.example.kotlintest.ui.theme.FrenchWine
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
-import com.example.kotlintest.util.BluetoothRepository
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-val values = listOf("SpO208", "SpO201", "SpO202", "SpO206", "SpO209", "SpO210", "SpO212", "SpO213")
-
 data class PulseOximeterState(
-    val shouldRequestBluetooth: Boolean = true,
-    val discoveredBluetoothDevices: List<String> = mutableListOf(),
-    val deviceArrayList: List<BluetoothDevice> = mutableListOf(),
-    val stringBuffer: StringBuffer = StringBuffer(),//todo make class to manage callback of the device
-    val isConnected: Boolean = false,
-    val pulseOximeterDataHolder: PulseOximeterDataHolder = PulseOximeterDataHolder(
+    val headerDataSection: HeaderDataSection = HeaderDataSection(
         title = "Pulse Oximeter",
         titleIcon = R.drawable.ic_bluetooth_on,
-        cancelIcon = R.drawable.ic_cancel,
-        cancelText = "Cancel",
-        pulseOximeterCardList = listOf(
-            PulseOximeterCard(
-                value = "90",
-                cardColor = PrimaryMidLinkColor,
-                title = "Pulse",
-                cardUnit = "bpm",
-                normalRange = "65 - 80"
-            ),
-            PulseOximeterCard(
-                value = "94",
-                cardColor = FrenchWine,
-                title = "SpO2",
-                cardUnit = "%",
-                normalRange = "95 - 100"
-            )
+        cancelIcon = R.drawable.ic_cancel
+    ),
+    val pulseOximeterCardList: List<PulseOximeterCard> = listOf<PulseOximeterCard>(
+        PulseOximeterCard(
+            value = "90",
+            cardColor = PrimaryMidLinkColor,
+            title = "Pulse",
+            cardUnit = "bpm",
+            normalRange = "65 - 80"
+        ),
+        PulseOximeterCard(
+            value = "94",
+            cardColor = FrenchWine,
+            title = "SpO2",
+            cardUnit = "%",
+            normalRange = "95 - 100"
         )
     )
 )
 
 sealed class PulseOximeterAction {
-    data object BluetoothRequestFinished : PulseOximeterAction()
-    data object CheckBluetooth : PulseOximeterAction()
-
+    data object ConnectToDevice : PulseOximeterAction()
 }
 
 sealed class PulseOximeterEvents {
@@ -75,54 +71,35 @@ sealed class PulseOximeterEvents {
 @HiltViewModel
 class PulseOximeterViewModel @Inject constructor(
     private val sdk: ContecSdk,
-    private val bluetoothRepository: BluetoothRepository
+    private val deviceManager: DeviceManager
 ) :
     BaseViewModel<PulseOximeterState, PulseOximeterEvents, PulseOximeterAction>(
         initialState = PulseOximeterState()
-    ) {
-    private val TAG = "ThermometerViewModel"
+    ), DeviceOperation {
+    private val TAG = "PulseOximeterViewModel"
+
+
+
+    init {
+        deviceManager.setDeviceModels(DeviceCategory.PulseOximeter)
+    }
+
+
+
     override fun handleAction(action: PulseOximeterAction) {
         when (action) {
-
-            PulseOximeterAction.BluetoothRequestFinished -> mutableState.update {
-                it.copy(
-                    shouldRequestBluetooth = false
-                )
-            }
-
-            PulseOximeterAction.CheckBluetooth -> checkBluetooth()
+            PulseOximeterAction.ConnectToDevice -> ConnectToDevice()
         }
     }
 
-//    private fun searchForBluetoothDevice() {
-//        bluetoothRepository.startScan { device, _, record ->
-//            val recordStr = record?.decodeToString() ?: ""
-//            val manufacturer = getManufacturerSpecific(record)
-//            val display = buildString {
-//                append(device.name ?: "Unknown")
-//                if (manufacturer != null) append("\n$manufacturer")
-//            }
-//            if (display !in mutableState.value.discoveredBluetoothDevices) {
-//                mutableState.update {
-//                    it.copy(discoveredBluetoothDevices = it.discoveredBluetoothDevices + display)
-//                }
-//            }
-//        }
-//    }
 
-    private fun getManufacturerSpecific(record: ByteArray?): String? {
-        if (record == null) return null
-        val index = record.indexOfFirst { it.toInt() == 0xFF }
-        return if (index >= 0) String(record.copyOfRange(index + 1, record.size)) else null
-    }
 
     private val callback = object : ConnectCallback {
         override fun onConnectStatus(status: Int) {
             Logger.i(TAG, "onConnectStatus: ${status}")
             if (status == SdkConstants.CONNECT_CONNECTED) {
-                viewModelScope.launch {
-                    mutableState.update { it.copy(isConnected = true) }
-                    mutableState.value.stringBuffer.setLength(0)
+                viewModelScope.launch(Dispatchers.IO) {
+                    deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Connected)
                     sdk.stopBluetoothSearch()
                     delay(1000)
 //                    sdk.communicate(communicateCallback)
@@ -132,7 +109,7 @@ class PulseOximeterViewModel @Inject constructor(
             }
 
             if (status == SdkConstants.CONNECT_DISCONNECTED || status == SdkConstants.CONNECT_DISCONNECT_EXCEPTION || status == SdkConstants.CONNECT_DISCONNECT_SERVICE_UNFOUND || status == SdkConstants.CONNECT_DISCONNECT_NOTIFY_FAIL) {
-                mutableState.update { it.copy(isConnected = false) }
+                deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Disconnecting)
             }
         }
 
@@ -241,14 +218,13 @@ class PulseOximeterViewModel @Inject constructor(
                         "  breathRate: " + breathRate
             }
             mutableState.update { it ->
-                val updatedCardList = it.pulseOximeterDataHolder.pulseOximeterCardList.toMutableList()
+                val updatedCardList =
+                    it.pulseOximeterCardList.toMutableList()
                 updatedCardList[0] = updatedCardList[0].copy(value = pr.toString())
                 updatedCardList[1] = updatedCardList[1].copy(value = spo2.toString())
 
                 it.copy(
-                    pulseOximeterDataHolder = it.pulseOximeterDataHolder.copy(
-                        pulseOximeterCardList = updatedCardList
-                    )
+                    pulseOximeterCardList = updatedCardList
                 )
             }
 
@@ -294,9 +270,9 @@ class PulseOximeterViewModel @Inject constructor(
         return msd
     }
 
-    fun checkBluetooth() {
-        if (mutableState.value.shouldRequestBluetooth) {
-            if (bluetoothRepository.isBluetoothEnabled()) {
+    override fun ConnectToDevice() {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
                 sdk.init(false)
                 sdk.startBluetoothSearch(
                     object : BluetoothSearchCallback {
@@ -307,7 +283,7 @@ class PulseOximeterViewModel @Inject constructor(
                             record: ByteArray
                         ) {
                             val address = device.getAddress()
-                            viewModelScope.launch(Dispatchers.Main) {
+                            viewModelScope.launch(Dispatchers.Default) {
                                 Logger.i(TAG, "device name" + device.getName())
 
 
@@ -325,7 +301,10 @@ class PulseOximeterViewModel @Inject constructor(
                                 }
 
                                 Logger.e(TAG, "String(record) ${String(record)} ")
-                                Logger.e(TAG, "manufactorSpecificString ${manufactorSpecificString}")
+                                Logger.e(
+                                    TAG,
+                                    "manufactorSpecificString ${manufactorSpecificString}"
+                                )
 
                                 val stringBuffer = StringBuffer()
                                 stringBuffer.append(device.getName() + "\n")
@@ -360,12 +339,12 @@ class PulseOximeterViewModel @Inject constructor(
                                 }
                                 Logger.i(TAG, "device: ${device.name}")
                                 Logger.i(TAG, "stringBuffer: ${stringBuffer}")
-                                if (values.any { device.name.startsWith(it) } &&
-                                    !mutableState.value.deviceArrayList.contains(device)
+                                if (deviceManager.getDeviceModels()
+                                        .any { device.name.startsWith(it) }
                                 ) {
-                                    mutableState.update { it.copy(deviceArrayList = it.deviceArrayList + device) }
-                                    mutableState.update { it.copy(discoveredBluetoothDevices = it.discoveredBluetoothDevices + stringBuffer.toString()) }
-                                    sdk.connect(device, callback)
+                                    withContext(Dispatchers.IO) {
+                                        sdk.connect(device, callback)
+                                    }
 //                                    sdk.startRealtime(startRealtimeCallback)
                                 }
                             }
@@ -373,18 +352,20 @@ class PulseOximeterViewModel @Inject constructor(
                         }
 
                         override fun onSearchError(errorCode: Int) {
-
+                            deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Failed)
                         }
 
                         override fun onSearchComplete() {
 
                         }
-                    }, 2000
+                    }, 200000
                 )
             } else {
                 //you should enable bluetooth msg
                 sendEvent(PulseOximeterEvents.ShowMsg("Please enable bluetooth"))
             }
+
         }
     }
+
 }

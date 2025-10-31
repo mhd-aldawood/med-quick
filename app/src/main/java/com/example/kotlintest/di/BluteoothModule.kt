@@ -13,11 +13,11 @@ import javax.inject.Singleton
 @dagger.Module
 @InstallIn(SingletonComponent::class)
 object BluetoothModule {
-    @Singleton
-    @Provides
-    fun provideBluetoothRepository(
-        @ApplicationContext context: Context
-    ): BluetoothRepository {
-        return BluetoothRepositoryImpl(context)
-    }
+//    @Singleton
+//    @Provides
+//    fun provideBluetoothRepository(
+//        @ApplicationContext context: Context
+//    ): BluetoothRepository {
+//        return BluetoothRepositoryImpl(context)
+//    }
 }

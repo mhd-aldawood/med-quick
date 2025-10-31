@@ -30,6 +30,7 @@ class BluetoothRepositoryImpl @Inject constructor(@ApplicationContext private va
     override fun getPairedDevices(): Set<BluetoothDevice>? = bluetoothAdapter?.bondedDevices
 
 
+
     private  val TAG = "BluetoothRepositoryImpl"
 
     override fun isBluetoothEnabled(): Boolean = bluetoothAdapter?.isEnabled == true

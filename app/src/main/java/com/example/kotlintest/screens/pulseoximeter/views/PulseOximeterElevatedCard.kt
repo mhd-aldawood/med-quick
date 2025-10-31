@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.pulseoximeter.screencomponent
+package com.example.kotlintest.screens.pulseoximeter.views
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

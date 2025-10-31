@@ -1,14 +1,10 @@
 package com.example.kotlintest.di
 
-import android.content.Context
-import com.contec.htd.code.connect.ContecSdk
 import com.example.kotlintest.BuildConfig
 import com.example.kotlintest.data.source.network.ApiService
 import com.example.kotlintest.data.source.network.ApiServiceImpl
-import com.example.kotlintest.util.BluetoothRepository
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
@@ -22,7 +18,6 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import javax.inject.Singleton
-import com.example.kotlintest.util.BluetoothRepositoryImpl
 
 
 @dagger.Module
