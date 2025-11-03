@@ -2,7 +2,6 @@ package com.example.kotlintest.screens.tonometer
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
 import com.contec.bp.code.base.ContecDevice
@@ -14,6 +13,7 @@ import com.contec.bp.code.tools.Utils
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.core.sdk.TonometerWorker
 import com.example.kotlintest.screens.tonometer.model.TonometerModel
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.util.BluetoothRepository
@@ -117,7 +117,8 @@ sealed class TonometerAction {
 class TonometerViewModel @Inject constructor(
     private val sdk: ContecSdk,
     @ApplicationContext private val context: Context,
-    private val bluetoothRepository: BluetoothRepository
+    private val bluetoothRepository: BluetoothRepository,
+    private val tonometerWorker: TonometerWorker
 ) : BaseViewModel<TonometerState, TonometerEvents, TonometerAction>(initialState = TonometerState()) {
     override fun handleAction(action: TonometerAction) {
         when (action) {
@@ -379,6 +380,11 @@ class TonometerViewModel @Inject constructor(
                         }
                     }, 200000
                 )
+                //////
+                tonometerWorker.startWork { result->
+                    Logger.i(TAG, "teamWorker: $result")
+                }
+
             } else {
                 //you should enable bluetooth msg
                 sendEvent(TonometerEvents.ShowMsg("Please enable bluetooth"))
