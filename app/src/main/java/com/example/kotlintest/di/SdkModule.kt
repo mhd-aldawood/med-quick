@@ -2,9 +2,9 @@ package com.example.kotlintest.di
 
 import android.content.Context
 import com.contec.htd.code.connect.ContecSdk
+import com.example.kotlintest.core.model.DataUtilsFactory
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import serial.jni.BluConnectionStateListener
@@ -59,14 +59,4 @@ object SdkModule {
     @Provides
     @Singleton
     fun provideConcurrentLinkedQueue(): ConcurrentLinkedQueue<Short> = ConcurrentLinkedQueue<Short>()
-
-}
-
-interface DataUtilsFactory {
-    fun create(
-        address: String,
-        lead: Int = DataUtils.ECG_LEAD_WILSON,
-        debug: Boolean = false,
-        listener: BluConnectionStateListener
-    ): DataUtils
 }

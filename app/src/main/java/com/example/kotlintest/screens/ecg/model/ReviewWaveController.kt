@@ -1,25 +1,24 @@
 package com.example.kotlintest.screens.ecg.model
 
-import com.example.kotlintest.screens.ecg.ReviewWave
+import com.example.kotlintest.screens.ecg.views.ReviewWave
 import java.util.concurrent.ConcurrentLinkedQueue
+import javax.inject.Inject
 
 interface ReviewWaveController {
     fun attach(view: ReviewWave)
     fun detach()
     fun setRenderColor()
-    fun setEcgDataBuf(mEcgQueue:ConcurrentLinkedQueue<Short>)
+    fun setEcgDataBuf()
     fun startRenderer()
     fun stopRender()
 
 }
 
-class ReviewWaveControllerImpl : ReviewWaveController {
+class ReviewWaveControllerImpl@Inject constructor(private val mEcgQueue: ConcurrentLinkedQueue<Short>) : ReviewWaveController {
     private var view: ReviewWave? = null
-    private var mEcgQueue: ConcurrentLinkedQueue<Short>? = null
 
-    override fun setEcgDataBuf(mEcgQueue: ConcurrentLinkedQueue<Short>) {
+    override fun setEcgDataBuf() {
         view?.setEcgDataBuf(mEcgQueue)
-        this.mEcgQueue=mEcgQueue
     }
     override fun attach(view: ReviewWave) {
         this.view = view
@@ -33,15 +32,15 @@ class ReviewWaveControllerImpl : ReviewWaveController {
         view?.setRendererColor(0, 1.0f, 0, 0)
     }
 
-
-
     override fun startRenderer() {
         view?.startRenderer()
     }
 
     override fun stopRender() {
         view?.stopRenderer()
-        this.mEcgQueue=null
-
+        if(mEcgQueue!= null&& mEcgQueue.isNotEmpty())
+        mEcgQueue.clear()
+        if(mEcgQueue!= null&& mEcgQueue.isNotEmpty())
+         mEcgQueue.remove()
     }
 }

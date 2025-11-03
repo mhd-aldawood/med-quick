@@ -4,24 +4,17 @@ import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import androidx.core.content.ContextCompat.registerReceiver
 import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.model.ConnectionState
+import com.example.kotlintest.core.model.DataUtilsFactory
 import com.example.kotlintest.core.model.HeaderDataSection
-import com.example.kotlintest.di.DataUtilsFactory
 import com.example.kotlintest.screens.ecg.model.ECGConfiguration
 import com.example.kotlintest.screens.ecg.model.NativeMsgBridge
 import com.example.kotlintest.util.BluetoothRepository
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
@@ -137,6 +130,7 @@ class EcgViewModel @Inject constructor(
                             )
                             it.copy(eCGConfiguration = state)
                         }
+                        Logger.i(TAG,"OnBluConnectStart")
                         //sendEvent(EcgEvents.ShowToast("Connect Start"))
                     }
                 }
@@ -149,6 +143,8 @@ class EcgViewModel @Inject constructor(
                             )
                             it.copy(eCGConfiguration = state)
                         }
+                        Logger.i(TAG,"OnBluConnectSuccess")
+
                         sendEvent(EcgEvents.StartRender(mEcgQueue))
                     }
                 }
@@ -164,6 +160,8 @@ class EcgViewModel @Inject constructor(
                             )
                             it.copy(eCGConfiguration = state)
                         }
+                        Logger.i(TAG,"OnBluConnectionInterrupted")
+
                         sendEvent(EcgEvents.MsgInterrupted)
                     }
                 }
@@ -177,7 +175,9 @@ class EcgViewModel @Inject constructor(
                             it.copy(eCGConfiguration = state)
 
                         }
-                     //   sendEvent(EcgEvents.ShowToast("Connect Failed"))
+                        Logger.i(TAG,"OnBluConnectFaild")
+
+                        //   sendEvent(EcgEvents.ShowToast("Connect Failed"))
                     }
                 }
             })

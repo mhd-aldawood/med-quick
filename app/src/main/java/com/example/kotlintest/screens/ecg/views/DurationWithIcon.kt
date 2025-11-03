@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.ecg.component
+package com.example.kotlintest.screens.ecg.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -11,8 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.kotlintest.component.DurationPicker
-import com.example.kotlintest.screens.ecg.EcgAction
-import kotlin.time.Duration
 
 @Composable
 fun DurationWithIcon(onDurationChange: (Int) -> Unit,icon:Int){

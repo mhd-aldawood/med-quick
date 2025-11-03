@@ -1,7 +1,6 @@
 package com.example.kotlintest.screens.ecg
 
 import android.bluetooth.BluetoothDevice
-import android.content.Context
 import android.content.IntentFilter
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,13 +19,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.kotlintest.core.EventsEffect
-import com.example.kotlintest.screens.ecg.component.DurationWithIcon
-import com.example.kotlintest.screens.ecg.component.EcgGraph
+import com.example.kotlintest.screens.ecg.views.DurationWithIcon
+import com.example.kotlintest.screens.ecg.views.EcgGraph
 import com.example.kotlintest.ui.theme.locals.LocalReviewWaveController
 import com.example.kotlintest.util.Logger
-import kotlinx.coroutines.launch
-import serial.jni.BluConnectionStateListener
-import serial.jni.DataUtils
 
 @Preview
 @Composable
@@ -44,7 +39,7 @@ fun EcgScreen(viewModel: EcgViewModel = hiltViewModel(), uiState: EcgState = Ecg
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY) {
                 Logger.i("Ecg screen", " on destroy")
-                controller.stopRender()
+                controller.stopRender()//TODO  call this when we have a disconnect status of bluetooth
                 controller.detach()
                 viewModel.trySendAction(EcgAction.StopBluetoothAndGathering)
             }
@@ -68,7 +63,7 @@ fun EcgScreen(viewModel: EcgViewModel = hiltViewModel(), uiState: EcgState = Ecg
             is EcgEvents.SetRenderColor -> controller.setRenderColor()
             is EcgEvents.MsgInterrupted -> controller.stopRender()
             is EcgEvents.StartRender -> {
-                controller.setEcgDataBuf(it.mEcgQueue)
+                controller.setEcgDataBuf()
                 controller.startRenderer()
             }
         }
