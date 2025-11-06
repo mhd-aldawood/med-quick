@@ -1,4 +1,4 @@
-package com.example.kotlintest.util
+package com.example.kotlintest.core.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice

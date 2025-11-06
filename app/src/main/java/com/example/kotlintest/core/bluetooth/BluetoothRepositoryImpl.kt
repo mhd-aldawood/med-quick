@@ -1,4 +1,4 @@
-package com.example.kotlintest.util
+package com.example.kotlintest.core.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
@@ -6,14 +6,11 @@ import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import androidx.annotation.RequiresPermission
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.registerReceiver
+import com.example.kotlintest.util.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -60,7 +57,7 @@ class BluetoothRepositoryImpl @Inject constructor(@ApplicationContext private va
         }
         val allPermissionsGranted = permissionsList.all {
             ContextCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-        }
+        }//TODO fix the issue here wwrong to pass the permission and just return nothing
 
         if (allPermissionsGranted) {
             scanner.startScan(callback)
