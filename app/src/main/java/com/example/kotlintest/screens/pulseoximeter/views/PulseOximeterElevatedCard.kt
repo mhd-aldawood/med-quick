@@ -43,7 +43,6 @@ fun PulseOximeterElevatedCard(
         Box(
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(top = 23.dp)
         ) {
             Text(
                 text = title,
@@ -76,7 +75,7 @@ fun PulseOximeterElevatedCard(
                 NestedCirclesWithCustomRadius(circleText = unit, circleColor = cardGeneralColor)
                 Column(modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(bottom = 10.dp, end=10.dp),
+                    .padding(bottom = 10.dp, end = 10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = "Norms", style = MaterialTheme
                         .typography

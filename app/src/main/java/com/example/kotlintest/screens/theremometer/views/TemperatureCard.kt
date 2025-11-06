@@ -37,7 +37,7 @@ fun TemperatureCard(temperature: Float,normalRange:String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 40.dp, bottom = 21.dp)
+            .padding(bottom = 21.dp)
     ) {
         Row(
             modifier = Modifier
@@ -47,7 +47,7 @@ fun TemperatureCard(temperature: Float,normalRange:String) {
             SimpleThermometer(
                 value = temperature,
                 modifier = Modifier
-                    .padding(top = 24.dp, bottom = 55.dp)
+                    .padding(bottom = 55.dp)
                     .height(400.dp)
                     .width(100.dp)
             )
@@ -69,14 +69,18 @@ fun TemperatureCard(temperature: Float,normalRange:String) {
                 )
                 {
                     Ring(
-                        modifier = Modifier.size(30.dp).offset(x=40.dp),
+                        modifier = Modifier
+                            .size(30.dp)
+                            .offset(x = 40.dp),
                         ringColor = PrimaryMidLinkColor,
                         ringWidth = 5.dp
                     )
                     TemperatureText(temperature, fontSize = 100, unit = TemperatureUnit.Celsius)
                     VerticalSpacer(100)
                     Ring(
-                        modifier = Modifier.size(10.dp).offset(x=9.dp, y = -16.dp),
+                        modifier = Modifier
+                            .size(10.dp)
+                            .offset(x = 9.dp, y = -16.dp),
                         ringColor = PrimaryMidLinkColor,
                         ringWidth = 2.dp
                     )

@@ -19,9 +19,6 @@ import com.example.kotlintest.util.Logger
 
 @Composable
 fun TonometerScreen(viewModel: TonometerViewModel, uiState: TonometerState) {
-//    val sdk = LocalContecSdk.current Todo keep this line tell we decide what will do for the sdk for tonometer and the context
-
-
     val lifecycleOwner = LocalLifecycleOwner.current
 
     DisposableEffect(lifecycleOwner) {
@@ -46,7 +43,7 @@ fun TonometerScreen(viewModel: TonometerViewModel, uiState: TonometerState) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 35.dp, bottom = 50.dp),
+            .padding(bottom = 50.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         LampSelectionInfoCard(uiState,

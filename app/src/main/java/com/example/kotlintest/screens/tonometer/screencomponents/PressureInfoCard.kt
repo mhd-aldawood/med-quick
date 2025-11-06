@@ -19,7 +19,7 @@ fun RowScope.PressureInfoCard(
 ) {
     ElevatedCard(
         modifier = Modifier
-            .padding(top = 15.dp, bottom = 50.dp)
+            .padding(bottom = 50.dp)
             .weight(1f), colors = CardDefaults
             .cardColors(
                 containerColor = Color.White

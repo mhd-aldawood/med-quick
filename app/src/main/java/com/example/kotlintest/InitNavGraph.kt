@@ -16,13 +16,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
 import com.example.kotlintest.core.PermissionGate
-import com.example.kotlintest.core.PermissionGateSimple
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
-import com.example.kotlintest.screens.pulseoximeter.PulseOximeterScreen
 import com.example.kotlintest.screens.home.HomeScreen
+import com.example.kotlintest.screens.pulseoximeter.PulseOximeterScreen
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterViewModel
+import com.example.kotlintest.screens.stethoscope.StethoScopeScreen
+import com.example.kotlintest.screens.stethoscope.StethoScopeViewModel
 import com.example.kotlintest.screens.theremometer.ThermometerScreen
 import com.example.kotlintest.screens.theremometer.ThermometerViewModel
 import com.example.kotlintest.screens.tonometer.TonometerScreen
@@ -111,14 +112,24 @@ fun InitNavGraph(
         composable(NavDestination.TONOMETER_SCREEN) {
             val tonometerViewModel: TonometerViewModel = hiltViewModel()
             val uiState by tonometerViewModel.stateFlow.collectAsStateWithLifecycle()
-            DeviceMainScreen(
-                title = uiState.headerDataSection.title,
-                titleIcon = uiState.headerDataSection.titleIcon,
-                cancelIcon = uiState.headerDataSection.cancelIcon,
-                cancelText = uiState.headerDataSection.cancelText,
-                onCancelClick = { navController.popBackStack() },
+            PermissionGate(
+                permissions = listOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.BLUETOOTH,
+                    Manifest.permission.BLUETOOTH_CONNECT,
+                    Manifest.permission.BLUETOOTH_SCAN,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
             ) {
-                TonometerScreen(tonometerViewModel, uiState)
+                DeviceMainScreen(
+                    title = uiState.headerDataSection.title,
+                    titleIcon = uiState.headerDataSection.titleIcon,
+                    cancelIcon = uiState.headerDataSection.cancelIcon,
+                    cancelText = uiState.headerDataSection.cancelText,
+                    onCancelClick = { navController.popBackStack() },
+                ) {
+                    TonometerScreen(tonometerViewModel, uiState)
+                }
             }
         }
         composable(NavDestination.ECG_SCREEN) {
@@ -142,6 +153,31 @@ fun InitNavGraph(
                         onCancelClick = { navController.popBackStack() },
                     ) {
                         EcgScreen(ecgViewModel, uiState)
+                    }
+                }
+            }
+        }
+        composable(NavDestination.STETHOSCOPE_SCREEN) {
+            val stethoScopeViewModel: StethoScopeViewModel = hiltViewModel()
+            val uiState by stethoScopeViewModel.stateFlow.collectAsStateWithLifecycle()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PermissionGate(
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.BLUETOOTH,
+                        Manifest.permission.BLUETOOTH_CONNECT,
+                        Manifest.permission.BLUETOOTH_SCAN,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                ) {
+                    DeviceMainScreen(
+                        title = uiState.headerDataSection.title,
+                        titleIcon = uiState.headerDataSection.titleIcon,
+                        cancelIcon = uiState.headerDataSection.cancelIcon,
+                        cancelText = uiState.headerDataSection.cancelText,
+                        onCancelClick = { navController.popBackStack() },
+                    ) {
+                        StethoScopeScreen(stethoScopeViewModel, uiState)
                     }
                 }
             }

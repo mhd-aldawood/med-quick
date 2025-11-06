@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +41,8 @@ fun DeviceConnectionHeader(
             modifier = Modifier.align(Alignment.TopStart),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
+        )
+        {
             Icon(
                 painter = painterResource(titleIcon),
                 tint = Color.Unspecified,
@@ -56,10 +58,13 @@ fun DeviceConnectionHeader(
             )
         }
         Row(
-            modifier = Modifier.align(Alignment.TopEnd).clickable { onCancelClick.invoke() },
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .clickable { onCancelClick.invoke() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(21.dp)
-        ) {
+        )
+        {
 
             Text(
                 text = cancelText,
@@ -75,7 +80,9 @@ fun DeviceConnectionHeader(
                 tint = Color.Unspecified
             )
         }
-        Box(modifier = Modifier.align(Alignment.Center)) {
+        Box(modifier = Modifier
+            .align(Alignment.Center)
+            .padding(top = 60.dp)) {
             content()
         }
     }
