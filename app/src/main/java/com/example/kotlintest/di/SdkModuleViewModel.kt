@@ -2,16 +2,13 @@ package com.example.kotlintest.di
 
 import android.content.Context
 import com.contec.htd.code.connect.ContecSdk
-import com.example.kotlintest.screens.ecg.model.ReviewWaveController
-import com.example.kotlintest.screens.ecg.model.ReviewWaveControllerImpl
-import com.example.kotlintest.util.BluetoothRepository
-import com.example.kotlintest.util.BluetoothRepositoryImpl
+import com.example.kotlintest.core.audio.AudioProcessor
+import com.example.kotlintest.core.bluetooth.BluetoothRepository
+import com.example.kotlintest.core.bluetooth.BluetoothRepositoryImpl
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @dagger.Module
 @InstallIn(ViewModelComponent::class)//TODO replace for ViewmodelComponent
@@ -33,5 +30,16 @@ object SdkModuleViewModel{
     ): ContecSdk {
         return ContecSdk(context)
     }
+
+    @Provides
+    fun provideAudioProcessor(
+        @ApplicationContext context: Context
+    ): AudioProcessor {
+        return AudioProcessor(context)
+    }
+
+    @Provides
+    fun provideTonometerContecSdk(
+    ): com.contec.bp.code.connect.ContecSdk = com.contec.bp.code.connect.ContecSdk()
 
 }

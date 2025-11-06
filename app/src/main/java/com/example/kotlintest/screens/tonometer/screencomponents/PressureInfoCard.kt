@@ -1,6 +1,5 @@
 package com.example.kotlintest.screens.tonometer.screencomponents
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
@@ -14,8 +13,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun RowScope.PressureInfoCard(
     pressureValue: String,
-    systolicPressure: Float,
-    pulseRate: Float,
+    systolicPressure: Double,
+    pulseRate: Double,
     pressureIcon: Int
 ) {
     ElevatedCard(
@@ -31,7 +30,11 @@ fun RowScope.PressureInfoCard(
             modifier = Modifier,
         )
         {
-            IndicatorAndSDValues(systolicPressure = systolicPressure, pulseRate = pulseRate,pressureIcon=pressureIcon)
+            IndicatorAndSDValues(
+                systolicPressure = systolicPressure,
+                pulseRate = pulseRate,
+                pressureIcon = pressureIcon
+            )
             SDValuesAndText(pressureValue = pressureValue)
         }
     }

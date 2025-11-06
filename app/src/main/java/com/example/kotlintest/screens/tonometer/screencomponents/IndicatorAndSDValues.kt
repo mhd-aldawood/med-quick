@@ -15,7 +15,7 @@ import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.util.verticalPadding
 
 @Composable
-fun RowScope.IndicatorAndSDValues(systolicPressure: Float, pulseRate: Float, pressureIcon: Int) {
+fun RowScope.IndicatorAndSDValues(systolicPressure: Double, pulseRate: Double, pressureIcon: Int) {
     Box(
         modifier = Modifier
             .weight(0.5f)
@@ -24,8 +24,8 @@ fun RowScope.IndicatorAndSDValues(systolicPressure: Float, pulseRate: Float, pre
     )
     {
         SimpleThermometer(
-            value = systolicPressure,
-            secondValue = pulseRate,
+            value = systolicPressure.toFloat(),
+            secondValue = pulseRate.toFloat(),
             colorIndicator = PrimaryMidLinkColor,
             incrementNumber = 30,
             minValue = 0f,

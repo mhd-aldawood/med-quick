@@ -22,7 +22,7 @@ import com.example.kotlintest.ui.theme.rhDisplayRegular
 
 @Composable
 
-fun BoxScope.SDevalues(pressureIcon:Int, systolicPressure: Float, pulseRate:Float){
+fun BoxScope.SDevalues(pressureIcon: Int, systolicPressure: Double, pulseRate: Double) {
     Row(modifier = Modifier
         .align(Alignment.Center)
         .padding(start = 75.dp)

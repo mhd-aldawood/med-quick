@@ -18,23 +18,29 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Timer
 import javax.inject.Inject
 
 class TonometerWorker @Inject constructor(
     private val sdk: ContecSdk,
     @ApplicationContext private val context: Context,
+    private val timer: Timer
 ) : Worker {
     init {
         sdk.init(ContecBluetoothType.TYPE_FF, false)
     }
-
-    public fun getCommunicateCallback(): CommunicateCallback {
-        return communicateCallback
-    }
-
     private val TAG = "TonometerWorker"
 
-    override fun startWork( result: (String) -> Unit) {
+
+    override fun startWork(result: (JSONObject) -> Unit) {
+//        timer.schedule(object : TimerTask() {
+//            override fun run() {
+//
+//
+//            }
+//        }, 0, 1000)
+
+
         sdk.startBluetoothSearch(
             object : BluetoothSearchCallback {
                 override fun onContecDeviceFound(contecDevice: ContecDevice?) {
@@ -87,22 +93,22 @@ class TonometerWorker @Inject constructor(
                                             "onCommunicateSuccess: " + latestScan?.PulseRate
                                         )
                                         if (latestScan?.SystolicPressure != null && latestScan?.PulseRate != null) {
-
+                                            val jsonObject = JSONObject()
+                                            jsonObject.put(
+                                                "pressureValue",
+                                                "${latestScan?.SystolicPressure} / ${latestScan?.PulseRate}"
+                                            )
+                                            jsonObject.put(
+                                                "systolicPressure",
+                                                latestScan?.SystolicPressure?.toDouble() ?: 0.0
+                                            )
+                                            jsonObject.put(
+                                                "pulseRate",
+                                                latestScan?.PulseRate?.toDouble() ?: 0.0
+                                            )
+                                            result(jsonObject)
                                         }
-                                        val jsonObject = JSONObject()
-                                        jsonObject.put(
-                                            "pressureValue",
-                                            "${latestScan?.SystolicPressure} / ${latestScan?.PulseRate}"
-                                        )
-                                        jsonObject.put(
-                                            "systolicPressure",
-                                            latestScan?.SystolicPressure?.toFloat() ?: 0f
-                                        )
-                                        jsonObject.put(
-                                            "pulseRate",
-                                            latestScan?.PulseRate?.toFloat() ?: 0f
-                                        )
-                                        result(jsonObject.toString())
+
                                     }
 
                                 }
@@ -122,9 +128,12 @@ class TonometerWorker @Inject constructor(
                 }
 
                 override fun onSearchError(p0: Int) {
+                    Logger.e(TAG, "onSearchError")
                 }
 
                 override fun onSearchComplete() {
+                    Logger.e(TAG, "onSearchComplete")
+
                 }
             }, 200000
         )
@@ -137,60 +146,10 @@ class TonometerWorker @Inject constructor(
 
     private val jsonDecoder = Json { ignoreUnknownKeys = true } // Ignore unknown fields
 
-    val communicateCallback = object : CommunicateCallback {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onCommunicateSuccess(json: String?) {
-            Logger.i(TAG, "onCommunicateSuccess" + json)
-
-            try {
-                var jsonArray = JSONObject(json).getJSONArray("BloodPressureData")
-
-                for (i in 0..<jsonArray.length()) {
-                    val jsonObject: JSONObject = jsonArray.optJSONObject(i)
-                    val systolicPressure = jsonObject.optString("SystolicPressure")
-                    val diastolicPressure = jsonObject.optString("DiastolicPressure")
-                    val date = jsonObject.optString("Date")
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-            json?.let {
-                val model: TonometerModel = jsonDecoder.decodeFromString(it)
-                val latestScan = model.BloodPressureData.maxByOrNull {
-                    LocalDateTime.parse(it.Date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                }
-                Logger.i(TAG, "onCommunicateSuccess: " + latestScan?.SystolicPressure)
-                Logger.i(TAG, "onCommunicateSuccess: " + latestScan?.PulseRate)
-                if (latestScan?.SystolicPressure != null && latestScan?.PulseRate != null) {
-
-                }
-                val jsonObject = JSONObject()
-                jsonObject.put(
-                    "pressureValue",
-                    "${latestScan?.SystolicPressure} / ${latestScan?.PulseRate}"
-                )
-                jsonObject.put("systolicPressure", latestScan?.SystolicPressure?.toFloat() ?: 0f)
-                jsonObject.put("pulseRate", latestScan?.PulseRate?.toFloat() ?: 0f)
-            }
-
-        }
-
-        override fun onCommunicateFailed(p0: Int) {
-            Logger.e(TAG, "onCommunicateFailed" + p0.toString())
-
-        }
-
-        override fun onCommunicateProgress(p0: Int) {
-            Logger.e(TAG, "onCommunicateProgress" + p0.toString())
-        }
-
-    }
-
-
 }
 
 
 interface Worker {
-     fun startWork(result: (String) -> Unit)
+    fun startWork(result: (JSONObject) -> Unit)
     fun stopWork()
 }

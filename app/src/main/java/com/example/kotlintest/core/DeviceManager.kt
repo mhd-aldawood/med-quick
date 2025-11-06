@@ -1,8 +1,8 @@
 package com.example.kotlintest.core
 
+import com.example.kotlintest.core.bluetooth.BluetoothRepositoryImpl
 import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.screens.home.DeviceCategory
-import com.example.kotlintest.util.BluetoothRepositoryImpl
 import javax.inject.Inject
 
 data class DeviceConfigure(
@@ -21,7 +21,6 @@ class DeviceManager @Inject constructor(val bluetoothRepositoryImpl: BluetoothRe
     fun getDeviceModels(): List<String> = deviceModels!!
 
 
-
     fun setDeviceType(deviceCategory: DeviceCategory) {
         deviceConfigure.deviceCategory = deviceCategory
         setDeviceModels(deviceCategory)
@@ -29,15 +28,33 @@ class DeviceManager @Inject constructor(val bluetoothRepositoryImpl: BluetoothRe
 
     fun setDeviceModels(deviceCategory: DeviceCategory) {//TODO we can read from storage
         deviceModels = when (deviceCategory) {
-            DeviceCategory.DigitalStethoscope -> TODO()
+            DeviceCategory.DigitalStethoscope -> listOf("Mintti")
             DeviceCategory.DopplerUltrasound -> TODO()
             DeviceCategory.ECGWorkstation -> TODO()
-            DeviceCategory.ElectronicSphygmomanometer -> TODO()
+            DeviceCategory.ElectronicSphygmomanometer -> listOf(
+                "NIBP01",
+                "NIBP03",
+                "NIBP04",
+                "NIBP07",
+                "NIBP08",
+                "NIBP09",
+                "NIBP11"
+            )
             DeviceCategory.FIATestingSystemPOCT -> TODO()
             DeviceCategory.Glucometer -> TODO()
             DeviceCategory.HemoglobinTestingSystem -> TODO()
             DeviceCategory.LipidTestingSystem -> TODO()
-            DeviceCategory.PulseOximeter -> listOf("SpO208", "SpO201", "SpO202", "SpO206", "SpO209", "SpO210", "SpO212", "SpO213")
+            DeviceCategory.PulseOximeter -> listOf(
+                "SpO208",
+                "SpO201",
+                "SpO202",
+                "SpO206",
+                "SpO209",
+                "SpO210",
+                "SpO212",
+                "SpO213"
+            )
+
             DeviceCategory.Thermometer -> listOf("HC-08", "TEMP04", "TEMP05")
 
             DeviceCategory.Spirometer -> TODO()

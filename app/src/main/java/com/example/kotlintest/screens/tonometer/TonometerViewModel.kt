@@ -1,33 +1,21 @@
 package com.example.kotlintest.screens.tonometer
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
-import com.contec.bp.code.base.ContecDevice
-import com.contec.bp.code.bean.ContecBluetoothType
-import com.contec.bp.code.callback.BluetoothSearchCallback
-import com.contec.bp.code.callback.CommunicateCallback
 import com.contec.bp.code.connect.ContecSdk
-import com.contec.bp.code.tools.Utils
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
+import com.example.kotlintest.core.DeviceManager
+import com.example.kotlintest.core.bluetooth.BluetoothCommand
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.core.sdk.TonometerWorker
-import com.example.kotlintest.screens.tonometer.model.TonometerModel
+import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
-import com.example.kotlintest.util.BluetoothRepository
-import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
-import org.json.JSONException
-import org.json.JSONObject
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import kotlin.String
 
 
 val devices = listOf(
@@ -89,8 +77,8 @@ data class TonometerState(
     ),
 
 
-    val systolicPressure: Float = 0f,//Todo group them in class
-    val pulseRate: Float = 0f,
+    val systolicPressure: Double = 0.0,//Todo group them in class
+    val pulseRate: Double = 0.0,
     val pressureValue: String = "",
     val pressureIcon: Int = R.mipmap.ic_s_d_blood_pressure,
 
@@ -98,18 +86,17 @@ data class TonometerState(
 
 sealed class TonometerEvents {
     data class ShowMsg(val msg: String) : TonometerEvents()
-
 }
 
 sealed class TonometerAction {
     data class OnLambChange(val patientPosition: PatientBodyPart) : TonometerAction()
-    data object CheckBluetooth : TonometerAction()
-    data object StopBluetoothAndCommunication : TonometerAction()
     data object BluetoothRequestFinished : TonometerAction()
     data class OnAgeGroupChange(val ageGroup: AgeGroup) : TonometerAction()
     data class OnSittingPosChange(
         val patientType: PositionType
     ) : TonometerAction()
+    data class Bluetooth(val command: BluetoothCommand) : TonometerAction()
+
 }
 
 
@@ -117,13 +104,14 @@ sealed class TonometerAction {
 class TonometerViewModel @Inject constructor(
     private val sdk: ContecSdk,
     @ApplicationContext private val context: Context,
-    private val bluetoothRepository: BluetoothRepository,
-    private val tonometerWorker: TonometerWorker
+    private val tonometerWorker: TonometerWorker,
+    private val deviceManager: DeviceManager
 ) : BaseViewModel<TonometerState, TonometerEvents, TonometerAction>(initialState = TonometerState()) {
+    init {
+        deviceManager.setDeviceModels(DeviceCategory.ElectronicSphygmomanometer)
+    }
     override fun handleAction(action: TonometerAction) {
         when (action) {
-            TonometerAction.CheckBluetooth -> checkBluetooth()
-            TonometerAction.StopBluetoothAndCommunication -> stopBluetoothAndCommunication()
             TonometerAction.BluetoothRequestFinished -> mutableState.update {
                 it.copy(
                     shouldRequestBluetooth = false
@@ -135,6 +123,11 @@ class TonometerViewModel @Inject constructor(
             is TonometerAction.OnSittingPosChange -> onPosChange(
                 action.patientType
             )
+
+            is TonometerAction.Bluetooth -> when (action.command) {
+                BluetoothCommand.SearchAndCommunicate -> searchAndCommunicate()
+                BluetoothCommand.StopBluetoothAndCommunication -> stopBluetoothAndCommunication()
+            }
         }
     }
 
@@ -295,94 +288,24 @@ class TonometerViewModel @Inject constructor(
     }
 
     private fun stopBluetoothAndCommunication() {
-        if (sdk != null) {
-            sdk.stopBluetoothSearch();
-            sdk.stopCommunicate();
-        }
+        tonometerWorker.stopWork()
     }
 
     private val jsonDecoder = Json { ignoreUnknownKeys = true } // Ignore unknown fields
 
-    val communicateCallback = object : CommunicateCallback {
-        @RequiresApi(Build.VERSION_CODES.O)
-        override fun onCommunicateSuccess(json: String?) {
-            Logger.i(TAG, "onCommunicateSuccess" + json)
-
-            try {
-                var jsonArray = JSONObject(json).getJSONArray("BloodPressureData")
-
-                for (i in 0..<jsonArray.length()) {
-                    val jsonObject: JSONObject = jsonArray.optJSONObject(i)
-                    val systolicPressure = jsonObject.optString("SystolicPressure")
-                    val diastolicPressure = jsonObject.optString("DiastolicPressure")
-                    val date = jsonObject.optString("Date")
-                }
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-            json?.let {
-                val model: TonometerModel = jsonDecoder.decodeFromString(it)
-                val latestScan = model.BloodPressureData.maxByOrNull {
-                    LocalDateTime.parse(it.Date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-                }
-                Logger.i(TAG, "onCommunicateSuccess: " + latestScan?.SystolicPressure)
-                Logger.i(TAG, "onCommunicateSuccess: " + latestScan?.PulseRate)
-                if (latestScan?.SystolicPressure != null && latestScan?.PulseRate != null) mutableState.update {
-                    it.copy(
-                        pressureValue = "${latestScan?.SystolicPressure} / ${latestScan?.PulseRate}",
-                        systolicPressure = latestScan.SystolicPressure?.toFloat() ?: 0f,
-                        pulseRate = latestScan.PulseRate?.toFloat() ?: 0f
-                    )
-                }
-            }
-
-        }
-
-        override fun onCommunicateFailed(p0: Int) {
-            Logger.e(TAG, "onCommunicateFailed" + p0.toString())
-
-        }
-
-        override fun onCommunicateProgress(p0: Int) {
-            Logger.e(TAG, "onCommunicateProgress" + p0.toString())
-        }
-
-    }
     private val TAG = "TonometerViewModel"
-    fun checkBluetooth() {
+    fun searchAndCommunicate() {
         if (mutableState.value.shouldRequestBluetooth) {
-            if (bluetoothRepository.isBluetoothEnabled()) {
-                sdk.init(ContecBluetoothType.TYPE_FF, false)
-                sdk.startBluetoothSearch(
-                    object : BluetoothSearchCallback {
-                        override fun onContecDeviceFound(contecDevice: ContecDevice?) {
-
-                            if (contecDevice?.name == null) {
-                                return
-                            }
-
-                            //打印设备名称
-                            Logger.e(TAG, contecDevice.getName())
-
-
-                            if (devices.any { contecDevice.name.startsWith(it) }) {
-                                Logger.i(TAG, Utils.bytesToHexString(contecDevice.getRecord()))
-                                sdk.startCommunicate(
-                                    context, contecDevice, communicateCallback
-                                )
-                            }
-                        }
-
-                        override fun onSearchError(p0: Int) {
-                        }
-
-                        override fun onSearchComplete() {
-                        }
-                    }, 200000
-                )
-                //////
+            if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
                 tonometerWorker.startWork { result->
-                    Logger.i(TAG, "teamWorker: $result")
+                    mutableState.update {
+                        it.copy(
+                            pressureValue = result.getString("pressureValue"),
+                            systolicPressure = result.getDouble("systolicPressure"),
+                            pulseRate = result.getDouble("pulseRate")
+                        )
+                    }
+
                 }
 
             } else {
