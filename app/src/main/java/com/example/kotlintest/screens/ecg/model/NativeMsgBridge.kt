@@ -1,6 +1,7 @@
 package com.example.kotlintest.screens.ecg.model
 
 import com.example.kotlintest.screens.ecg.EcgAction
+import com.example.kotlintest.util.Logger
 import kotlinx.coroutines.channels.SendChannel
 import serial.jni.NativeCallBack
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -49,21 +50,26 @@ class NativeMsgBridge(
             // onAutoSave?.invoke() // wire this if you want auto-save later
         }
     }
-
+    private val TAG = "NativeMsgBridge"
     override fun callEcgWaveDataMsg(wave: ShortArray) {
         // Original code offered samples[48..59]. Keep your vendor quirk if you must.
         val slice = if (wave.size >= 60) wave.copyOfRange(48, 60) else wave.copyOf()
         ecgQueue?.addAll(slice.toList())
+        Logger.i(TAG, "callEcgWaveDataMsg" + ecgQueue)
     }
 
     override fun callEcg18WaveDataMsg(wave: ShortArray) {
         val slice = if (wave.size >= 90) wave.copyOfRange(72, 90) else wave.copyOf()
         ecgQueue?.addAll(slice.toList())
+        Logger.i(TAG, "callEcg18WaveDataMsg" + ecgQueue)
+
     }
 
     override fun callEcg15WaveDataMsg(wave: ShortArray) {
         val slice = if (wave.size >= 75) wave.copyOfRange(60, 75) else wave.copyOf()
         ecgQueue?.addAll(slice.toList())
+        Logger.i(TAG, "callEcg15WaveDataMsg" + ecgQueue)
+
     }
 
     override fun callVcgWaveDataMsg(wave: ShortArray) {

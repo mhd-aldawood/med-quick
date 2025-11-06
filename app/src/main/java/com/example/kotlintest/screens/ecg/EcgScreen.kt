@@ -78,7 +78,7 @@ fun EcgScreen(viewModel: EcgViewModel = hiltViewModel(), uiState: EcgState = Ecg
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 35.dp, bottom = 50.dp),
+            .padding(bottom = 50.dp),
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         EcgGraph(controller)

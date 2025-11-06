@@ -7,12 +7,12 @@ import android.bluetooth.le.ScanResult
 import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
+import com.example.kotlintest.core.bluetooth.BluetoothRepository
 import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.core.model.DataUtilsFactory
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.screens.ecg.model.ECGConfiguration
 import com.example.kotlintest.screens.ecg.model.NativeMsgBridge
-import com.example.kotlintest.util.BluetoothRepository
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
