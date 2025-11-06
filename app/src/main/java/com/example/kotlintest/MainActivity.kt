@@ -8,12 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
-import com.contec.bp.code.connect.ContecSdk
 import com.example.kotlintest.core.PermissionManager
 import com.example.kotlintest.di.ReviewWaveFactory
 import com.example.kotlintest.screens.ecg.model.ReviewWaveController
 import com.example.kotlintest.ui.theme.KotlinTestTheme
-import com.example.kotlintest.ui.theme.locals.LocalContecSdk
 import com.example.kotlintest.ui.theme.locals.LocalPermissionManager
 import com.example.kotlintest.ui.theme.locals.LocalReviewWaveController
 import com.example.kotlintest.ui.theme.locals.LocalReviewWaveFactory
@@ -48,9 +46,6 @@ class MainActivity : ComponentActivity() {
     }
     //</editor-fold>
 
-
-    @Inject
-    lateinit var contecSdk: ContecSdk
     @Inject lateinit var reviewWaveFactory: ReviewWaveFactory
     @Inject lateinit var reviewWaveController: ReviewWaveController
     @Inject lateinit var permissionManager: PermissionManager
@@ -62,12 +57,12 @@ class MainActivity : ComponentActivity() {
 //        requestLocationPermissions()
         setContent {
             KotlinTestTheme {
-                CompositionLocalProvider(LocalContecSdk provides contecSdk,
+                CompositionLocalProvider(
                     LocalReviewWaveFactory provides reviewWaveFactory,
                     LocalReviewWaveController provides reviewWaveController,
                     LocalPermissionManager provides permissionManager
                 ) {
-                    InitNavGraph(startDestination = NavDestination.THERMOMETER_SCREEN)
+                    InitNavGraph(startDestination = NavDestination.TONOMETER_SCREEN)
                 }
             }
         }
