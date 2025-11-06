@@ -1,8 +1,6 @@
 package com.example.kotlintest.screens.tonometer
 
-import android.content.Context
 import androidx.compose.ui.graphics.Color
-import com.contec.bp.code.connect.ContecSdk
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
@@ -12,7 +10,6 @@ import com.example.kotlintest.core.sdk.TonometerWorker
 import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -102,8 +99,6 @@ sealed class TonometerAction {
 
 @HiltViewModel
 class TonometerViewModel @Inject constructor(
-    private val sdk: ContecSdk,
-    @ApplicationContext private val context: Context,
     private val tonometerWorker: TonometerWorker,
     private val deviceManager: DeviceManager
 ) : BaseViewModel<TonometerState, TonometerEvents, TonometerAction>(initialState = TonometerState()) {
