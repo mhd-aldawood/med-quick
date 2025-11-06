@@ -12,7 +12,7 @@ fun DeviceMainScreen(
     content: @Composable () -> Unit
 ) {
     MainScaffold() {
-        DeviceConnectionHeader(//TODO add some padding to bottom of the header
+        DeviceConnectionHeader(
             titleIcon = titleIcon,
             title = title,
             cancelText = cancelText,
