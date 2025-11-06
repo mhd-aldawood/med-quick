@@ -1,11 +1,4 @@
-import org.gradle.kotlin.dsl.implementation
-
 plugins {
-//    alias(libs.plugins.android.application)
-//    alias(libs.plugins.kotlin.android)
-//    alias(libs.plugins.kotlin.compose)
-//    alias(libs.plugins.ksp)
-//    alias(libs.plugins.hilt)
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
@@ -101,6 +94,7 @@ dependencies {
     implementation (files("libs/contec_htd_sdk_v1.8.aar"))
     implementation (files("libs/contec_bp_ble_sdk_v1.4.jar"))
     implementation (files("libs/ecgsdk_library-release-1.8.7_202406191047.aar"))
+    implementation(files("libs/minttisdk_v2.1.2-beta.jar"))
 
     // Architecture Components
     implementation(libs.room.runtime)
@@ -135,20 +129,6 @@ dependencies {
     debugImplementation(composeBom)
     debugImplementation(libs.androidx.compose.ui.tooling.core)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.lifecycle.runtime.ktx)
-//    implementation(libs.androidx.activity.compose)
-//    implementation(platform(libs.androidx.compose.bom))
-//    implementation(libs.androidx.ui)
-//    implementation(libs.androidx.ui.graphics)
-//    implementation(libs.androidx.ui.tooling.preview)
-//    implementation(libs.androidx.material3)
-//    implementation(libs.androidx.navigation.compose)
-//
-//    // Hilt
-//    implementation(libs.hilt.android.core)
-//    implementation(libs.androidx.hilt.navigation.compose)
-//    ksp(libs.hilt.compiler)
 
     //Ktor
     implementation(libs.io.ktor.core)
@@ -173,4 +153,5 @@ dependencies {
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
+    implementation(group = "com.antonkarpenko", name = "ffmpeg-kit-min-gpl", version = "2.1.0")
 }
