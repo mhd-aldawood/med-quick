@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                     LocalReviewWaveController provides reviewWaveController,
                     LocalPermissionManager provides permissionManager
                 ) {
-                    InitNavGraph(startDestination = NavDestination.TONOMETER_SCREEN)
+                    InitNavGraph(startDestination = NavDestination.HOME_SCREEN)
                 }
             }
         }
