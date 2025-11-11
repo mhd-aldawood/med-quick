@@ -17,12 +17,15 @@ import com.contec.spo2.code.callback.RealtimeCallback
 import com.contec.spo2.code.callback.RealtimeSpO2Callback
 import com.contec.spo2.code.connect.ContecSdk
 import com.contec.spo2.code.tools.Utils
-import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.R
-import com.example.kotlintest.core.model.ConnectionState
+import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.DeviceOperation
+import com.example.kotlintest.core.bluetooth.BluetoothCommand
+import com.example.kotlintest.core.devicesWorker.Worker
+import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.di.PulseOximeterQualifier
 import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.screens.pulseoximeter.model.PulseOximeterCard
 import com.example.kotlintest.ui.theme.FrenchWine
@@ -61,7 +64,8 @@ data class PulseOximeterState(
 )
 
 sealed class PulseOximeterAction {
-    data object ConnectToDevice : PulseOximeterAction()
+    data class Bluetooth(val command: BluetoothCommand) : PulseOximeterAction()
+
 }
 
 sealed class PulseOximeterEvents {
@@ -71,7 +75,8 @@ sealed class PulseOximeterEvents {
 @HiltViewModel
 class PulseOximeterViewModel @Inject constructor(
     private val sdk: ContecSdk,
-    private val deviceManager: DeviceManager
+    private val deviceManager: DeviceManager,
+    @PulseOximeterQualifier private val worker: Worker
 ) :
     BaseViewModel<PulseOximeterState, PulseOximeterEvents, PulseOximeterAction>(
         initialState = PulseOximeterState()
@@ -88,18 +93,19 @@ class PulseOximeterViewModel @Inject constructor(
 
     override fun handleAction(action: PulseOximeterAction) {
         when (action) {
-            PulseOximeterAction.ConnectToDevice -> ConnectToDevice()
+            is PulseOximeterAction.Bluetooth -> when (action.command) {
+                BluetoothCommand.SearchAndCommunicate -> ConnectToDevice()
+                BluetoothCommand.StopBluetoothAndCommunication -> worker.stopWork()
+            }
         }
     }
-
-
 
     private val callback = object : ConnectCallback {
         override fun onConnectStatus(status: Int) {
             Logger.i(TAG, "onConnectStatus: ${status}")
             if (status == SdkConstants.CONNECT_CONNECTED) {
                 viewModelScope.launch(Dispatchers.IO) {
-                    deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Connected)
+                    deviceManager.setConnectionState(ConnectionState.Connected)
                     sdk.stopBluetoothSearch()
                     delay(1000)
 //                    sdk.communicate(communicateCallback)
@@ -109,7 +115,7 @@ class PulseOximeterViewModel @Inject constructor(
             }
 
             if (status == SdkConstants.CONNECT_DISCONNECTED || status == SdkConstants.CONNECT_DISCONNECT_EXCEPTION || status == SdkConstants.CONNECT_DISCONNECT_SERVICE_UNFOUND || status == SdkConstants.CONNECT_DISCONNECT_NOTIFY_FAIL) {
-                deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Disconnecting)
+                deviceManager.setConnectionState(ConnectionState.Disconnecting)
             }
         }
 
@@ -272,7 +278,7 @@ class PulseOximeterViewModel @Inject constructor(
 
     override fun ConnectToDevice() {
         viewModelScope.launch(Dispatchers.IO) {
-            if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
+            if (deviceManager.bluetoothScanner.isBluetoothEnabled()) {
                 sdk.init(false)
                 sdk.startBluetoothSearch(
                     object : BluetoothSearchCallback {
@@ -352,7 +358,7 @@ class PulseOximeterViewModel @Inject constructor(
                         }
 
                         override fun onSearchError(errorCode: Int) {
-                            deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Failed)
+                            deviceManager.setConnectionState(ConnectionState.Failed)
                         }
 
                         override fun onSearchComplete() {
@@ -360,6 +366,22 @@ class PulseOximeterViewModel @Inject constructor(
                         }
                     }, 200000
                 )
+
+//                worker.startWork {jSONObject ->
+//                    mutableState.update { it ->
+//                        val updatedCardList =
+//                            it.pulseOximeterCardList.toMutableList()
+//                        updatedCardList[0] = updatedCardList[0].copy(value = jSONObject.getInt("pr").toString())
+//                        updatedCardList[1] = updatedCardList[1].copy(value = jSONObject.getInt("spo2").toString())
+//
+//                        it.copy(
+//                            pulseOximeterCardList = updatedCardList
+//                        )
+//                    }
+//                }
+
+
+
             } else {
                 //you should enable bluetooth msg
                 sendEvent(PulseOximeterEvents.ShowMsg("Please enable bluetooth"))
