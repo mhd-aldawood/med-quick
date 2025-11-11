@@ -30,7 +30,7 @@ import kotlin.math.sin
 
 @Composable
 fun AudioWaveform(
-    samples: ShortArray,
+    samples: List<Short>,
     modifier: Modifier = Modifier,
     barColor: Color = Color(0xFFBFCDE5),        // light bluish like your mock
     dotColor: Color = Color(0xFFBFCDE5),
@@ -142,7 +142,7 @@ fun AudioWaveform(
 @Composable
 fun WavePreview() {
     val samples = remember {
-        ShortArray(2048) { i ->
+        List<Short>(2048) { i ->
             val freq = 0.05f
             val amp = (sin(i * freq) * Short.MAX_VALUE * 0.5).toInt().toShort()
             (amp * (0.5 + 0.5 * sin(i * 0.001))).toInt().toShort()
@@ -152,9 +152,9 @@ fun WavePreview() {
         samples = samples,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        barWidth = 4.dp,
-        barGap = 6.dp
+            .padding(16.dp),
+        barColor = Periwinkle,
+        minBarHeight = 10.dp
     )
 }
 

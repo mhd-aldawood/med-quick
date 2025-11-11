@@ -21,15 +21,13 @@ class PcmFileWriter(
         val dir = context.getExternalFilesDir(null)
 //        val dir = getExternalFilesDir(null)
         Logger.d("PathTest", "App external files dir: ${dir?.absolutePath}")
-        dir?.mkdirs()
-        java.io.File(dir, "test_from_app.txt").writeText("hello from app")
-
         file = File(context.getExternalFilesDir(null), fileName)
         out = BufferedOutputStream(FileOutputStream(file))
         return file.absolutePath
     }
-
+    private val TAG = "PcmFileWriter"
     fun writeChunk(samples: ShortArray) {
+        Logger.i(TAG, "writeChunk")
         val o = out ?: return
         var offset = 0
         // write in slices that fit our scratch buffer
@@ -57,5 +55,35 @@ class PcmFileWriter(
     }
 
     fun path(): String = file.absolutePath
+
+    /*
+    *     streamPcmFile(file) { chunk: ShortArray ->
+        player.writeData(chunk) // this ends up in audioTrack.write(...)
+    }
+    * this is the usage here
+    * */
+    public fun streamPcmFile(file: File, onChunk: (ShortArray) -> Unit) {
+        Logger.i(TAG, "streamPcmFile start")
+
+        val buffer = ByteArray(4096)
+        file.inputStream().use { input ->
+            var bytesRead: Int
+            while (input.read(buffer).also { bytesRead = it } != -1) {
+                val shorts = ShortArray(bytesRead / 2)
+                var i = 0
+                var j = 0
+                while (j < bytesRead - 1) {
+                    val lo = buffer[j].toInt() and 0xFF
+                    val hi = buffer[j + 1].toInt() and 0xFF
+                    shorts[i] = ((hi shl 8) or lo).toShort()
+                    i++
+                    j += 2
+                }
+                Logger.i(TAG, "streamPcmFile ${shorts.size}")
+                onChunk(shorts)
+            }
+        }
+    }
+
 }
 
