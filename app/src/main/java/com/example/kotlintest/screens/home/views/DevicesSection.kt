@@ -1,10 +1,12 @@
-package com.example.kotlintest.screens.home.screencomponent
+package com.example.kotlintest.screens.home.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,23 +28,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.LineBreak.Companion.Simple
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kotlintest.screens.home.HomeScreenCard
+import com.example.kotlintest.screens.home.models.CardBottomOptions
+import com.example.kotlintest.screens.home.models.HomeScreenCard
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.YankeesBlue
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.rhDisplayRegular
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int) -> Unit) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3), // 👈 3 columns
-        verticalArrangement = Arrangement.spacedBy(32.dp),
-        horizontalArrangement = Arrangement.spacedBy(32.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp),
+        horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         itemsIndexed(cardList) { index, item ->
             Box(
@@ -52,6 +57,7 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                 ElevatedCard(
                     modifier = Modifier
                         .wrapContentWidth()
+                        .height(220.dp) // Fixed height for all cards
                         .padding(top = 15.dp)
                         .align(Alignment.TopCenter),
                     colors = CardDefaults
@@ -59,21 +65,25 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                             containerColor = Color.White
                         ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-                ) {
+                )
+                {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 90.dp)
-                            .padding(horizontal = 25.dp),
+                            .padding(top = 90.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     )
                     {
                         Text(
-                            text = item.deviceCategory.title, style = MaterialTheme
+                            text = item.deviceCategory.title,
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme
                                 .typography
                                 .rhDisplayBold
-                                .copy(color = YankeesBlue, fontSize = 15.sp)
+                                .copy(color = YankeesBlue, fontSize = 13.sp),
+
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                         item.services?.joinToString(separator = " . ")?.let {
@@ -90,18 +100,63 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                             )
                         }
                         Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = item.cardBottomOptions.title,
-                            style = MaterialTheme
-                                .typography
-                                .rhDisplayBold
-                                .copy(
-                                    color = PrimaryMidLinkColor,
-                                    lineBreak = Simple,
-                                    fontSize = 15.sp,
-                                    textAlign = TextAlign.Center
+                        when (val bottomOption = item.cardBottomOptions) {
+                            is CardBottomOptions.SeeResult -> {
+                                Text(
+                                    text = bottomOption.text,
+                                    style = MaterialTheme.typography.rhDisplayBold.copy(
+                                        color = bottomOption.textColor,
+                                        lineBreak = LineBreak.Simple,
+                                        fontSize = 15.sp,
+                                        textAlign = TextAlign.Center
+                                    )
                                 )
-                        )
+                            }
+
+                            is CardBottomOptions.Temperature -> {
+                                Text(
+                                    text = bottomOption.text,
+                                    style = MaterialTheme.typography.rhDisplayBold.copy(
+                                        color = bottomOption.textColor,
+                                        lineBreak = LineBreak.Simple,
+                                        fontSize = 15.sp,
+                                        textAlign = TextAlign.Center
+                                    )
+                                )
+                            }
+
+                            is CardBottomOptions.NewPulse -> {
+                                // FlowRow lets texts wrap if the line is too long
+                                FlowRow(
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalArrangement = Arrangement.Center,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    bottomOption.list.forEachIndexed { index, pulse ->
+                                        Text(
+                                            text = "${pulse.text}: ${pulse.value}",
+                                            style = MaterialTheme.typography.rhDisplayBold.copy(
+                                                color = pulse.textColor,
+                                                fontSize = 15.sp
+                                            )
+                                        )
+                                        if (index < bottomOption.list.lastIndex) {
+                                            Text(
+                                                text = "  .  ", // separator
+                                                style = MaterialTheme.typography.rhDisplayBold.copy(
+                                                    color = PrimaryMidLinkColor,
+                                                    fontSize = 15.sp
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            is CardBottomOptions.Empty -> {
+                                Spacer(modifier = Modifier.height(0.dp))
+                            }
+                        }
                         Spacer(modifier = Modifier.height(15.dp))
 
 
@@ -119,7 +174,7 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                         .align(Alignment.TopEnd)
                         .padding(top = 30.dp),
                 ) {
-                    item.connectionStateList.forEachIndexed { index, state ->
+                    item.moduleConnectionStateList.forEachIndexed { index, state ->
                         Icon(
                             painter = painterResource(state.type.getIcon(state.status)),
                             tint = Color.Unspecified, contentDescription = "",

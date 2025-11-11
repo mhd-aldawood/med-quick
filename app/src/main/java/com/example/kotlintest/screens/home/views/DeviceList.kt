@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.home.screencomponent
+package com.example.kotlintest.screens.home.views
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.home.screencomponent
+package com.example.kotlintest.screens.home.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -39,7 +39,7 @@ fun ColumnScope.AddDeviceWithPatientInfo(
     Row(
         modifier = Modifier
             .wrapContentWidth()
-            .padding( top = 10.dp)
+            .padding(top = 10.dp)
             .align(Alignment.End)
             .clickable { onAddDeviceClicked },
         verticalAlignment = Alignment.CenterVertically,

@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.stethoscope.model
+package com.example.kotlintest.screens.stethoscope.models
 
 import com.example.kotlintest.R
 

@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.tonometer.model
+package com.example.kotlintest.screens.tonometer.models
 
 @kotlinx.serialization.Serializable
 data class TonometerModel(

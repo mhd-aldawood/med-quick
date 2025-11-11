@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.home.screencomponent
+package com.example.kotlintest.screens.home.views
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -22,7 +22,9 @@ import com.example.kotlintest.util.pixelsToDp
 @Composable
 fun RowScope.SyncLocally(savedLocallyIcon: Int, savedLocally: String) {
     Icon(
-        modifier = Modifier.size(50.dp).padding(vertical = 10.dp),
+        modifier = Modifier
+            .size(50.dp)
+            .padding(vertical = 10.dp),
         painter = painterResource(savedLocallyIcon),
         contentDescription = "",
         tint = Color.Unspecified

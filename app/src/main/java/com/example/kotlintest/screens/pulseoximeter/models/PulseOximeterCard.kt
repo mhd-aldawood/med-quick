@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.pulseoximeter.model
+package com.example.kotlintest.screens.pulseoximeter.models
 
 import androidx.compose.ui.graphics.Color
 
