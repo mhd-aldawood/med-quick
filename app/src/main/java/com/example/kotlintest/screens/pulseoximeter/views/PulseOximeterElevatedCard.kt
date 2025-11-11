@@ -43,6 +43,7 @@ fun PulseOximeterElevatedCard(
         Box(
             modifier = Modifier
                 .wrapContentWidth()
+                .padding(top = 10.dp)
         ) {
             Text(
                 text = title,
