@@ -2,7 +2,6 @@ package com.example.kotlintest.di
 
 import android.content.Context
 import com.contec.htd.code.connect.ContecSdk
-import com.example.kotlintest.core.audio.AudioProcessor
 import com.example.kotlintest.core.bluetooth.BluetoothRepository
 import com.example.kotlintest.core.bluetooth.BluetoothRepositoryImpl
 import dagger.Provides
@@ -11,19 +10,23 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 
 @dagger.Module
-@InstallIn(ViewModelComponent::class)//TODO replace for ViewmodelComponent
+@InstallIn(ViewModelComponent::class)
 object SdkModuleViewModel{
 
     @Provides
     fun providePulseOximeterContecSdk(
         @ApplicationContext context: Context
     ): com.contec.spo2.code.connect.ContecSdk = com.contec.spo2.code.connect.ContecSdk(context)
+
+
     @Provides
     fun provideBluetoothRepository(
         @ApplicationContext context: Context
     ): BluetoothRepository {
         return BluetoothRepositoryImpl(context)
     }
+
+
     @Provides
     fun provideThermometerContecSdk(
         @ApplicationContext context: Context
@@ -31,12 +34,6 @@ object SdkModuleViewModel{
         return ContecSdk(context)
     }
 
-    @Provides
-    fun provideAudioProcessor(
-        @ApplicationContext context: Context
-    ): AudioProcessor {
-        return AudioProcessor(context)
-    }
 
     @Provides
     fun provideTonometerContecSdk(
