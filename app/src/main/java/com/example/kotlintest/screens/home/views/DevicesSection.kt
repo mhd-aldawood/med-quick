@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.LineBreak.Companion.Simple
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -76,7 +75,7 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                     )
                     {
                         Text(
-                            text = item.deviceCategory.title,
+                            text = item.title,
                             modifier = Modifier.fillMaxWidth(),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme
@@ -106,7 +105,7 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                                     text = bottomOption.text,
                                     style = MaterialTheme.typography.rhDisplayBold.copy(
                                         color = bottomOption.textColor,
-                                        lineBreak = LineBreak.Simple,
+                                        lineBreak = Simple,
                                         fontSize = 15.sp,
                                         textAlign = TextAlign.Center
                                     )
@@ -118,7 +117,7 @@ fun ColumnScope.DevicesSection(cardList: List<HomeScreenCard>, onCardClick: (Int
                                     text = bottomOption.text,
                                     style = MaterialTheme.typography.rhDisplayBold.copy(
                                         color = bottomOption.textColor,
-                                        lineBreak = LineBreak.Simple,
+                                        lineBreak = Simple,
                                         fontSize = 15.sp,
                                         textAlign = TextAlign.Center
                                     )
