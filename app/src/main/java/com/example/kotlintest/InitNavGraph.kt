@@ -177,7 +177,10 @@ fun InitNavGraph(
                         cancelText = uiState.headerDataSection.cancelText,
                         onCancelClick = { navController.popBackStack() },
                     ) {
-                        StethoScopeScreen(stethoScopeViewModel, uiState)
+                        StethoScopeScreen(
+                            stethoScopeViewModel,
+                            uiState,
+                            onCheckClicked = { navController.popBackStack() })
                     }
                 }
             }
