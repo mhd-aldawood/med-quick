@@ -12,12 +12,14 @@ import com.contec.htd.code.callback.ConnectCallback
 import com.contec.htd.code.callback.OnOperateListener
 import com.contec.htd.code.connect.ContecSdk
 import com.contec.spo2.code.tools.Utils
-import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.R
-import com.example.kotlintest.core.model.ConnectionState
+import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.DeviceOperation
+import com.example.kotlintest.core.devicesWorker.Worker
+import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.di.ThermometerQualifier
 import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -51,7 +53,8 @@ sealed class ThermometerEvents {
 @HiltViewModel
 class ThermometerViewModel @Inject constructor(
     private val sdk: ContecSdk,
-    private val deviceManager: DeviceManager
+    private val deviceManager: DeviceManager,
+    @ThermometerQualifier private val worker: Worker
 ) :
     BaseViewModel<ThermometerState, ThermometerEvents, ThermometerAction>(
         initialState = ThermometerState()
@@ -152,14 +155,14 @@ class ThermometerViewModel @Inject constructor(
                 Logger.i(TAG, "onConnectStatus: ${status}")
                 if (status == com.contec.spo2.code.bean.SdkConstants.CONNECT_CONNECTED) {
                     viewModelScope.launch(Dispatchers.IO) {
-                        deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Connected)
+                        deviceManager.setConnectionState(ConnectionState.Connected)
                         sdk.stopBluetoothSearch()
                         delay(1000)
                     }
                 }
 
                 if (status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECTED || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_EXCEPTION || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_SERVICE_UNFOUND || status == com.contec.spo2.code.bean.SdkConstants.CONNECT_DISCONNECT_NOTIFY_FAIL) {
-                    deviceManager.deviceConfigure.copy(connectionState = ConnectionState.Disconnecting)
+                    deviceManager.setConnectionState(ConnectionState.Disconnecting)
                 }
             }
         }
@@ -258,9 +261,15 @@ class ThermometerViewModel @Inject constructor(
 
 
     override fun ConnectToDevice() {
-        if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
+        if (deviceManager.bluetoothScanner.isBluetoothEnabled()) {
             sdk.init(false)
             sdk.startBluetoothSearch(mBluetoothSearchCallback, 2000000)
+
+//            worker.startWork { result->
+//                mutableState.update {
+//                    it.copy(temp = result.getString("temp").toFloat())
+//                }
+//            }
 
         } else {
             sendEvent(ThermometerEvents.ShowMsg("Please enable bluetooth"))
