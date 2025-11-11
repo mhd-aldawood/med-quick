@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.sdk
+package com.example.kotlintest.core.devicesWorker
 
 import android.content.Context
 import android.os.Build
@@ -9,7 +9,7 @@ import com.contec.bp.code.callback.BluetoothSearchCallback
 import com.contec.bp.code.callback.CommunicateCallback
 import com.contec.bp.code.connect.ContecSdk
 import com.contec.bp.code.tools.Utils
-import com.example.kotlintest.screens.tonometer.devices
+import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.screens.tonometer.model.TonometerModel
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,7 +24,8 @@ import javax.inject.Inject
 class TonometerWorker @Inject constructor(
     private val sdk: ContecSdk,
     @ApplicationContext private val context: Context,
-    private val timer: Timer
+    private val timer: Timer,
+    private val deviceManager: DeviceManager
 ) : Worker {
     init {
         sdk.init(ContecBluetoothType.TYPE_FF, false)
@@ -53,7 +54,7 @@ class TonometerWorker @Inject constructor(
                     Logger.e(TAG, contecDevice.getName())
 
 
-                    if (devices.any { contecDevice.name.startsWith(it) }) {
+                    if (deviceManager.getDeviceModels().any { contecDevice.name.startsWith(it) }) {
                         Logger.i(TAG, Utils.bytesToHexString(contecDevice.getRecord()))
                         sdk.startCommunicate(
                             context, contecDevice, object : CommunicateCallback {
@@ -149,7 +150,3 @@ class TonometerWorker @Inject constructor(
 }
 
 
-interface Worker {
-    fun startWork(result: (JSONObject) -> Unit)
-    fun stopWork()
-}
