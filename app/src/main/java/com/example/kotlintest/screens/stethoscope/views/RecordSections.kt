@@ -24,8 +24,8 @@ import androidx.compose.ui.unit.sp
 import com.example.kotlintest.component.CardWithShadowOnBorder
 import com.example.kotlintest.component.HorizontalSpacer
 import com.example.kotlintest.screens.stethoscope.StethoScopeState
-import com.example.kotlintest.screens.stethoscope.model.DeleteBtnStatus
-import com.example.kotlintest.screens.stethoscope.model.PlayBtnStatus
+import com.example.kotlintest.screens.stethoscope.models.DeleteBtnStatus
+import com.example.kotlintest.screens.stethoscope.models.PlayBtnStatus
 import com.example.kotlintest.ui.theme.Periwinkle
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold

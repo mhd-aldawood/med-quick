@@ -5,7 +5,7 @@ import com.example.kotlintest.NavDestination.ECG_SCREEN
 import com.example.kotlintest.NavDestination.PULSE_OXIMETER_SCREEN
 import com.example.kotlintest.NavDestination.THERMOMETER_SCREEN
 import com.example.kotlintest.NavDestination.TONOMETER_SCREEN
-import com.example.kotlintest.screens.home.DeviceCategory
+import com.example.kotlintest.screens.home.models.DeviceCategory
 
 fun NavController.safeNavigate(
     destination: String

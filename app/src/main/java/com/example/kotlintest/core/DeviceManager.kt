@@ -2,7 +2,7 @@ package com.example.kotlintest.core
 
 import com.example.kotlintest.core.bluetooth.BluetoothScanner
 import com.example.kotlintest.core.model.ConnectionState
-import com.example.kotlintest.screens.home.DeviceCategory
+import com.example.kotlintest.screens.home.models.DeviceCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update

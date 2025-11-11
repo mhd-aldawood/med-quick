@@ -10,7 +10,7 @@ import com.contec.bp.code.callback.CommunicateCallback
 import com.contec.bp.code.connect.ContecSdk
 import com.contec.bp.code.tools.Utils
 import com.example.kotlintest.core.DeviceManager
-import com.example.kotlintest.screens.tonometer.model.TonometerModel
+import com.example.kotlintest.screens.tonometer.models.TonometerModel
 import com.example.kotlintest.util.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.serialization.json.Json

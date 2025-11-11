@@ -26,8 +26,8 @@ import com.example.kotlintest.core.devicesWorker.Worker
 import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.di.PulseOximeterQualifier
-import com.example.kotlintest.screens.home.DeviceCategory
-import com.example.kotlintest.screens.pulseoximeter.model.PulseOximeterCard
+import com.example.kotlintest.screens.home.models.DeviceCategory
+import com.example.kotlintest.screens.pulseoximeter.models.PulseOximeterCard
 import com.example.kotlintest.ui.theme.FrenchWine
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.util.Logger

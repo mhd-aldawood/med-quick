@@ -26,7 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kotlintest.component.HorizontalSpacer
-import com.example.kotlintest.screens.stethoscope.model.AuscultationSite
+import com.example.kotlintest.screens.stethoscope.models.AuscultationSite
 import com.example.kotlintest.ui.theme.ShadowBlue
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.rhDisplayMedium

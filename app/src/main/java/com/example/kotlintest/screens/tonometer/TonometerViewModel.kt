@@ -8,7 +8,7 @@ import com.example.kotlintest.core.bluetooth.BluetoothCommand
 import com.example.kotlintest.core.devicesWorker.Worker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.di.TonometerQualifier
-import com.example.kotlintest.screens.home.DeviceCategory
+import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update

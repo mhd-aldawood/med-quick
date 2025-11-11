@@ -13,9 +13,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.kotlintest.component.VerticalSpacer
 import com.example.kotlintest.core.EventsEffect
-import com.example.kotlintest.screens.home.screencomponent.AddDeviceWithPatientInfo
-import com.example.kotlintest.screens.home.screencomponent.DeviceListSection
-import com.example.kotlintest.screens.home.screencomponent.DevicesSection
+import com.example.kotlintest.screens.home.models.DeviceCategory
+import com.example.kotlintest.screens.home.views.AddDeviceWithPatientInfo
+import com.example.kotlintest.screens.home.views.DeviceListSection
+import com.example.kotlintest.screens.home.views.DevicesSection
 import com.example.kotlintest.ui.theme.locals.LocalPermissionManager
 
 @Composable

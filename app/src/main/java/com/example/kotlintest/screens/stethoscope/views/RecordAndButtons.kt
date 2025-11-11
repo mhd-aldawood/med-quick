@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.kotlintest.screens.stethoscope.StethoScopeState
-import com.example.kotlintest.screens.stethoscope.model.DeleteBtnStatus
-import com.example.kotlintest.screens.stethoscope.model.PlayBtnStatus
+import com.example.kotlintest.screens.stethoscope.models.DeleteBtnStatus
+import com.example.kotlintest.screens.stethoscope.models.PlayBtnStatus
 
 @Composable
 fun RecordAndButtons(
