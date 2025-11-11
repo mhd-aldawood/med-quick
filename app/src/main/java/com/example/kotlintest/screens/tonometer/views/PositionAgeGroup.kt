@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.tonometer.screencomponents
+package com.example.kotlintest.screens.tonometer.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,9 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.example.kotlintest.component.VerticalSpacer
 import com.example.kotlintest.screens.tonometer.AgeGroup
 import com.example.kotlintest.screens.tonometer.AgeGroupBtn
-import com.example.kotlintest.screens.tonometer.PatientPosition
 import com.example.kotlintest.screens.tonometer.PositionType
-import com.example.kotlintest.screens.tonometer.SelectStatus
 import com.example.kotlintest.screens.tonometer.TonometerState
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold

@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.tonometer.screencomponents
+package com.example.kotlintest.screens.tonometer.views
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +21,6 @@ import com.example.kotlintest.ui.theme.Lotion
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.rhDisplaySemiBold
-import com.example.kotlintest.util.horizontalPadding
 
 @Composable
 fun RowScope.SDValuesAndText(pressureValue: String)

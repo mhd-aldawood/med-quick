@@ -1,4 +1,4 @@
-package com.example.kotlintest.screens.tonometer.screencomponents
+package com.example.kotlintest.screens.tonometer.views
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
