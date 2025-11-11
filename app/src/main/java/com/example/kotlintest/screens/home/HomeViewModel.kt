@@ -1,6 +1,8 @@
 package com.example.kotlintest.screens.home
 
 import com.example.kotlintest.core.BaseViewModel
+import com.example.kotlintest.screens.home.models.DataHolder
+import com.example.kotlintest.screens.home.models.DeviceCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
