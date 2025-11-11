@@ -9,6 +9,7 @@ import com.example.kotlintest.core.audio.AudioProcessor
 import com.example.kotlintest.core.bluetooth.BluetoothScanner
 import com.example.kotlintest.core.devicesWorker.StethoScopeWorker
 import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.core.model.TimeEvent
 import com.example.kotlintest.di.StethoScopeQualifier
 import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.screens.stethoscope.model.AuscultationRecord
@@ -20,7 +21,6 @@ import com.example.kotlintest.ui.theme.CeruleanBlue
 import com.example.kotlintest.ui.theme.PaleCerulean
 import com.example.kotlintest.util.AuscultationRecordLoader
 import com.example.kotlintest.util.Logger
-import com.example.kotlintest.util.calculateTimeDifference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -203,7 +203,10 @@ class StethoScopeViewModel @Inject constructor(
             // Calculate duration and update the first record in the list
             val updatedFirstRecord = state.auscultationRecordList.first().copy(
                 isCashed = true,
-                duration = start.calculateTimeDifference(System.currentTimeMillis()) // Timer ends here
+                duration = TimeEvent(
+                    startTimeMillis = start,
+                    endTimeMillis = System.currentTimeMillis()
+                ).calculateTimeDifference() // Timer ends here
             )
 
             val updatedList = state.auscultationRecordList.toMutableList().apply {
