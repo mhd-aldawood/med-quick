@@ -5,8 +5,9 @@ import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
+import com.example.kotlintest.core.devicesWorker.Worker
 import com.example.kotlintest.core.model.HeaderDataSection
-import com.example.kotlintest.core.sdk.TonometerWorker
+import com.example.kotlintest.di.TonometerQualifier
 import com.example.kotlintest.screens.home.DeviceCategory
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,10 +15,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-
-val devices = listOf(
-    "NIBP01", "NIBP03", "NIBP04", "NIBP07", "NIBP08", "NIBP09", "NIBP11"
-)
 val items = listOf(
     "(血压计型号:CONTEC08A)",
     "(血压计型号:CONTEC08C)",
@@ -99,7 +96,7 @@ sealed class TonometerAction {
 
 @HiltViewModel
 class TonometerViewModel @Inject constructor(
-    private val tonometerWorker: TonometerWorker,
+    @TonometerQualifier private val worker: Worker,
     private val deviceManager: DeviceManager
 ) : BaseViewModel<TonometerState, TonometerEvents, TonometerAction>(initialState = TonometerState()) {
     init {
@@ -157,74 +154,6 @@ class TonometerViewModel @Inject constructor(
     }
 
     private fun onLambChange(patientPosition: PatientBodyPart) {
-        //region old logic for test ,maybe it will be changed it to normal classes
-        //        mutableState.update { it ->
-//            val updatedList = it.bodyLamp.map { it1 ->
-//                if (it1::class == patientPosition::class)
-//                    when (it1) {
-//                        is PatientBodyPart.LeftArm -> {
-//                            it.copy(patientIcon = R.drawable.ic_patient_left_arm)
-//                            it1.copy(fontSize = 20)
-//                        }
-//
-//                        is PatientBodyPart.LeftLeg -> {
-//                            it.copy(patientIcon = R.drawable.ic_patient_left_leg)
-//                            it1.copy(fontSize = 20)
-//                        }
-//
-//                        is PatientBodyPart.RightArm -> {
-//                            it.copy(patientIcon = R.drawable.ic_patient_rigth_arm)
-//                            it1.copy(fontSize = 20)
-//                        }
-//
-//                        is PatientBodyPart.RightLeg -> {
-//                            it.copy(patientIcon = R.drawable.ic_patient_rigth_leg)
-//                            it1.copy(fontSize = 20)
-//                        }
-//                    }
-//                else
-//                    when (it1) {
-//                        is PatientBodyPart.LeftArm -> {
-//                            it1.copy(fontSize = 14)
-//                        }
-//
-//                        is PatientBodyPart.LeftLeg -> {
-//                            it1.copy(fontSize = 14)
-//                        }
-//
-//                        is PatientBodyPart.RightArm -> {
-//                            it1.copy(fontSize = 14)
-//                        }
-//
-//                        is PatientBodyPart.RightLeg -> {
-//                            it1.copy(fontSize = 14)
-//                        }
-//                    }
-//            }
-//            // Split updated list back into left and right lamps
-//            val updatedLeftLamp =
-//                updatedList.filter { it is PatientBodyPart.LeftArm || it is PatientBodyPart.LeftLeg }
-//            val updatedRightLamp =
-//                updatedList.filter { it is PatientBodyPart.RightArm || it is PatientBodyPart.RightLeg }
-//
-//
-//            // Compute new patientIcon
-//            val updatedIcon = when (patientPosition) {
-//                is PatientBodyPart.LeftArm -> R.drawable.ic_patient_left_arm
-//                is PatientBodyPart.LeftLeg -> R.drawable.ic_patient_left_leg
-//                is PatientBodyPart.RightArm -> R.drawable.ic_patient_rigth_arm
-//                is PatientBodyPart.RightLeg -> R.drawable.ic_patient_rigth_leg
-//            }
-//
-//
-//            it.copy(
-//                patientIcon = updatedIcon,
-//                bodyLamp = updatedList,
-//                leftLamp = updatedLeftLamp,
-//                rightLamp = updatedRightLamp
-//            )
-//        }
-        //endregion may be will change sealed class to normal class
         //TODO re-write this logic again
         mutableState.update { state ->
 
@@ -256,8 +185,8 @@ class TonometerViewModel @Inject constructor(
             val updatedIcon = when (patientPosition) {
                 is PatientBodyPart.LeftArm -> R.drawable.ic_patient_left_arm
                 is PatientBodyPart.LeftLeg -> R.drawable.ic_patient_left_leg
-                is PatientBodyPart.RightArm -> R.drawable.ic_patient_rigth_arm
-                is PatientBodyPart.RightLeg -> R.drawable.ic_patient_rigth_leg
+                is PatientBodyPart.RightArm -> R.drawable.ic_patient_right_arm
+                is PatientBodyPart.RightLeg -> R.drawable.ic_patient_right_leg
             }
 
             state.copy(
@@ -283,7 +212,7 @@ class TonometerViewModel @Inject constructor(
     }
 
     private fun stopBluetoothAndCommunication() {
-        tonometerWorker.stopWork()
+        worker.stopWork()
     }
 
     private val jsonDecoder = Json { ignoreUnknownKeys = true } // Ignore unknown fields
@@ -291,8 +220,8 @@ class TonometerViewModel @Inject constructor(
     private val TAG = "TonometerViewModel"
     fun searchAndCommunicate() {
         if (mutableState.value.shouldRequestBluetooth) {
-            if (deviceManager.bluetoothRepositoryImpl.isBluetoothEnabled()) {
-                tonometerWorker.startWork { result->
+            if (deviceManager.bluetoothScanner.isBluetoothEnabled()) {
+                worker.startWork { result ->
                     mutableState.update {
                         it.copy(
                             pressureValue = result.getString("pressureValue"),

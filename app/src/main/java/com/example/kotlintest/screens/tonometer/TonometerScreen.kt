@@ -13,8 +13,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
-import com.example.kotlintest.screens.tonometer.screencomponents.LampSelectionInfoCard
-import com.example.kotlintest.screens.tonometer.screencomponents.PressureInfoCard
+import com.example.kotlintest.screens.tonometer.views.LampSelectionInfoCard
+import com.example.kotlintest.screens.tonometer.views.PressureInfoCard
 import com.example.kotlintest.util.Logger
 
 @Composable
