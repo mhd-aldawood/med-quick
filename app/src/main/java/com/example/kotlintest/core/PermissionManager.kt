@@ -4,13 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -27,7 +23,7 @@ class PermissionManager @Inject constructor(@ApplicationContext private val cont
         }
     }
 
-    private fun arePermissionsGranted(permissions: List<String>): Boolean {
+    public fun arePermissionsGranted(permissions: List<String>): Boolean {
         for (permission in permissions) {
             if (ContextCompat.checkSelfPermission(
                     context,
@@ -46,7 +42,7 @@ class PermissionManager @Inject constructor(@ApplicationContext private val cont
         onPermissionsResult: (Boolean) -> Unit
     ) {
         val permissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestMultiplePermissions()
+            contract = RequestMultiplePermissions()
         ) { result ->
             val allGranted = result.all { it.value }
             onPermissionsResult(allGranted)
