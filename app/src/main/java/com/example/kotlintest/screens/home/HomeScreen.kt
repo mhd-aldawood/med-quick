@@ -1,20 +1,18 @@
 package com.example.kotlintest.screens.home
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.kotlintest.core.EventsEffect
 import com.example.kotlintest.component.VerticalSpacer
+import com.example.kotlintest.core.EventsEffect
 import com.example.kotlintest.screens.home.screencomponent.AddDeviceWithPatientInfo
 import com.example.kotlintest.screens.home.screencomponent.DeviceListSection
 import com.example.kotlintest.screens.home.screencomponent.DevicesSection
@@ -40,7 +38,7 @@ fun HomeScreen(
         modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(30.dp)
     ) {
-        Column(modifier = Modifier.weight(3.3f)) {
+        Column(modifier = Modifier.weight(1f)) {
             DeviceListSection(
                 uiState.dataHolder.deviceConfigure.deviceList,
                 uiState.dataHolder.deviceConfigure.savedLocallyIcon,
@@ -59,7 +57,7 @@ fun HomeScreen(
         }
         Column(
             modifier = Modifier
-                .weight(0.7f)
+                .wrapContentWidth()
         ) {
             AddDeviceWithPatientInfo(
                 onAddDeviceClicked = {},

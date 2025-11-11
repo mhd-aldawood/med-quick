@@ -5,10 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kotlintest.component.HorizontalSpacer
 import com.example.kotlintest.ui.theme.CeruleanBlue
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold
@@ -47,11 +48,11 @@ fun ColumnScope.PatentInfoSection(
                 containerColor = Color.White
             ),
         modifier = Modifier
-            .fillMaxWidth()
+            .wrapContentWidth()
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentWidth()
                 .padding(20.dp)
         ) {
             Row(
@@ -66,7 +67,7 @@ fun ColumnScope.PatentInfoSection(
                         fontWeight = FontWeight.Bold
                     )
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                HorizontalSpacer(30)
                 Icon(
                     painter = painterResource(icon),
                     contentDescription = "",
