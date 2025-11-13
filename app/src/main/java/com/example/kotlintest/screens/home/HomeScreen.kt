@@ -82,13 +82,6 @@ fun HomeScreen(
         }
     }
 
-    // Check permission status and navigate after permissions are granted
-    LaunchedEffect(permissionsGranted.value) {
-        // Trigger navigation immediately if permissions are granted
-        if (permissionsGranted.value) {
-            deviceCategory.value?.let { navigateToSelectedDevice(it) }
-        }
-    }
     Row(
         modifier = Modifier.fillMaxSize(),
         horizontalArrangement = Arrangement.spacedBy(30.dp)
