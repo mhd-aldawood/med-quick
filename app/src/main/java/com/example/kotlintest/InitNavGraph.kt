@@ -1,7 +1,5 @@
 package com.example.kotlintest
 
-import android.Manifest
-import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -15,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
-import com.example.kotlintest.core.PermissionGate
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
@@ -55,134 +52,73 @@ fun InitNavGraph(
                     navController.navigateSelectedDevice(selectedDevice)
                 })
             }
-
         }
         composable(NavDestination.PULSE_OXIMETER_SCREEN) {
             val pulseOximeterViewModel: PulseOximeterViewModel = hiltViewModel()
             val uiState by pulseOximeterViewModel.stateFlow.collectAsStateWithLifecycle()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PermissionGate(
-                    permissions = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                ) {
-                    DeviceMainScreen(
-                        title = uiState.headerDataSection.title,
-                        titleIcon = uiState.headerDataSection.titleIcon,
-                        cancelIcon = uiState.headerDataSection.cancelIcon,
-                        cancelText = uiState.headerDataSection.cancelText,
-                        onCancelClick = { navController.popBackStack() },
-                    ) {
-                        PulseOximeterScreen(pulseOximeterViewModel, uiState)
-                    }
-                }
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                PulseOximeterScreen(pulseOximeterViewModel, uiState)
             }
-
-
         }
         composable(NavDestination.THERMOMETER_SCREEN) {
             val thermometerViewModel: ThermometerViewModel = hiltViewModel()
             val uiState by thermometerViewModel.stateFlow.collectAsStateWithLifecycle()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PermissionGate(
-                    permissions = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                ) {
-                    DeviceMainScreen(
-                        title = uiState.headerDataSection.title,
-                        titleIcon = uiState.headerDataSection.titleIcon,
-                        cancelIcon = uiState.headerDataSection.cancelIcon,
-                        cancelText = uiState.headerDataSection.cancelText,
-                        onCancelClick = { navController.popBackStack() },
-                    ) {
-                        ThermometerScreen(thermometerViewModel, uiState)
-                    }
-                }
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                ThermometerScreen(thermometerViewModel, uiState)
             }
         }
         composable(NavDestination.TONOMETER_SCREEN) {
             val tonometerViewModel: TonometerViewModel = hiltViewModel()
             val uiState by tonometerViewModel.stateFlow.collectAsStateWithLifecycle()
-            PermissionGate(
-                permissions = listOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.BLUETOOTH,
-                    Manifest.permission.BLUETOOTH_CONNECT,
-                    Manifest.permission.BLUETOOTH_SCAN,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                )
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
             ) {
-                DeviceMainScreen(
-                    title = uiState.headerDataSection.title,
-                    titleIcon = uiState.headerDataSection.titleIcon,
-                    cancelIcon = uiState.headerDataSection.cancelIcon,
-                    cancelText = uiState.headerDataSection.cancelText,
-                    onCancelClick = { navController.popBackStack() },
-                ) {
-                    TonometerScreen(tonometerViewModel, uiState)
-                }
+                TonometerScreen(tonometerViewModel, uiState)
             }
         }
         composable(NavDestination.ECG_SCREEN) {
             val ecgViewModel: EcgViewModel = hiltViewModel()
             val uiState by ecgViewModel.stateFlow.collectAsStateWithLifecycle()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PermissionGate(
-                    permissions = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                ) {
-                    DeviceMainScreen(
-                        title = uiState.headerDataSection.title,
-                        titleIcon = uiState.headerDataSection.titleIcon,
-                        cancelIcon = uiState.headerDataSection.cancelIcon,
-                        cancelText = uiState.headerDataSection.cancelText,
-                        onCancelClick = { navController.popBackStack() },
-                    ) {
-                        EcgScreen(ecgViewModel, uiState)
-                    }
-                }
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                EcgScreen(ecgViewModel, uiState)
             }
         }
         composable(NavDestination.STETHOSCOPE_SCREEN) {
             val stethoScopeViewModel: StethoScopeViewModel = hiltViewModel()
             val uiState by stethoScopeViewModel.stateFlow.collectAsStateWithLifecycle()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                PermissionGate(
-                    permissions = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.BLUETOOTH,
-                        Manifest.permission.BLUETOOTH_CONNECT,
-                        Manifest.permission.BLUETOOTH_SCAN,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                ) {
-                    DeviceMainScreen(
-                        title = uiState.headerDataSection.title,
-                        titleIcon = uiState.headerDataSection.titleIcon,
-                        cancelIcon = uiState.headerDataSection.cancelIcon,
-                        cancelText = uiState.headerDataSection.cancelText,
-                        onCancelClick = { navController.popBackStack() },
-                    ) {
-                        StethoScopeScreen(
-                            stethoScopeViewModel,
-                            uiState,
-                            onCheckClicked = { navController.popBackStack() })
-                    }
-                }
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                StethoScopeScreen(
+                    stethoScopeViewModel,
+                    uiState,
+                    onCheckClicked = { navController.popBackStack() })
             }
         }
     }
