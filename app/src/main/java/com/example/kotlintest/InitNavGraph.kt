@@ -17,6 +17,8 @@ import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
 import com.example.kotlintest.screens.home.HomeScreen
+import com.example.kotlintest.screens.poct.PoctScreen
+import com.example.kotlintest.screens.poct.PoctViewModel
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterScreen
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterViewModel
 import com.example.kotlintest.screens.stethoscope.StethoScopeScreen
@@ -117,6 +119,22 @@ fun InitNavGraph(
             ) {
                 StethoScopeScreen(
                     stethoScopeViewModel,
+                    uiState,
+                    onCheckClicked = { navController.popBackStack() })
+            }
+        }
+        composable(NavDestination.POCT_SCREEN) {
+            val poctViewModel: PoctViewModel = hiltViewModel()
+            val uiState by poctViewModel.stateFlow.collectAsStateWithLifecycle()
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                PoctScreen(
+                    poctViewModel,
                     uiState,
                     onCheckClicked = { navController.popBackStack() })
             }

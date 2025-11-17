@@ -4,9 +4,9 @@ package com.example.kotlintest.ui.theme
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.kotlintest.R
+
 //list of all available fonts
 @Stable
 fun FontRHDisplay() = FontFamily(
@@ -27,6 +27,7 @@ fun FontRHDisplay() = FontFamily(
     Font(R.font.redhat_display_black, weight = FontWeight.Black),
     Font(R.font.redhat_display_bold, weight = FontWeight.Bold),
     Font(R.font.redhat_display_semi_bold, weight = FontWeight.SemiBold),
+    Font(R.font.redhat_display_extra_bold, weight = FontWeight.ExtraBold),
 //    Font(R.font.sfprodisplaymediumItalic, style = FontStyle.Italic),
 
 //    Font(R.font.sfprodisplaythinitalic, style = FontStyle.Italic),

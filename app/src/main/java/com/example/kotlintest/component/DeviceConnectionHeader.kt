@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -30,7 +31,8 @@ fun DeviceConnectionHeader(
     cancelText: String,
     cancelIcon: Int,
     onCancelClick: () -> Unit = {},
-    content: @Composable BoxScope.() -> Unit
+    innerPadding: PaddingValues,
+    content: @Composable BoxScope.() -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -81,8 +83,9 @@ fun DeviceConnectionHeader(
             )
         }
         Box(modifier = Modifier
-            .align(Alignment.Center)
-            .padding(top = 60.dp)) {
+            .align(Alignment.TopCenter)
+            .padding(top = 60.dp, bottom = innerPadding.calculateBottomPadding())
+        ) {
             content()
         }
     }

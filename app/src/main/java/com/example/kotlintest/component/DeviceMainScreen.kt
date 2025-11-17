@@ -11,13 +11,14 @@ fun DeviceMainScreen(
     onCancelClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    MainScaffold() {
+    MainScaffold() { innerPadding ->
         DeviceConnectionHeader(
             titleIcon = titleIcon,
             title = title,
             cancelText = cancelText,
             cancelIcon = cancelIcon,
-            onCancelClick = onCancelClick
+            onCancelClick = onCancelClick,
+            innerPadding = innerPadding,
         ) {
             content()
         }

@@ -2,6 +2,7 @@ package com.example.kotlintest.navigation
 
 import androidx.navigation.NavController
 import com.example.kotlintest.NavDestination.ECG_SCREEN
+import com.example.kotlintest.NavDestination.POCT_SCREEN
 import com.example.kotlintest.NavDestination.PULSE_OXIMETER_SCREEN
 import com.example.kotlintest.NavDestination.STETHOSCOPE_SCREEN
 import com.example.kotlintest.NavDestination.THERMOMETER_SCREEN
@@ -31,7 +32,7 @@ fun NavController.navigateSelectedDevice(deviceCategory: DeviceCategory) {
         DeviceCategory.DopplerUltrasound -> TODO()
         DeviceCategory.ECGWorkstation -> safeNavigate(ECG_SCREEN)
         DeviceCategory.ElectronicSphygmomanometer -> safeNavigate(TONOMETER_SCREEN)
-        DeviceCategory.FIATestingSystemPOCT -> TODO()
+        DeviceCategory.FIATestingSystemPOCT -> safeNavigate(POCT_SCREEN)
         DeviceCategory.Glucometer -> TODO()
         DeviceCategory.HemoglobinTestingSystem -> TODO()
         DeviceCategory.LipidTestingSystem -> TODO()

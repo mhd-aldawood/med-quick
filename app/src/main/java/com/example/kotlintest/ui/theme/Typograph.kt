@@ -85,6 +85,12 @@ val Typography.rhDisplaySemiBold: TextStyle
         fontFamily = FontRHDisplay(),
         fontWeight = FontWeight.Bold
     )
+val Typography.rhDisplayExtraBold: TextStyle
+    @Composable
+    get() = TextStyle(
+        fontFamily = FontRHDisplay(),
+        fontWeight = FontWeight.ExtraBold
+    )
 val Typography.poppinsMedium: TextStyle
     @Composable
     get() = TextStyle(
