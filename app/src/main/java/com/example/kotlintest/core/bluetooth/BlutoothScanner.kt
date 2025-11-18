@@ -122,16 +122,19 @@ class BluetoothScanner(private val context: Context) {
      * >>> The one you asked for: accept a list of names and stop on first match. <<<
      * Exact match by default, case-insensitive.
      */
+    private val TAG = "BlutoothScanner"
     fun startDiscovery(
         targetNames: List<String>,
         ignoreCase: Boolean = true,
         onFound: (BluetoothDevice) -> Unit,
     ) {
-        val set =
-            if (ignoreCase) targetNames.map { it.lowercase() }.toSet() else targetNames.toSet()
+        val normalizedPrefixes =
+            if (ignoreCase) targetNames.map { it.lowercase() } else targetNames
         startDiscovery(
             targetNameMatcher = { n ->
-                n?.let { if (ignoreCase) it.lowercase() else it }?.let { it in set } == true
+                val name = n ?: return@startDiscovery false
+                val normalizedName = if (ignoreCase) name.lowercase() else name
+                normalizedPrefixes.any { prefix -> normalizedName.startsWith(prefix) }
             },
             onFound = onFound
         )
