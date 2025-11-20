@@ -1,21 +1,36 @@
 package com.example.kotlintest.screens.poct
 
+import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
+import com.example.kotlintest.core.devicesWorker.PoctWorker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.screens.poct.models.Category
 import com.example.kotlintest.screens.poct.models.PoctCardItem
 import com.example.kotlintest.screens.poct.models.PoctCardTestHeader
+import com.example.kotlintest.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 //FIA Testing System
 class PoctViewModel @Inject constructor(
+    private val worker: PoctWorker
 ) :
     BaseViewModel<PoctState, PoctEvents, PoctAction>(
         initialState = PoctState()
     ) {
+    private val TAG = "PoctViewModel"
+
+    init {
+        Logger.i(TAG, "BloodAnalyzerViewModel init")
+        viewModelScope.launch {
+            worker.startHl7Server(21000) { result ->
+            }
+
+        }
+    }
     override fun handleAction(action: PoctAction) {
         TODO("Not yet implemented")
     }

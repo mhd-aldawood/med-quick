@@ -8,8 +8,9 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.ServerSocket
 import java.net.Socket
+import javax.inject.Inject
 
-class PoctWorker() {
+class PoctWorker @Inject constructor() {
 
     suspend fun receiveHl7FromDevice(
         host: String,
@@ -18,7 +19,8 @@ class PoctWorker() {
 
         val START_BLOCK = 0x0B.toChar()
         val END_BLOCK = 0x1C.toChar()
-        val CARRIAGE_RETURN = '\n' // as per your spec
+        val CARRIAGE_RETURN = '\r' // as per your spec
+//        val CARRIAGE_RETURN = '\n' // as per your spec
 
         var hl7Message: String? = null
 
@@ -155,37 +157,44 @@ class PoctWorker() {
 
     suspend fun connectToDeviceAndHandle(host: String, port: Int) {
         val socket = Socket(host, port)
-        handleHl7Session(socket)
+//        handleHl7Session(socket, onResult)
     }
 
-    suspend fun startHl7Server(port: Int) = withContext(Dispatchers.IO) {
+    suspend fun startHl7Server(port: Int, onResult: (DeviceResult) -> Unit) =
+        withContext(Dispatchers.IO) {//use this one for the device
+            Logger.d("HL7", "Starting HL7 server on port $port")
         val serverSocket = ServerSocket(port)
-
+            Logger.d("HL7", "HL7 server started, waiting for connections...")
         while (true) {
             val client = serverSocket.accept() // device connects
             // For simplicity handle in same coroutine; in real app, use a new coroutine
-            handleHl7Session(client)
+            Logger.d("HL7", "Client connected from: ${client.inetAddress.hostAddress}")
+            handleHl7Session(client, onResult)
         }
     }
 
-    suspend fun handleHl7Session(socket: Socket) = withContext(Dispatchers.IO) {
+    suspend fun handleHl7Session(socket: Socket, onResult: (DeviceResult) -> Unit) =
+        withContext(Dispatchers.IO) {
         // Optional timeout: e.g., 60s
-        socket.soTimeout = 60_000
+            socket.soTimeout = 600_000
+            Logger.d("HL7", "Handling HL7 session for ${socket.inetAddress.hostAddress}")
 
         socket.use { s ->
             while (true) {
                 val message = readHl7Message(s) ?: break // no more data / closed
+                Logger.d("HL7", "Raw HL7 message received:\n$message")
 
-                // 1) Try to parse
                 val parsed = parseOruOrNull(message)
-
                 val ackCode = if (parsed != null) "AA" else "AE"
 
-                // 2) Build ACK
                 val ack = buildAckMessage(message, ackCode)
+                Logger.d("HL7", "Sending ACK with code $ackCode:\n$ack")
 
                 // 3) Send ACK back so device can send the next packet
                 sendHl7Message(s, ack)
+                if (parsed != null) {
+                    onResult(parsed)
+                }
 
                 // You can also store/use `parsed` if not null
             }
@@ -242,11 +251,29 @@ class PoctWorker() {
             // SPM
             val specimenType = spm?.getOrNull(2)           // Whole Blood
 
+            logParsedFields(
+                patientId = patientId,
+                patientName = patientName,
+                orderNumber = orderNumber,
+                testCode = testCode,
+                testName = testName,
+                resultValue = resultValue,
+                resultUnit = resultUnit,
+                referenceRange = referenceRange,
+                interpretation = interpretation,
+                resultStatus = resultStatus,
+                resultDateTime = resultDateTime,
+                lotNumber = lotNumber,
+                serialNumber = serialNumber,
+                specimenType = specimenType
+            )
+
             if (patientId == null || resultValue == null) {
                 // treat as parse failure
                 null
             } else {
-                DeviceResult(
+
+                return DeviceResult(
                     patientId = patientId,
                     patientName = patientName,
                     orderNumber = orderNumber,
@@ -271,7 +298,8 @@ class PoctWorker() {
     fun sendHl7Message(socket: Socket, hl7Message: String) {
         val START_BLOCK = 0x0B.toChar()
         val END_BLOCK = 0x1C.toChar()
-        val CARRIAGE_RETURN = '\n' // LF
+        val CARRIAGE_RETURN = '\r' // LF
+//        val CARRIAGE_RETURN = '\n' // LF
 
         val framed = buildString {
             append(START_BLOCK)
@@ -334,13 +362,17 @@ class PoctWorker() {
         ).joinToString(fieldSep)
 
         // Segments separated by \n because your carriage return is '\n'
-        return listOf(ackMsh, msa).joinToString("\n") + "\n"
+//        return listOf(ackMsh, msa).joinToString("\n") + "\n"
+        val CR = "\r"
+        return listOf(ackMsh, msa).joinToString(CR) + CR
     }
 
     fun readHl7Message(socket: Socket): String? {
+        Logger.i(TAG, "readHl7Message")
         val START_BLOCK = 0x0B.toChar()
         val END_BLOCK = 0x1C.toChar()
-        val CARRIAGE_RETURN = '\n' // your protocol
+        val CARRIAGE_RETURN = '\r' // your protocol
+//        val CARRIAGE_RETURN = '\n' // your protocol
 
         val reader = BufferedReader(
             InputStreamReader(socket.getInputStream(), Charsets.UTF_8)
@@ -352,7 +384,11 @@ class PoctWorker() {
         var ch: Int
 
         while (reader.read().also { ch = it } != -1) {
+            Logger.i(TAG, "readHl7Message while reading")
+
             val c = ch.toChar()
+            Logger.i(TAG, "readHl7Message while data ${c}")
+
 
             // Wait for start of block
             if (!insideBlock) {
@@ -376,11 +412,14 @@ class PoctWorker() {
             sb.append(c)
         }
 
-        if (sb.isEmpty()) return null
+        if (sb.isEmpty()) {
+            Logger.i(TAG, "readHl7Message empty")
+            return null
+        }
         return sb.toString()
     }
 
-    private val TAG = "HL7Parser"
+    private val TAG = "HL7"
 
     fun logParsedFields(
         patientId: String?,

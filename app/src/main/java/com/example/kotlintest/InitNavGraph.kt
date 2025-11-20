@@ -14,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
 import com.example.kotlintest.navigation.navigateSelectedDevice
+import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerScreen
+import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerViewModel
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
 import com.example.kotlintest.screens.home.HomeScreen
@@ -135,8 +137,23 @@ fun InitNavGraph(
             ) {
                 PoctScreen(
                     poctViewModel,
-                    uiState,
-                    onCheckClicked = { navController.popBackStack() })
+                    uiState
+                )
+            }
+        }
+        composable(NavDestination.WHITE_BLOOD_CELL_ANALYZER_SCREEN) {
+            val analyzerViewModel: BloodAnalyzerViewModel = hiltViewModel()
+            val uiState by analyzerViewModel.stateFlow.collectAsStateWithLifecycle()
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                BloodAnalyzerScreen(
+                    uiState, analyzerViewModel
+                )
             }
         }
     }

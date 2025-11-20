@@ -3,6 +3,7 @@ package com.example.kotlintest.di
 import android.content.Context
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor
+import com.example.kotlintest.core.devicesWorker.PoctWorker
 import com.example.kotlintest.core.devicesWorker.PulseOximeterWorker
 import com.example.kotlintest.core.devicesWorker.StethoScopeWorker
 import com.example.kotlintest.core.devicesWorker.ThermometerWorker
@@ -63,4 +64,7 @@ object WorkerModule {
         deviceManager = deviceManager,
         sdk = sdk
     )
+
+    @Provides
+    fun providePoctWorker(): PoctWorker = PoctWorker()
 }

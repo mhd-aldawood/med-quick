@@ -1,6 +1,5 @@
 package com.example.kotlintest.component
 
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.runtime.Composable
@@ -11,8 +10,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CardWithShadowOnBorder(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     ElevatedCard(
-        modifier = modifier
-            .wrapContentWidth(), colors = CardDefaults
+        modifier = modifier, colors = CardDefaults
             .cardColors(
                 containerColor = Color.White
             ),

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
@@ -45,7 +46,9 @@ fun RowScope.RecordSections(
     ) {
         items(items = uiState.auscultationRecordList, key = { it.id })
         { it ->
-            CardWithShadowOnBorder(modifier = Modifier.padding(bottom = 20.dp)) {
+            CardWithShadowOnBorder(modifier = Modifier
+                .wrapContentWidth()
+                .padding(bottom = 20.dp)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically

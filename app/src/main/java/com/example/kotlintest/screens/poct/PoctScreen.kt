@@ -11,7 +11,7 @@ import com.example.kotlintest.screens.poct.views.CardsListTestsSection
 
 @Composable
 //FIA Testing System
-fun PoctScreen(viewModel: PoctViewModel, uiState: PoctState, onCheckClicked: () -> Boolean) {
+fun PoctScreen(viewModel: PoctViewModel, uiState: PoctState) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)) {
         CardsListTestsSection(
             viewModel = viewModel, uiState = uiState, modifier = Modifier.weight(0.5f)

@@ -132,7 +132,7 @@ data class DataHolder(
                 ModuleConnectionState(ConnectionType.USB, ConnectionType.Status.CONNECTED),
                 ModuleConnectionState(ConnectionType.BLUETOOTH, ConnectionType.Status.CONNECTED),
             ),
-            title = "White Blood Cell AnalyzerCard",
+            title = "White Blood Cell Analyzer",
             services = listOf<String>(" WBC count and differential: MON, NEU, EOS)"),
             deviceCategory = DeviceCategory.WhiteBloodCellAnalyzer,
             cardBottomOptions = CardBottomOptions.Empty
@@ -142,7 +142,7 @@ data class DataHolder(
             moduleConnectionStateList = mutableStateListOf(
                 ModuleConnectionState(ConnectionType.BLUETOOTH, ConnectionType.Status.CONNECTED),
             ),
-            title = "White Blood Cell AnalyzerCard",
+            title = "Electronic Sphygmomanometer",
             services = listOf<String>("NIBP : adult, pediatric, neonatal"),
             deviceCategory = DeviceCategory.ElectronicSphygmomanometer,
             cardBottomOptions = CardBottomOptions.Empty
