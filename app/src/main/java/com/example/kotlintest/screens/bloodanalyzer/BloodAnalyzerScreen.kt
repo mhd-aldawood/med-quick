@@ -9,12 +9,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.kotlintest.component.NormalRangeCard
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
 import com.example.kotlintest.screens.bloodanalyzer.views.CardResultsList
@@ -36,6 +38,10 @@ fun BloodAnalyzerScreen(uiState: BloodAnalyzerState, analyzerViewModel: BloodAna
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
+    val result by analyzerViewModel.latestResult.collectAsStateWithLifecycle()
+    Logger.i("BloodAnalyzerScreen", "result $result")
+
+
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(60.dp)) {
         CardResultsList(modifier = Modifier.weight(0.5f), uiState = uiState)
         CardWithPhoto(modifier = Modifier.weight(0.5f), uiState = uiState)

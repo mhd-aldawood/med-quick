@@ -2,22 +2,63 @@ package com.example.kotlintest.screens.bloodanalyzer
 
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
+import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
+import com.example.kotlintest.core.bluetooth.BluetoothScanner
+import com.example.kotlintest.core.devicesWorker.WbcBleDevice
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.screens.bloodanalyzer.models.WhiteBloodCellAnalyzerResult
 import com.example.kotlintest.screens.bloodanalyzer.models.WhiteBloodCellAnalyzerValues
+import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.screens.pulseoximeter.models.PulseOximeterCard
 import com.example.kotlintest.ui.theme.FrenchWine
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
+import com.example.kotlintest.util.CellResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class BloodAnalyzerViewModel @Inject constructor() :
-    BaseViewModel<BloodAnalyzerState, BloodAnalyzerEvents, BloodAnalyzerActions>(initialState = BloodAnalyzerState()) {
+class BloodAnalyzerViewModel @Inject constructor(
+    private val deviceManager: DeviceManager,
+    private val bluetoothScanner: BluetoothScanner,
+    private val wbcDevice: WbcBleDevice
+) : BaseViewModel<BloodAnalyzerState, BloodAnalyzerEvents, BloodAnalyzerActions>(initialState = BloodAnalyzerState()) {
     private val TAG = "BloodAnalyzerViewModel"
+    val latestResult: StateFlow<CellResult?> = wbcDevice.latestResult
+    val connected: StateFlow<Boolean> = wbcDevice.connected
+
+    init {
+
+        deviceManager.setDeviceModels(DeviceCategory.WhiteBloodCellAnalyzer)
+        bluetoothScanner.startDiscovery(deviceManager.getDeviceModels()) { device ->
+            wbcDevice.init(device)
+            wbcDevice.connect()
+            wbcDevice.requestHandshake()
+            wbcDevice.requestLatestResult()
+
+        }
+    }
 
     override fun handleAction(action: BloodAnalyzerActions) {
+
+    }
+
+    fun connect() {
+        wbcDevice.connect()
+    }
+
+    fun disconnect() {
+        wbcDevice.disconnect()
+    }
+
+    fun fetchResult() {
+        wbcDevice.requestLatestResult()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        disconnect()
 
     }
 }
