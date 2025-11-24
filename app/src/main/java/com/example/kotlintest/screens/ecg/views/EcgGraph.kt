@@ -1,7 +1,6 @@
 package com.example.kotlintest.screens.ecg.views
 
 import android.graphics.PixelFormat
-import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope

@@ -4,9 +4,9 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.util.AttributeSet
 import com.example.kotlintest.core.PermissionManager
-import com.example.kotlintest.screens.ecg.views.ReviewWave
 import com.example.kotlintest.screens.ecg.model.ReviewWaveController
 import com.example.kotlintest.screens.ecg.model.ReviewWaveControllerImpl
+import com.example.kotlintest.screens.ecg.views.ReviewWaveNew
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
@@ -20,12 +20,18 @@ object SdkModuleActivity {
     fun provideReviewWaveFactory(
         @ActivityContext context: Context
     ): ReviewWaveFactory = object : ReviewWaveFactory {
-        override fun create(attrs: AttributeSet?): ReviewWave {
-            return ReviewWave(context, attrs).apply {
+        override fun create(attrs: AttributeSet?): ReviewWaveNew {
+            return ReviewWaveNew(context, attrs).apply {
                 setZOrderOnTop(true)
                 holder.setFormat(PixelFormat.TRANSLUCENT)
             }
         }
+//        override fun create(attrs: AttributeSet?): ReviewWave_ {
+//            return ReviewWave_(context, attrs).apply {
+//                setZOrderOnTop(true)
+//                holder.setFormat(PixelFormat.TRANSLUCENT)
+//            }
+//        }
     }
     @Provides
     fun provideReviewWaveController(mEcgQueue: ConcurrentLinkedQueue<Short>): ReviewWaveController {
@@ -36,5 +42,6 @@ object SdkModuleActivity {
 }
 
 interface ReviewWaveFactory {
-    fun create(attrs: AttributeSet? = null): ReviewWave
+    fun create(attrs: AttributeSet? = null): ReviewWaveNew
+//    fun create(attrs: AttributeSet? = null): ReviewWave_
 }

@@ -1,11 +1,9 @@
 package com.example.kotlintest.screens.ecg.views
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,9 +14,8 @@ import com.example.kotlintest.component.DurationPicker
 fun DurationWithIcon(onDurationChange: (Int) -> Unit,icon:Int){
     Column(
         modifier = Modifier
-            .fillMaxHeight()
-            .wrapContentWidth()
-        , verticalArrangement = Arrangement.SpaceBetween
+            .wrapContentSize()
+//        , verticalArrangement = Arrangement.SpaceBetween
     ) {
         DurationPicker() {
             onDurationChange(it)

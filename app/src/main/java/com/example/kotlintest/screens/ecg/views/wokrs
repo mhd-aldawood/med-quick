@@ -1,0 +1,403 @@
+package com.example.kotlintest.screens.ecg.views;
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.PorterDuff;
+import android.os.Process;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+/**
+ * ECG waveform view:
+ *  - 6 leads
+ *  - One row, six columns
+ *  - Waves scroll from BOTTOM to TOP (time axis vertical)
+ *  - Old waves stay until we wrap at the top
+ */
+
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Paint.FontMetrics;
+import android.graphics.PorterDuff;
+import android.os.Process;
+import android.util.AttributeSet;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+/**
+ * ECG waveform:
+ *  - One row, six columns (6 leads)
+ *  - Time: bottom -> top
+ *  - Keeps history until wrap
+ *  - Uses point vs line like original logic
+ */
+public class ReviewWave_ extends SurfaceView implements SurfaceHolder.Callback {
+
+    private static final String TAG = ReviewWave.class.getSimpleName();
+
+    // number of leads
+    private int mLeadCount = 6;
+
+    // pixels per mm approx
+    private float perMillmeter = 8f;
+
+    // sample rate
+    public static final int SAMPLE_RATE = 1000;
+
+    private float amplitudeScale = 1.0f;
+
+    public void setAmplitudeScale(float scale) {
+        this.amplitudeScale = Math.max(0f, scale);
+    }
+
+    private int mViewWidth;
+    private int mViewHeight;
+    private int mWaveColor;
+    private Paint mPaint;
+    private float mFontHeight;
+
+    // paddings
+    private float paddingTop = 30f;
+    private float paddingBottom = 40f;
+    private float paddingLeft = 20f;
+    private float paddingRight = 20f;
+
+    // lead names
+    private String[] mLeadNames;
+
+    // BLE / ECG data queue: interleaved samples for each lead
+    private ConcurrentLinkedQueue<Short> mWaveDatas;
+
+    private SurfaceHolder mHolder;
+    private boolean refreshWave = false;
+
+    private Context mContext;
+
+    // layout: one row, six columns
+    private float[] mLeadCenterXs;  // X center per lead
+
+    // per-lead X positions for point/line behavior
+    private float[] mLastXs = new float[12];
+    private float[] mLasterXs = new float[12];
+    private float[] mCurXs = new float[12];
+
+    // shared Y positions (time axis)
+    private float mLastY;
+    private float mLasterY;
+    private float mCurY;
+
+    // vertical step per sample (like oneXwidth in original)
+    private float oneYStep;
+
+    // gain 10mm/mV
+    private int gain = 10;
+
+    private HealthWave waveRenderer;
+
+    public ReviewWave_(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mContext = context;
+
+        DisplayMetrics dm = new DisplayMetrics();
+        ((Activity) context).getWindowManager().getDefaultDisplay().getMetrics(dm);
+        float scaledDensity = dm.scaledDensity; // 缩放密度
+
+        mLeadNames = new String[]{"I", "II", "III", "aVR", "aVL", "aVF"};
+
+        // your original mm logic
+        perMillmeter = 0.014f * 200f * dm.widthPixels / (20.5f * 25f);
+
+        int jumpPoint = 1;
+        // vertical step: analogous to original oneXwidth
+        oneYStep = perMillmeter * 25f / 200f * jumpPoint;
+
+        Log.e(TAG, "oneYStep:" + oneYStep
+                + ",scaledDensity:" + scaledDensity
+                + ",dm.heightPixels:" + dm.heightPixels
+                + ",dm.widthPixels:" + dm.widthPixels
+                + ",dm.densityDpi:" + dm.densityDpi);
+
+        // paint
+        mPaint = new Paint();
+        mPaint.setStrokeWidth((int) scaledDensity);
+        mPaint.setTextAlign(Paint.Align.CENTER);
+        float textSize = 15 * scaledDensity;
+        mWaveColor = Color.GREEN;
+        mPaint.setColor(mWaveColor);
+        mPaint.setTextSize(textSize);
+        mPaint.setAntiAlias(true);
+
+        FontMetrics fontMetrics = mPaint.getFontMetrics();
+        mFontHeight = (fontMetrics.descent - fontMetrics.ascent) / 3f * 2f;
+
+        mHolder = this.getHolder();
+        mHolder.addCallback(this);
+    }
+
+    /**
+     * Provide ECG data buffer: values interleaved per lead
+     */
+    public void setEcgDataBuf(ConcurrentLinkedQueue<Short> ecgDataBuf) {
+        mWaveDatas = ecgDataBuf;
+    }
+
+    /**
+     * Compute layout: one row, six columns.
+     */
+    private void computeLayout() {
+        if (mViewWidth <= 0 || mViewHeight <= 0) return;
+
+        mLeadCenterXs = new float[mLeadCount];
+
+        float availableWidth = mViewWidth - paddingLeft - paddingRight;
+        float colWidth = availableWidth / mLeadCount;
+
+        for (int i = 0; i < mLeadCount; i++) {
+            float left = paddingLeft + i * colWidth;
+            float centerX = left + colWidth / 2f;
+            mLeadCenterXs[i] = centerX;
+
+            // init last positions at baseline
+            mLastXs[i] = centerX;
+            mLasterXs[i] = centerX;
+            mCurXs[i] = centerX;
+        }
+
+        float bottomWaveY = mViewHeight - paddingBottom;
+        mLastY = bottomWaveY;
+        mLasterY = bottomWaveY;
+        mCurY = bottomWaveY;
+    }
+
+    /**
+     * Draw waves: bottom -> top, keep history, point & line behavior.
+     */
+    private void drawWave() {
+        if (mWaveDatas == null || mWaveDatas.isEmpty()) {
+            return;
+        }
+
+        if (mLeadCenterXs == null && mViewWidth > 0 && mViewHeight > 0) {
+            computeLayout();
+        }
+        if (mLeadCenterXs == null) return;
+
+        Canvas canvas = mHolder.lockCanvas();
+        if (canvas == null) return;
+
+        // 🟢 DO NOT clear here → history preserved
+        // canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+        // vertical center lines for each lead (baseline)
+        Paint baselinePaint = new Paint(mPaint);
+        baselinePaint.setColor(Color.argb(120, 0, 255, 0));
+        baselinePaint.setStrokeWidth(1.5f);
+
+        float topWaveY = paddingTop;
+        float bottomWaveY = mViewHeight - paddingBottom;
+
+        for (int i = 0; i < mLeadCount; i++) {
+            float x = mLeadCenterXs[i];
+            canvas.drawLine(x, topWaveY, x, bottomWaveY, baselinePaint);
+        }
+
+        // lead labels
+        mPaint.setColor(mWaveColor);
+        for (int i = 0; i < mLeadCount; i++) {
+            canvas.drawText(
+                    mLeadNames[i],
+                    mLeadCenterXs[i],
+                    mViewHeight - paddingBottom + mFontHeight,
+                    mPaint
+            );
+        }
+
+        int stepsPerFrame = 3;
+
+        for (int step = 0; step < stepsPerFrame; step++) {
+
+            // compute next Y position (time axis)
+            float candidateY = mLastY - oneYStep;
+            boolean wrapped = false;
+
+            if (candidateY < topWaveY) {
+                // wrap to bottom: clear page once
+                candidateY = bottomWaveY;
+                wrapped = true;
+
+                canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+                // redraw baselines
+                for (int i = 0; i < mLeadCount; i++) {
+                    float x = mLeadCenterXs[i];
+                    canvas.drawLine(x, topWaveY, x, bottomWaveY, baselinePaint);
+                }
+
+                // redraw labels
+                for (int i = 0; i < mLeadCount; i++) {
+                    canvas.drawText(
+                            mLeadNames[i],
+                            mLeadCenterXs[i],
+                            mViewHeight - paddingBottom + mFontHeight,
+                            mPaint
+                    );
+                }
+
+                // reset all X histories to baseline when sweep restarts
+                for (int i = 0; i < mLeadCount; i++) {
+                    float cx = mLeadCenterXs[i];
+                    mLastXs[i] = cx;
+                    mLasterXs[i] = cx;
+                    mCurXs[i] = cx;
+                }
+                // reset Y history
+                mLastY = bottomWaveY;
+                mLasterY = bottomWaveY;
+            }
+
+            mCurY = candidateY;
+
+            // for each lead, consume one sample and draw
+            for (int lead = 0; lead < mLeadCount; lead++) {
+                Short val = mWaveDatas.poll();
+                if (val == null) {
+                    continue;
+                }
+
+                // convert amplitude to pixels
+                float amplitudePx = val * 0.001f * gain * perMillmeter * amplitudeScale;
+
+                float centerX = mLeadCenterXs[lead];
+                mCurXs[lead] = centerX + amplitudePx;
+
+                // ✨ point & line behavior (mirroring old logic):
+
+                if (step == 0) {
+                    // first pass in this frame: bridge or point
+
+                    if (wrapped || mLastY == bottomWaveY) {
+                        // just started a new sweep / page → draw POINT only
+                        canvas.drawPoint(mCurXs[lead], mCurY, mPaint);
+                        mLasterXs[lead] = mLastXs[lead];
+                        mLastXs[lead] = mCurXs[lead];
+                        continue;
+                    } else {
+                        // not at start: bridge previous segment across frames
+                        // line from "older" point to previous last point
+                        canvas.drawLine(
+                                mLasterXs[lead], mLasterY,
+                                mLastXs[lead], mLastY,
+                                mPaint
+                        );
+                    }
+                }
+
+                // normal segment from last -> current
+                canvas.drawLine(
+                        mLastXs[lead], mLastY,
+                        mCurXs[lead], mCurY,
+                        mPaint
+                );
+
+                mLasterXs[lead] = mLastXs[lead];
+                mLastXs[lead] = mCurXs[lead];
+            }
+
+            // update Y history once per step
+            mLasterY = mLastY;
+            mLastY = mCurY;
+        }
+
+        mHolder.unlockCanvasAndPost(canvas);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        mViewHeight = getHeight();
+        mViewWidth = getWidth();
+        Log.d(TAG, "surfaceCreated: w=" + mViewWidth + ", h=" + mViewHeight);
+        computeLayout();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width,
+                               int height) {
+        Log.d(TAG, "surfaceChanged: w=" + width + ", h=" + height);
+        mViewHeight = height;
+        mViewWidth = width;
+        computeLayout();
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfaceDestroyed");
+        stopRenderer();
+    }
+
+    public void startRenderer() {
+        if (refreshWave) return;
+
+        refreshWave = true;
+
+        if (mLeadCenterXs != null) {
+            float bottomWaveY = mViewHeight - paddingBottom;
+            for (int i = 0; i < mLeadCount; i++) {
+                float cx = mLeadCenterXs[i];
+                mLastXs[i] = cx;
+                mLasterXs[i] = cx;
+                mCurXs[i] = cx;
+            }
+            mLastY = bottomWaveY;
+            mLasterY = bottomWaveY;
+            mCurY = bottomWaveY;
+        }
+
+        if (waveRenderer == null) {
+            waveRenderer = new HealthWave();
+        }
+        waveRenderer.start();
+    }
+
+    public void stopRenderer() {
+        if (!refreshWave) return;
+
+        refreshWave = false;
+
+        if (waveRenderer != null && waveRenderer.isAlive()) {
+            waveRenderer.interrupt();
+            waveRenderer = null;
+        }
+    }
+
+    private class HealthWave extends Thread {
+        @Override
+        public void run() {
+            Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_DISPLAY);
+            while (refreshWave) {
+                drawWave();
+                try {
+                    sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
+        }
+    }
+}
