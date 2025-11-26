@@ -1,9 +1,9 @@
 package com.example.kotlintest.di
 
 import android.content.Context
+import com.example.kotlintest.core.bluetooth.BleUartDevice
 import com.example.kotlintest.core.bluetooth.BluetoothScanner
-import com.example.kotlintest.core.devicesWorker.BleUartDevice
-import com.example.kotlintest.core.devicesWorker.WbcBleDevice
+import com.example.kotlintest.core.bluetooth.WbcBleDevice
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext

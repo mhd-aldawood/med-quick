@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -11,6 +11,9 @@ import android.os.Build
 import com.example.kotlintest.screens.bloodanalyzer.models.WbcBleUuids
 import com.example.kotlintest.util.Logger
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import javax.inject.Inject
 
@@ -23,8 +26,9 @@ class BleUartDevice @Inject constructor(
     private var rxChar: BluetoothGattCharacteristic? = null   // notifications from device
     private val rxBuffer = mutableListOf<Byte>()   // 🔹 new
 
-
-    private val frameChannel = Channel<ByteArray>(Channel.BUFFERED)
+    private val _connected = MutableStateFlow(false)
+    val connected: StateFlow<Boolean> = _connected.asStateFlow()
+    private val frameChannel = Channel<ByteArray>(Channel.Factory.BUFFERED)
     val framesFlow = frameChannel.receiveAsFlow()
 
     fun init(device: BluetoothDevice) {
@@ -58,8 +62,13 @@ class BleUartDevice @Inject constructor(
 
         override fun onConnectionStateChange(g: BluetoothGatt, status: Int, newState: Int) {
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                _connected.value = true
+                Logger.i(TAG, "onConnectionStateChange: STATE_CONNECTED")
                 g.discoverServices()
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                _connected.value = false
+                Logger.i(TAG, "onConnectionStateChange: STATE_DISCONNECTED")
+
                 disconnect()
             }
         }

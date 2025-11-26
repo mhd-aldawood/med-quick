@@ -5,9 +5,9 @@ import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
-import com.example.kotlintest.core.bluetooth.BluetoothScanner
-import com.example.kotlintest.core.devicesWorker.WbcBleDevice
+import com.example.kotlintest.core.devicesWorker.Worker
 import com.example.kotlintest.core.model.HeaderDataSection
+import com.example.kotlintest.di.BloodAnalyzerQualifier
 import com.example.kotlintest.screens.bloodanalyzer.models.WhiteBloodCellAnalyzerResult
 import com.example.kotlintest.screens.bloodanalyzer.models.WhiteBloodCellAnalyzerValues
 import com.example.kotlintest.screens.home.models.DeviceCategory
@@ -18,38 +18,36 @@ import com.example.kotlintest.util.CellResult
 import com.example.kotlintest.util.createResultFromCell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 @HiltViewModel
 class BloodAnalyzerViewModel @Inject constructor(
     private val deviceManager: DeviceManager,
-    private val bluetoothScanner: BluetoothScanner,
-    private val wbcDevice: WbcBleDevice
+    private @BloodAnalyzerQualifier val worker: Worker
 ) : BaseViewModel<BloodAnalyzerState, BloodAnalyzerEvents, BloodAnalyzerActions>(initialState = BloodAnalyzerState()) {
     private val TAG = "BloodAnalyzerViewModel"
-    val latestResult: StateFlow<CellResult?> = wbcDevice.latestResult
-    val connected: StateFlow<Boolean> = wbcDevice.connected
+//    val latestResult: StateFlow<CellResult?> = wbcDevice.latestResult
+//    val connected: StateFlow<Boolean> = wbcDevice.connected
 
     init {
 
         deviceManager.setDeviceModels(DeviceCategory.WhiteBloodCellAnalyzer)
         viewModelScope.launch(Dispatchers.IO) {
-            bluetoothScanner.startDiscovery(deviceManager.getDeviceModels()) { device ->
-                wbcDevice.init(device)
-                wbcDevice.connect() { cellResult ->
+            worker.startWork { jSONObject ->
+                viewModelScope.launch(Dispatchers.Default) {
+                    val obj = Json.decodeFromString<CellResult>(jSONObject.toString())
                     mutableState.update {
                         val newResult = WhiteBloodCellAnalyzerResult(
-                            cardValues = createResultFromCell(cellResult),
-                            date = cellResult.dateTime
+                            cardValues = createResultFromCell(obj),
+                            date = obj.dateTime
                         )
                         it.copy(bloodCellAnalyzerResults = it.bloodCellAnalyzerResults + newResult)
                     }
                 }
-                wbcDevice.requestHandshake()
-                wbcDevice.requestLatestResult()
+
             }
         }
 
@@ -59,24 +57,10 @@ class BloodAnalyzerViewModel @Inject constructor(
 
     }
 
-    fun connect() {
-        wbcDevice.connect() {
-
-        }
-    }
-
-    fun disconnect() {
-        wbcDevice.disconnect()
-    }
-
-    fun fetchResult() {
-        wbcDevice.requestLatestResult()
-    }
 
     override fun onCleared() {
         super.onCleared()
-        disconnect()
-
+        worker.stopWork()
     }
 }
 

@@ -1,6 +1,7 @@
 package com.example.kotlintest.util
 
 import com.konsung.lib.wbc.KSWbc
+import kotlinx.serialization.Serializable
 
 // ---------- Frame building ----------
 
@@ -74,7 +75,7 @@ fun parseWbcFrame(bytes: ByteArray): WbcFrame {
     return WbcFrame(op1, op2, op3, payload.toList())
 }
 
-// Result structure from the PDF
+@Serializable
 data class CellResult(
     val sn: String,
     val deviceSn: String,

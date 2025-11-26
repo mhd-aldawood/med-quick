@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import com.example.kotlintest.util.CellResult
@@ -30,6 +30,12 @@ class WbcBleDevice @Inject constructor(
 
     fun init(bluetoothDevice: BluetoothDevice) {
         ble.init(bluetoothDevice)
+        scope.launch() {
+            ble.connected.collect { isConnected ->
+                _connected.value = isConnected
+            }
+        }
+
     }
 
 

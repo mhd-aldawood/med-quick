@@ -54,6 +54,4 @@ object CommonModuleViewModel {
     ): AudioProcessor {
         return AudioProcessor(context, pcmPlayer, pcmFileReader)
     }
-
-
 }
