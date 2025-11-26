@@ -3,6 +3,8 @@ package com.example.kotlintest.di
 import android.content.Context
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor
+import com.example.kotlintest.core.bluetooth.WbcBleDevice
+import com.example.kotlintest.core.devicesWorker.BloodAnalyzerWorker
 import com.example.kotlintest.core.devicesWorker.PoctWorker
 import com.example.kotlintest.core.devicesWorker.PulseOximeterWorker
 import com.example.kotlintest.core.devicesWorker.StethoScopeWorker
@@ -65,6 +67,12 @@ object WorkerModule {
         sdk = sdk
     )
 
+    @BloodAnalyzerQualifier
+    @Provides
+    fun provideBloodAnalyzerWorker(
+        deviceManager: DeviceManager,
+        wbcBleDevice: WbcBleDevice
+    ): Worker = BloodAnalyzerWorker(deviceManager = deviceManager, wbcDevice = wbcBleDevice)
     @Provides
     fun providePoctWorker(): PoctWorker = PoctWorker()
 }

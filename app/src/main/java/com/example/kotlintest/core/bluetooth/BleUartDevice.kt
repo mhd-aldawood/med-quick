@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
@@ -24,7 +24,7 @@ class BleUartDevice @Inject constructor(
     private val rxBuffer = mutableListOf<Byte>()   // 🔹 new
 
 
-    private val frameChannel = Channel<ByteArray>(Channel.BUFFERED)
+    private val frameChannel = Channel<ByteArray>(Channel.Factory.BUFFERED)
     val framesFlow = frameChannel.receiveAsFlow()
 
     fun init(device: BluetoothDevice) {

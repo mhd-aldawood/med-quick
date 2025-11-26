@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.bluetooth
 
 import android.bluetooth.BluetoothDevice
 import com.example.kotlintest.util.CellResult

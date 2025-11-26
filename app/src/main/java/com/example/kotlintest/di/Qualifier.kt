@@ -18,3 +18,6 @@ annotation class PulseOximeterQualifier
 @Retention(AnnotationRetention.BINARY)
 annotation class ThermometerQualifier
 
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BloodAnalyzerQualifier
