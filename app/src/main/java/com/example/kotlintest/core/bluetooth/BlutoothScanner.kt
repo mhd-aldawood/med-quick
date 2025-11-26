@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import com.example.kotlintest.util.Logger
 
 class BluetoothScanner(private val context: Context) {
 
@@ -43,7 +44,7 @@ class BluetoothScanner(private val context: Context) {
                     device?.let { dev ->
                         val name = dev.name ?: "Unknown"
                         val mac = dev.address
-                        println("Found: $name ($mac)")
+                        Logger.i(TAG, "Found: $name ($mac)")
                         foundDevices.add(dev)
 
                         // If a target matcher is set and matches, stop immediately and return the device
@@ -59,7 +60,7 @@ class BluetoothScanner(private val context: Context) {
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    println("Discovery finished with ${foundDevices.size} devices.")
+                    Logger.i(TAG, "Discovery finished with ${foundDevices.size} devices.")
                     onFinishedList?.let { cb ->
                         val result = foundDevices.map { it.name.orEmpty() to it.address }
                         if (result.isNotEmpty()) cb(result)
