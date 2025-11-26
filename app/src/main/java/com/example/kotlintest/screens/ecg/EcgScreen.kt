@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -77,9 +76,7 @@ fun EcgScreen(viewModel: EcgViewModel = hiltViewModel(), uiState: EcgState = Ecg
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 50.dp),
-        horizontalArrangement = Arrangement.spacedBy(20.dp)
+            .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         EcgGraph(controller)
         DurationWithIcon(onDurationChange = {

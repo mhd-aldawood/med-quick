@@ -1,8 +1,6 @@
 package com.example.kotlintest.screens.ecg.views;
 
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -18,6 +16,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
@@ -145,6 +145,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
             Canvas canvas = mHolder.lockCanvas(new Rect(0, 0, mLeadNameWidth, mViewHeight));
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             mPaint.setColor(Color.GREEN);
+            // Draw lead names (Lead I, II, III, etc.)
             for (int i = 0; i < mLeadCount; i++) {
                 canvas.drawText(mLeadNames[i], paddingRight, mCenterLineYs[i], mPaint);
             }
@@ -155,13 +156,17 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
             mHolder.unlockCanvasAndPost(canvas);
         }
 
-
+//You draw 5 points per frame, so you need enough queued samples.
         if (mWaveDatas.size() < 5 * mLeadCount) {
             return;
         }
 
         float startX = mLastX + oneXwidth;
-
+//        mLastX is your last drawn x-coordinate.
+//
+//                oneXwidth is the horizontal pixel spacing for one sample (depends on speed).
+//
+//        When the drawing reaches the right edge → it wraps to the left.
         if (startX > mViewWidth) {
             mLastX = 0;
         }
