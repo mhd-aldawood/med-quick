@@ -8,6 +8,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
+import com.example.kotlintest.util.Logger
 
 class BluetoothScanner(private val context: Context) {
 
@@ -19,15 +22,22 @@ class BluetoothScanner(private val context: Context) {
     private val foundDevices = mutableListOf<BluetoothDevice>()
 
     // Callbacks
-    private var onFinishedList: ((List<Pair<String, String>>) -> Unit)? = null
     private var onFoundSingle: ((BluetoothDevice) -> Unit)? = null
+
+    // Retry control
+    private val handler = Handler(Looper.getMainLooper())
+    private var retryDelayMillis: Long = 0L
+    private var maxRetries: Int? = null
+    private var retryCount = 0
+    private var retryEnabled = false
 
     // Target matcher
     private var targetMatcher: ((String?) -> Boolean)? = null
-
+    private val TAG = "BlutoothScanner"
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
             when (intent?.action) {
+
                 BluetoothDevice.ACTION_FOUND -> {
                     val device: BluetoothDevice? =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -42,28 +52,43 @@ class BluetoothScanner(private val context: Context) {
 
                     device?.let { dev ->
                         val name = dev.name ?: "Unknown"
-                        val mac = dev.address
-                        println("Found: $name ($mac)")
                         foundDevices.add(dev)
 
-                        // If a target matcher is set and matches, stop immediately and return the device
+                        // Target match?
                         targetMatcher?.let { match ->
                             if (match(name)) {
+                                retryEnabled = false
+                                handler.removeCallbacksAndMessages(null)
+
                                 onFoundSingle?.invoke(dev)
                                 safelyStopDiscoveryAndUnregister()
-                                // prevent list callback on finish path
-                                onFinishedList = null
+                                return
                             }
                         }
                     }
                 }
 
                 BluetoothAdapter.ACTION_DISCOVERY_FINISHED -> {
-                    println("Discovery finished with ${foundDevices.size} devices.")
-                    onFinishedList?.let { cb ->
-                        val result = foundDevices.map { it.name.orEmpty() to it.address }
-                        if (result.isNotEmpty()) cb(result)
+                    Logger.i(TAG, "Scan finished. Found ${foundDevices.size}. No match.")
+
+                    if (retryEnabled) {
+                        retryCount++
+                        val allowed = maxRetries?.let { retryCount <= it } ?: true
+
+                        if (allowed) {
+                            Logger.i(TAG, "Retrying in $retryDelayMillis ms (attempt $retryCount)")
+                            foundDevices.clear()
+
+                            handler.postDelayed({
+                                startScanInternal()
+                            }, retryDelayMillis)
+
+                            return
+                        } else {
+                            Logger.i(TAG, "Max retries reached. Stopping.")
+                        }
                     }
+
                     safelyUnregisterReceiver()
                     clearCallbacks()
                 }
@@ -71,87 +96,75 @@ class BluetoothScanner(private val context: Context) {
         }
     }
 
-    /** Public: stop discovery if running, and unregister receiver */
+    /** Public stop */
     fun stopDiscovery() {
+        retryEnabled = false
+        handler.removeCallbacksAndMessages(null)
+
         bluetoothAdapter?.let {
-            if (it.isDiscovering) {
-                it.cancelDiscovery()
-                println("Bluetooth discovery stopped.")
-            }
+            if (it.isDiscovering) it.cancelDiscovery()
         }
         safelyUnregisterReceiver()
         clearCallbacks()
     }
 
-    /** Original API: discover and return the full list at the end */
-    fun startDiscovery(onFinished: (List<Pair<String, String>>) -> Unit) {
-        this.onFinishedList = onFinished
-        this.onFoundSingle = null
-        this.targetMatcher = null
-        internalStartDiscovery()
-    }
-
     /**
-     * New API: discover until a device name matches `targetNameMatcher`.
-     * On first match, stop discovery and invoke `onFound` with the device.
+     * Start discovery with target matcher + retry logic.
      */
     fun startDiscovery(
         targetNameMatcher: (String?) -> Boolean,
+        retryDelayMillis: Long = 0L,
+        maxRetries: Int? = null,
         onFound: (BluetoothDevice) -> Unit
     ) {
-        this.onFinishedList = null
         this.onFoundSingle = onFound
         this.targetMatcher = targetNameMatcher
-        internalStartDiscovery()
+
+        this.retryDelayMillis = retryDelayMillis
+        this.maxRetries = maxRetries
+        this.retryEnabled = retryDelayMillis > 0
+        this.retryCount = 0
+
+        startScanInternal()
     }
 
-    /**
-     * Convenience: exact name match (case-insensitive).
-     */
-    fun startDiscoveryExactName(
-        targetName: String,
-        onFound: (BluetoothDevice) -> Unit
-    ) {
-        startDiscovery(
-            targetNameMatcher = { name -> name?.equals(targetName, ignoreCase = true) == true },
-            onFound = onFound
-        )
-    }
-
-    /**
-     * >>> The one you asked for: accept a list of names and stop on first match. <<<
-     * Exact match by default, case-insensitive.
-     */
-    private val TAG = "BlutoothScanner"
+    /** Convenience: list of prefixes */
     fun startDiscovery(
         targetNames: List<String>,
         ignoreCase: Boolean = true,
+        retryDelayMillis: Long = 0L,
+        maxRetries: Int? = null,
         onFound: (BluetoothDevice) -> Unit,
     ) {
         val normalizedPrefixes =
             if (ignoreCase) targetNames.map { it.lowercase() } else targetNames
+
         startDiscovery(
-            targetNameMatcher = { n ->
-                val name = n ?: return@startDiscovery false
-                val normalizedName = if (ignoreCase) name.lowercase() else name
-                normalizedPrefixes.any { prefix -> normalizedName.startsWith(prefix) }
+            targetNameMatcher = { name ->
+                val n = name ?: return@startDiscovery false
+                val nn = if (ignoreCase) n.lowercase() else n
+                normalizedPrefixes.any { nn.startsWith(it) }
             },
+            retryDelayMillis = retryDelayMillis,
+            maxRetries = maxRetries,
             onFound = onFound
         )
     }
 
-    // Internal start
-    private fun internalStartDiscovery() {
+    // Internal scan start
+    private fun startScanInternal() {
         foundDevices.clear()
 
         val filter = IntentFilter().apply {
             addAction(BluetoothDevice.ACTION_FOUND)
             addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
         }
+
         context.registerReceiver(receiver, filter)
 
         val started = bluetoothAdapter?.startDiscovery() == true
-        println(if (started) "Scanning started…" else "Failed to start discovery.")
+        Logger.i(TAG, if (started) "Bluetooth scan started…" else "Failed to start scan")
+
         if (!started) {
             safelyUnregisterReceiver()
             clearCallbacks()
@@ -170,14 +183,15 @@ class BluetoothScanner(private val context: Context) {
         try {
             context.unregisterReceiver(receiver)
         } catch (_: IllegalArgumentException) {
-            // Receiver already unregistered — ignore
         }
     }
 
     private fun clearCallbacks() {
-        onFinishedList = null
         onFoundSingle = null
         targetMatcher = null
+        retryEnabled = false
+        retryDelayMillis = 0
+        retryCount = 0
     }
 
     fun isBluetoothEnabled(): Boolean = bluetoothAdapter?.isEnabled == true
