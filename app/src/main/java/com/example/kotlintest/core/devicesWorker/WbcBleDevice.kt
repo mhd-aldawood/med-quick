@@ -33,7 +33,7 @@ class WbcBleDevice @Inject constructor(
     }
 
 
-    fun connect() {
+    fun connect(result: (CellResult) -> Unit) {
         ble.connect()
 
         scope.launch {
@@ -58,6 +58,7 @@ class WbcBleDevice @Inject constructor(
                     0x24 -> {
                         // Report results
                         val result = parseCellResult(frame.payload)
+                        result(result)
                         _latestResult.value = result
                     }
 

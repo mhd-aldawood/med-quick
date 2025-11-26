@@ -25,3 +25,4 @@
 # Keep all annotations and fields in the package (if required by serialization)
 -keepattributes *Annotation*
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+-keep class com.konsung.lib.wbclib.** { *; }

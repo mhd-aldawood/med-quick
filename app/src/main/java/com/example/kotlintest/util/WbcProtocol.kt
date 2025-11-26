@@ -1,7 +1,6 @@
 package com.example.kotlintest.util
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import com.konsung.lib.wbc.KSWbc
 
 // ---------- Frame building ----------
 
@@ -45,7 +44,7 @@ data class WbcFrame(
     val op1: Int,
     val op2: Int,
     val op3: Int,
-    val payload: ByteArray
+    val payload: List<Byte>
 )
 
 // This assumes one full frame arrives in one notification.
@@ -70,27 +69,35 @@ fun parseWbcFrame(bytes: ByteArray): WbcFrame {
     val op3 = bytes[7].toInt() and 0xFF
 
     // Here we treat everything after index 8 (parameter and onward, without checksum) as payload.
-    val payload = bytes.copyOfRange(8, bytes.size - 1)
+    val payload = bytes
 
-    return WbcFrame(op1, op2, op3, payload)
+    return WbcFrame(op1, op2, op3, payload.toList())
 }
 
 // Result structure from the PDF
 data class CellResult(
-    val sn: Int,
-    val wbcCount: Double,
-    val rawReserved: ByteArray,
+    val sn: String,
+    val deviceSn: String,
     val dateTime: String,
+
+    val wbc: String,
+    val lym: String,
+    val mon: String,
+    val neu: String,
+    val eqs: String,
+    val bas: String,
+
+    val lymPer: String,
+    val monPer: String,
+    val neuPer: String,
+    val eosPer: String,
+    val basPer: String
 )
 
-fun parseCellResult(payload: ByteArray): CellResult {
-    // Expect 64 bytes total in real response; here we just read first 4 + rest as reserved.
-    val buf = ByteBuffer.wrap(payload).order(ByteOrder.LITTLE_ENDIAN)
+fun parseCellResult(payload: List<Byte>): CellResult {
+    val bean = KSWbc.parse(payload.toByteArray())//silly solution -_- WTF
 
-
-    val sn = buf.short.toInt()           // u16sn
-    val countRaw = buf.short.toInt()     // u16count
-    val wbc = countRaw * 0.01           // PDF: unit is 0.01 * 1E9/L
+    Logger.i("parseWbcFrame", bean.toString())
     val day = payload[22].toInt() and 0xFF
     val month = payload[23].toInt() and 0xFF
     val year = payload[24].toInt() and 0xFF  // probably 2000 + year
@@ -100,9 +107,20 @@ fun parseCellResult(payload: ByteArray): CellResult {
 
     val dateTime = "20%02d-%02d-%02d %02d:%02d:%02d"
         .format(year, month, day, hour, min, sec)
-
-    val reserved = ByteArray(payload.size - 4)
-    if (reserved.isNotEmpty()) buf.get(reserved)
-
-    return CellResult(sn, wbc, reserved, dateTime)
+    return CellResult(
+        sn = bean.sn,
+        deviceSn = bean.deviceSn,
+        wbc = bean.wbc,
+        lym = bean.lym,
+        mon = bean.mon,
+        neu = bean.neu,
+        eqs = bean.eos,
+        bas = bean.bas,
+        lymPer = bean.lymPer,// lym%
+        monPer = bean.monPer,// mon%
+        neuPer = bean.neuPer,// neu%
+        eosPer = bean.eosPer,// eos%
+        basPer = bean.basPer,// bas% ,
+        dateTime = dateTime
+    )
 }

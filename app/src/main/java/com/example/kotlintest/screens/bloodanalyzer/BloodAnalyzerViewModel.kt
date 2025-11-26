@@ -1,5 +1,6 @@
 package com.example.kotlintest.screens.bloodanalyzer
 
+import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
@@ -14,8 +15,12 @@ import com.example.kotlintest.screens.pulseoximeter.models.PulseOximeterCard
 import com.example.kotlintest.ui.theme.FrenchWine
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.util.CellResult
+import com.example.kotlintest.util.createResultFromCell
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,13 +36,23 @@ class BloodAnalyzerViewModel @Inject constructor(
     init {
 
         deviceManager.setDeviceModels(DeviceCategory.WhiteBloodCellAnalyzer)
-        bluetoothScanner.startDiscovery(deviceManager.getDeviceModels()) { device ->
-            wbcDevice.init(device)
-            wbcDevice.connect()
-            wbcDevice.requestHandshake()
-            wbcDevice.requestLatestResult()
-
+        viewModelScope.launch(Dispatchers.IO) {
+            bluetoothScanner.startDiscovery(deviceManager.getDeviceModels()) { device ->
+                wbcDevice.init(device)
+                wbcDevice.connect() { cellResult ->
+                    mutableState.update {
+                        val newResult = WhiteBloodCellAnalyzerResult(
+                            cardValues = createResultFromCell(cellResult),
+                            date = cellResult.dateTime
+                        )
+                        it.copy(bloodCellAnalyzerResults = it.bloodCellAnalyzerResults + newResult)
+                    }
+                }
+                wbcDevice.requestHandshake()
+                wbcDevice.requestLatestResult()
+            }
         }
+
     }
 
     override fun handleAction(action: BloodAnalyzerActions) {
@@ -45,7 +60,9 @@ class BloodAnalyzerViewModel @Inject constructor(
     }
 
     fun connect() {
-        wbcDevice.connect()
+        wbcDevice.connect() {
+
+        }
     }
 
     fun disconnect() {
