@@ -36,7 +36,10 @@ class BloodAnalyzerWorker @Inject constructor(
 
     fun startDiscovery(result: (JSONObject) -> Unit) {
         scope.launch {
-            deviceManager.bluetoothScanner.startDiscovery(deviceManager.getDeviceModels()) { device ->
+            deviceManager.bluetoothScanner.startDiscovery(
+                deviceManager.getDeviceModels(),
+                retryDelayMillis = 2000L
+            ) { device ->
                 wbcDevice.init(device)
                 wbcDevice.connect() { cellResult ->
                     val jsonObject = JSONObject().apply {

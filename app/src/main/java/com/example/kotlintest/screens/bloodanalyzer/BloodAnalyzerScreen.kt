@@ -8,14 +8,48 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.kotlintest.component.NormalRangeCard
+import com.example.kotlintest.core.bluetooth.BluetoothCommand
 import com.example.kotlintest.screens.bloodanalyzer.views.CardResultsList
+import com.example.kotlintest.ui.theme.locals.LocalReviewWaveController
+import com.example.kotlintest.util.Logger
 
 @Composable
-fun BloodAnalyzerScreen(uiState: BloodAnalyzerState, analyzerViewModel: BloodAnalyzerViewModel) {
+fun BloodAnalyzerScreen(uiState: BloodAnalyzerState, viewModel: BloodAnalyzerViewModel) {
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+
+
+    val controller = LocalReviewWaveController.current
+
+    DisposableEffect(lifecycleOwner) {
+
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                Logger.i("BloodAnalyzerScreen", " on destroy")
+            }
+            if (event == Lifecycle.Event.ON_START) {
+                viewModel.trySendAction(BloodAnalyzerActions.Bluetooth(BluetoothCommand.SearchAndCommunicate))
+            }
+            if (event == Lifecycle.Event.ON_RESUME) {
+                Logger.i("BloodAnalyzerScreen", "ON_RESUME")
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(60.dp)) {
         CardResultsList(modifier = Modifier.weight(0.5f), uiState = uiState)

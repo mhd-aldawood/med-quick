@@ -35,6 +35,27 @@ class BloodAnalyzerViewModel @Inject constructor(
     init {
 
         deviceManager.setDeviceModels(DeviceCategory.WhiteBloodCellAnalyzer)
+
+
+    }
+
+    override fun handleAction(action: BloodAnalyzerActions) {
+        when (action) {
+            is BloodAnalyzerActions.Bluetooth -> {
+                when (action.command) {
+                    BluetoothCommand.SearchAndCommunicate -> {
+                        startDiscovery()
+                    }
+
+                    BluetoothCommand.StopBluetoothAndCommunication -> {}
+                }
+            }
+
+        }
+
+    }
+
+    fun startDiscovery() {
         viewModelScope.launch(Dispatchers.IO) {
             worker.startWork { jSONObject ->
                 viewModelScope.launch(Dispatchers.Default) {
@@ -50,11 +71,6 @@ class BloodAnalyzerViewModel @Inject constructor(
 
             }
         }
-
-    }
-
-    override fun handleAction(action: BloodAnalyzerActions) {
-
     }
 
 
