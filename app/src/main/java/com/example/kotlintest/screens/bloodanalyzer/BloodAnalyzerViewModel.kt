@@ -5,7 +5,7 @@ import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.bluetooth.BluetoothCommand
-import com.example.kotlintest.core.devicesWorker.Worker
+import com.example.kotlintest.core.workers.Worker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.di.BloodAnalyzerQualifier
 import com.example.kotlintest.screens.bloodanalyzer.models.WhiteBloodCellAnalyzerResult
@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
-
 @HiltViewModel
 class BloodAnalyzerViewModel @Inject constructor(
     private val deviceManager: DeviceManager,
@@ -31,12 +30,8 @@ class BloodAnalyzerViewModel @Inject constructor(
     private val TAG = "BloodAnalyzerViewModel"
 //    val latestResult: StateFlow<CellResult?> = wbcDevice.latestResult
 //    val connected: StateFlow<Boolean> = wbcDevice.connected
-
     init {
-
         deviceManager.setDeviceModels(DeviceCategory.WhiteBloodCellAnalyzer)
-
-
     }
 
     override fun handleAction(action: BloodAnalyzerActions) {

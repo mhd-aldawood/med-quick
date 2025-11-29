@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.workers
 
 import android.content.Context
 import com.contec.spo2.code.bean.DayStepsData

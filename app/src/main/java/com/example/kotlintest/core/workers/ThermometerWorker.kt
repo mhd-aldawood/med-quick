@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.workers
 
 import com.contec.htd.code.bean.HistoryResultData
 import com.contec.htd.code.bean.ResultData

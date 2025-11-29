@@ -3,7 +3,7 @@ package com.example.kotlintest.screens.poct
 import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
-import com.example.kotlintest.core.devicesWorker.PoctWorker
+import com.example.kotlintest.core.workers.PoctWorker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.screens.poct.models.Category
 import com.example.kotlintest.screens.poct.models.PoctCardItem

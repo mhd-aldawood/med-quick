@@ -1,4 +1,4 @@
-package com.example.kotlintest.core.devicesWorker
+package com.example.kotlintest.core.workers
 
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor

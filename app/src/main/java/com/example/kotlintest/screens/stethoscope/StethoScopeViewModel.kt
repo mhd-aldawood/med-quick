@@ -7,7 +7,7 @@ import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor
 import com.example.kotlintest.core.bluetooth.BluetoothScanner
-import com.example.kotlintest.core.devicesWorker.StethoScopeWorker
+import com.example.kotlintest.core.workers.StethoScopeWorker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.core.model.TimeEvent
 import com.example.kotlintest.di.StethoScopeQualifier

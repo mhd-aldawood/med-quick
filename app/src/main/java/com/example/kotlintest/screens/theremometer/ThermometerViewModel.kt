@@ -16,7 +16,7 @@ import com.example.kotlintest.R
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.DeviceOperation
-import com.example.kotlintest.core.devicesWorker.Worker
+import com.example.kotlintest.core.workers.Worker
 import com.example.kotlintest.core.model.ConnectionState
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.di.ThermometerQualifier
