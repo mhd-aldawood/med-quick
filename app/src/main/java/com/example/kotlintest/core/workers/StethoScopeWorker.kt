@@ -100,6 +100,7 @@ class StethoScopeWorker @Inject constructor(
         BleManager.getInstance().unNotifyAudioData()
         BleManager.getInstance().removeConnectionListener(iBleConnectStatusListener)
         stopRecording(release)
+        deviceManager.bluetoothScanner.stopDiscovery()
     }
 
     fun startRecording() {
