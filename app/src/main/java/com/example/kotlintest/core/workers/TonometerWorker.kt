@@ -18,13 +18,11 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Timer
 import javax.inject.Inject
 
 class TonometerWorker @Inject constructor(
     private val sdk: ContecSdk,
     @ApplicationContext private val context: Context,
-    private val timer: Timer,
     private val deviceManager: DeviceManager
 ) : Worker {
     init {
@@ -34,14 +32,6 @@ class TonometerWorker @Inject constructor(
 
 
     override fun startWork(result: (JSONObject) -> Unit) {
-//        timer.schedule(object : TimerTask() {
-//            override fun run() {
-//
-//
-//            }
-//        }, 0, 1000)
-
-
         sdk.startBluetoothSearch(
             object : BluetoothSearchCallback {
                 override fun onContecDeviceFound(contecDevice: ContecDevice?) {
@@ -143,6 +133,7 @@ class TonometerWorker @Inject constructor(
     override fun stopWork() {
         sdk.stopBluetoothSearch()
         sdk.stopCommunicate()
+        deviceManager.bluetoothScanner.stopDiscovery()
     }
 
     private val jsonDecoder = Json { ignoreUnknownKeys = true } // Ignore unknown fields
