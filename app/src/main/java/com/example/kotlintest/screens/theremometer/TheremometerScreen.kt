@@ -1,15 +1,16 @@
 package com.example.kotlintest.screens.theremometer
 
-import android.Manifest
-import android.os.Build
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.kotlintest.core.EventsEffect
+import com.example.kotlintest.core.bluetooth.BluetoothCommand
 import com.example.kotlintest.screens.theremometer.views.TemperatureCard
+import com.example.kotlintest.util.Logger
 
 @Composable
 fun ThermometerScreen(viewModel: ThermometerViewModel, uiState: ThermometerState) {
@@ -24,11 +25,26 @@ fun ThermometerScreen(viewModel: ThermometerViewModel, uiState: ThermometerState
 
         }
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
 
+    DisposableEffect(lifecycleOwner) {
 
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                viewModel.trySendAction(ThermometerAction.Bluetooth(BluetoothCommand.StopBluetoothAndCommunication))
+            }
+            if (event == Lifecycle.Event.ON_START) {
+                viewModel.trySendAction(ThermometerAction.Bluetooth(BluetoothCommand.SearchAndCommunicate))
+            }
+            if (event == Lifecycle.Event.ON_RESUME) {
+                Logger.i("BloodAnalyzerScreen", "ON_RESUME")
+            }
+        }
 
-    LaunchedEffect(Unit) {
-        viewModel.trySendAction(ThermometerAction.ConnectToDevice)
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     TemperatureCard(uiState.temp, uiState.normalRange)
