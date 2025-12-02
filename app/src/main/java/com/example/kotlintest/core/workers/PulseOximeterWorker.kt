@@ -219,6 +219,7 @@ class PulseOximeterWorker @Inject constructor(
 
     override fun stopWork() {
         sdk.disconnect()
+        deviceManager.bluetoothScanner.stopDiscovery()
     }
 
 }
