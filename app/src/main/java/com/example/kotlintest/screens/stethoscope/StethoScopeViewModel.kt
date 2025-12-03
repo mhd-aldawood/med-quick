@@ -7,9 +7,9 @@ import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor
 import com.example.kotlintest.core.bluetooth.BluetoothScanner
-import com.example.kotlintest.core.workers.StethoScopeWorker
 import com.example.kotlintest.core.model.HeaderDataSection
 import com.example.kotlintest.core.model.TimeEvent
+import com.example.kotlintest.core.workers.StethoScopeWorker
 import com.example.kotlintest.di.StethoScopeQualifier
 import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.screens.stethoscope.models.AuscultationRecord
@@ -51,7 +51,7 @@ class StethoScopeViewModel @Inject constructor(
         when (action) {
             StethoScopeAction.SearchAndConnectToStethoScope -> handleSearchAndConnectToStethoScope()
             StethoScopeAction.StopBluetoothAndCommunication -> {
-                stethoScopeWorker.disconnect(release = true)
+                handleStopBluetoothAndCommunication()
             }
 
             is StethoScopeAction.ChangeAuscultationSite -> handleChangeAuscultationSite(action.index)
@@ -59,6 +59,13 @@ class StethoScopeViewModel @Inject constructor(
             is StethoScopeAction.RecordClick -> handleRecordClick()
             is StethoScopeAction.DeleteRecord -> handleRecordDeleted(action.recordPath, action.icon)
             is StethoScopeAction.PlayRecord -> handlePlayRecord(action.recordPath, action.icon)
+        }
+    }
+
+    private fun handleStopBluetoothAndCommunication() {
+        viewModelScope.launch(Dispatchers.IO) {
+            stethoScopeWorker.disconnect(release = true)
+            state.auscultationRecordList.forEach { it -> deleteFileOnIO(it.file.toString()) }
         }
     }
 
@@ -267,14 +274,17 @@ class StethoScopeViewModel @Inject constructor(
     }
 
     fun startPlayingRecord(recordPath: String, record: AuscultationRecord) {
+
+        // Update the state using mutableState to reflect the play/pause change
+        changeIconThroughId(record.id, PlayBtnStatus.Pause)
+
         // Play the record and change icon to pause
         audioProcessor.playRecord(recordPath) {
             audioProcessor.stopPlayingRecord()
             changeIconThroughId(record.id, PlayBtnStatus.Play)
         }
-        // Update the state using mutableState to reflect the play/pause change
-        changeIconThroughId(record.id, PlayBtnStatus.Pause)
     }
+
 
     /** 2) Confirm: delete the file (IO) then drop the row from state */
     fun confirmDeletion(path: String) {

@@ -33,7 +33,7 @@ fun StethoScopeScreen(
     val context = LocalContext.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_DESTROY) {
+            if (event == Lifecycle.Event.ON_STOP) {
                 Logger.i("Tonometer screen", " on destroy")
                 viewModel.trySendAction(StethoScopeAction.StopBluetoothAndCommunication)
             }

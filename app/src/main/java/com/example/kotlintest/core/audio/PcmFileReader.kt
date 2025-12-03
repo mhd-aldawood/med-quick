@@ -28,6 +28,8 @@ class PcmFileReader @Inject constructor() {
                 while (input.read(buffer).also { bytesRead = it } != -1) {
                     val shorts = convertBytesToShortArray(buffer, bytesRead)
                     onChunk(shorts)  // Pass the chunk to the callback
+                    val ms = shorts.size * 1000L / 8000L
+                    Thread.sleep(ms)
                 }
                 onEnd()
             }

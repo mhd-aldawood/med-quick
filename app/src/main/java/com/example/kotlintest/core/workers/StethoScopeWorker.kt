@@ -63,14 +63,14 @@ class StethoScopeWorker @Inject constructor(
         BleManager.getInstance().addConnectionListener(iBleConnectStatusListener)
         BleManager.getInstance().setAudioDataCallback(object : IAudioDataCallback {
             override fun onSpkData(p0: ShortArray?) {
-                Logger.i(TAG, "onSpkData: $p0")
+//                Logger.i(TAG, "onSpkData: $p0")
             }
 
             override fun onMicData(p0: ShortArray?) {
             }
 
             override fun onProcessData(p0: ShortArray?) {
-                Logger.i(TAG, "onProcessData: $p0")
+//                Logger.i(TAG, "onProcessData: $p0")
                 val copy: ShortArray? = p0?.copyOf() // BLE libs often reuse buffers
                 copy?.let {
                     if (_spkChannel.trySend(copy).isFailure) {
