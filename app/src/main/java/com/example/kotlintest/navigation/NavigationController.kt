@@ -1,6 +1,7 @@
 package com.example.kotlintest.navigation
 
 import androidx.navigation.NavController
+import com.example.kotlintest.NavDestination.CALL_SCREEN
 import com.example.kotlintest.NavDestination.ECG_SCREEN
 import com.example.kotlintest.NavDestination.POCT_SCREEN
 import com.example.kotlintest.NavDestination.PULSE_OXIMETER_SCREEN
@@ -44,4 +45,7 @@ fun NavController.navigateSelectedDevice(deviceCategory: DeviceCategory) {
         DeviceCategory.UrineAnalyzer -> TODO()
         DeviceCategory.WhiteBloodCellAnalyzer -> safeNavigate(WHITE_BLOOD_CELL_ANALYZER_SCREEN)
     }
+}
+fun NavController.NavigateToCallScreen() {
+    safeNavigate(CALL_SCREEN)
 }

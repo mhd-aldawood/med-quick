@@ -1,9 +1,11 @@
 package com.example.kotlintest.screens.home.views
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -18,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.kotlintest.R
 import com.example.kotlintest.component.VerticalSpacer
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold
@@ -25,6 +28,7 @@ import com.example.kotlintest.ui.theme.rhDisplayBold
 @Composable
 fun ColumnScope.AddDeviceWithPatientInfo(
     onAddDeviceClicked: () -> Unit,
+    onCallClicked: () -> Unit,
     gender: String,
     age: String,
     insuranceCompany: String,
@@ -70,6 +74,14 @@ fun ColumnScope.AddDeviceWithPatientInfo(
         companyName = companyName,
         insuranceType = insuranceType,
         number = number
+    )
+    Spacer(modifier = Modifier.weight(1f))
+    Image(
+        painter = painterResource(R.mipmap.ic_call),
+        modifier = Modifier
+            .size(120.dp)
+            .clickable { onCallClicked.invoke() },
+        contentDescription = ""
     )
 }
 

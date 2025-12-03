@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,8 @@ import com.example.kotlintest.util.PermissionManager.checkPermissions
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navigateToSelectedDevice: (DeviceCategory) -> Unit
+    navigateToSelectedDevice: (DeviceCategory) -> Unit,
+    onCallClicked: () -> Unit
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     val permissionManager = LocalPermissionManager.current
@@ -105,10 +107,12 @@ fun HomeScreen(
         }
         Column(
             modifier = Modifier
-                .wrapContentWidth()
+                .wrapContentWidth(),
+            horizontalAlignment = Alignment.End
         ) {
             AddDeviceWithPatientInfo(
                 onAddDeviceClicked = {},
+                onCallClicked = { onCallClicked.invoke() },
                 uiState.dataHolder.patentInfo.age,
                 uiState.dataHolder.patentInfo.gender,
                 uiState.dataHolder.patentInfo.insuranceCompany,
@@ -121,6 +125,7 @@ fun HomeScreen(
                 uiState.dataHolder.patentInfo.insuranceInfo.number
             )
         }
+
 
     }
 

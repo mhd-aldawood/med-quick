@@ -16,6 +16,7 @@ import com.example.kotlintest.component.MainScaffold
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerScreen
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerViewModel
+import com.example.kotlintest.screens.call.TwoColumnFrontCameraScreen
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
 import com.example.kotlintest.screens.home.HomeScreen
@@ -54,7 +55,7 @@ fun InitNavGraph(
             ) {
                 HomeScreen(navigateToSelectedDevice = { selectedDevice ->
                     navController.navigateSelectedDevice(selectedDevice)
-                })
+                }, onCallClicked = { navController.navigate(NavDestination.CALL_SCREEN) })
             }
         }
         composable(NavDestination.PULSE_OXIMETER_SCREEN) {
@@ -154,6 +155,17 @@ fun InitNavGraph(
                 BloodAnalyzerScreen(
                     uiState, analyzerViewModel
                 )
+            }
+        }
+        composable(NavDestination.CALL_SCREEN) {
+            DeviceMainScreen(
+                title = "Camera Call",
+                titleIcon = R.drawable.ic_online_call,
+                cancelIcon = R.drawable.ic_cancel,
+                cancelText = "Cancel",
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                TwoColumnFrontCameraScreen()
             }
         }
     }

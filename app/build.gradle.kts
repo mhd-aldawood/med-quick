@@ -138,7 +138,7 @@ dependencies {
     implementation(libs.io.ktor.serialization.kotlinx.json)
     implementation(libs.io.ktor.logging)
     implementation(libs.kotlinx.serialization.json)
-//testing
+    //testing
     // Dependencies for local unit tests
     testImplementation(composeBom)
     testImplementation(libs.junit4)
@@ -151,6 +151,13 @@ dependencies {
     testImplementation(libs.androidx.test.espresso.intents)
     testImplementation(libs.google.truth)
     testImplementation(libs.androidx.compose.ui.test.junit)
+
+    //Camera
+    implementation(libs.camera.core)
+    implementation(libs.camera.camera2)
+    implementation(libs.camera.lifecycle)
+    implementation(libs.camera.view)
+
     // AndroidX Test - Hilt testing
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
