@@ -26,12 +26,11 @@ object WorkerModule {
     fun provideTonometerWorker(
         @ApplicationContext context: Context,
         sdk: com.contec.bp.code.connect.ContecSdk,
-        timer: Timer, deviceManager: DeviceManager
+        deviceManager: DeviceManager
     ): Worker = TonometerWorker(
         context = context,
         sdk = sdk,
         deviceManager = deviceManager,
-        timer = timer
     )
 
     @PulseOximeterQualifier
