@@ -106,7 +106,7 @@ fun DurationPicker(
         modifier = modifier
             .background(Color.Transparent, RoundedCornerShape(16.dp))
             .border(1.dp, PrimaryMidLinkColor, RoundedCornerShape(16.dp))
-            .sizeIn(maxWidth = 120.dp, maxHeight = 386.dp)
+            .sizeIn(maxWidth = 120.dp, maxHeight = 300.dp)
             .padding(vertical = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -139,13 +139,17 @@ fun DurationPicker(
                     painter = painterResource(R.drawable.ic_left_arrow),
                     contentDescription = null,
                     tint = Color(0xFF0D47A1),
-                    modifier = Modifier.size(18.dp).rotate(90f)
+                    modifier = Modifier
+                        .size(18.dp)
+                        .rotate(90f)
                 )
                 Icon(
                     painter = painterResource(R.drawable.ic_right_arrow),
                     contentDescription = null,
                     tint = Color(0xFF0D47A1),
-                    modifier = Modifier.size(18.dp).rotate(90f)
+                    modifier = Modifier
+                        .size(18.dp)
+                        .rotate(90f)
                 )
             }
 
