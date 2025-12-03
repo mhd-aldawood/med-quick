@@ -1,8 +1,6 @@
 package com.example.kotlintest.screens.ecg.views;
 
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -19,6 +17,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 /**
  * 波形
@@ -28,7 +28,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
 
     private static final String TAG = ReviewWave.class.getSimpleName();
     // 病例对应的是多少导联：12或18
-    private int mLeadCount = 6;//12;
+    private int mLeadCount = 12;
 
     // 每毫米8个像素
     private float perMillmeter = 8;
@@ -83,7 +83,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
             .getMetrics(dm);
         float scaledDensity = dm.scaledDensity;// 缩放密度
 
-        mLeadNames = new String[]{"I", "II", "III", "aVR", "aVL", "aVF",};// "V1", "V2", "V3", "V4", "V5", "V6"};
+        mLeadNames = new String[]{"I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"};
 //        perMillmeter = dm.densityDpi / 25.4f;
         perMillmeter = 0.014f * 200
         * dm.widthPixels / (20.5f * 25);
@@ -289,7 +289,7 @@ public class ReviewWave extends SurfaceView implements SurfaceHolder.Callback
 
     }
 
-    private int mRow = 6;
+    private int mRow = 12;
     private int mColumn = 1;
     private int mDisplayRhythmLeadCount = 0;
 
