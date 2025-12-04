@@ -37,7 +37,6 @@ fun RowScope.PositionAgeGroup(
 ) {
     Column(
         modifier = Modifier
-            .padding(top = 10.dp)
             .wrapContentWidth()
             .weight(0.3f), horizontalAlignment = Alignment.CenterHorizontally
     )
@@ -81,7 +80,7 @@ fun AgeGroupButton(
                 shape = RoundedCornerShape(5.dp)
             )
             .border(1.dp, PrimaryMidLinkColor, RoundedCornerShape(5.dp))
-            .padding(horizontal = 8.dp, vertical = 10.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
             .clickable {
                 onAgeGroupChange(ageGroupBtn.ageGroup)
             }
