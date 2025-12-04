@@ -1,8 +1,6 @@
-package com.example.kotlintest.screens.tonometer
+package com.example.kotlintest.screens.tonometer.models
 
 import androidx.compose.ui.graphics.Color
-import com.example.kotlintest.R
-import kotlinx.coroutines.selects.select
 
 enum class ChosenLamp(val selectStatus: SelectStatus) {
     LeftArm(selectStatus = SelectStatus.NotSelected),
@@ -28,7 +26,7 @@ enum class SelectStatus {
 
 enum class AgeGroup(val text: String) {
     Adult(text = "Adult"),
-    NewPorn(text = "NewPorn"),
+    NewPorn(text = "NewBorn"),
     Child(text = "Child"),
     None(text = "None")
 }

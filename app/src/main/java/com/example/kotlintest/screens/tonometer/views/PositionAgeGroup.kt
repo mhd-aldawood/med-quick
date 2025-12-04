@@ -22,9 +22,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kotlintest.component.VerticalSpacer
-import com.example.kotlintest.screens.tonometer.AgeGroup
-import com.example.kotlintest.screens.tonometer.AgeGroupBtn
-import com.example.kotlintest.screens.tonometer.PositionType
+import com.example.kotlintest.screens.tonometer.models.AgeGroup
+import com.example.kotlintest.screens.tonometer.models.AgeGroupBtn
+import com.example.kotlintest.screens.tonometer.models.PositionType
 import com.example.kotlintest.screens.tonometer.TonometerState
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold

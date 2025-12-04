@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
-import com.example.kotlintest.screens.tonometer.PatientBodyPart
+import com.example.kotlintest.screens.tonometer.models.PatientBodyPart
 import com.example.kotlintest.screens.tonometer.TonometerState
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBold

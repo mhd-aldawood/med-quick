@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.kotlintest.screens.tonometer.PatientBodyPart
+import com.example.kotlintest.screens.tonometer.models.PatientBodyPart
 import com.example.kotlintest.screens.tonometer.TonometerState
 import com.example.kotlintest.ui.theme.rhDisplayMedium
 
