@@ -1,15 +1,24 @@
 package com.example.kotlintest.util
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+
 //
 ///**
 // * Converts Adobe XD pixel values to dp based on your design scale.
@@ -47,3 +56,22 @@ fun Modifier.verticalPadding(value: Int): Modifier = this.padding(vertical = val
 
 @Composable
 fun Modifier.horizontalPadding(value: Int): Modifier = this.padding(horizontal = value.dp)
+
+fun Modifier.throttledClickable(
+    throttleDurationMillis: Long = 500L,
+    onClick: () -> Unit
+): Modifier = composed {
+    val scope = rememberCoroutineScope()
+    val clickFlow = remember { MutableSharedFlow<Unit>(extraBufferCapacity = 1) }
+
+    remember(onClick) {
+        clickFlow
+            .debounce(throttleDurationMillis)
+            .onEach { onClick() }
+            .launchIn(scope)
+    }
+
+    this.clickable {
+        clickFlow.tryEmit(Unit)
+    }
+}

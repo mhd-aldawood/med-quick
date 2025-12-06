@@ -23,6 +23,7 @@ import com.example.kotlintest.ui.theme.Periwinkle
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.rhDisplayBlack
 import com.example.kotlintest.ui.theme.rhDisplayBold
+import com.example.kotlintest.util.throttledClickable
 
 @Composable
 fun DeviceConnectionHeader(
@@ -62,7 +63,7 @@ fun DeviceConnectionHeader(
         Row(
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .clickable { onCancelClick.invoke() },
+                .throttledClickable  { onCancelClick.invoke() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(21.dp)
         )
