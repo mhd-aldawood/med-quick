@@ -1,8 +1,10 @@
 package com.example.kotlintest.screens.tonometer.views
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,18 +22,16 @@ import com.example.kotlintest.ui.theme.rhDisplayMedium
 @Composable
 fun NormalAbnormal(modifier: Modifier) {
 
-    Row(
+    Column(
         modifier=modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
+        verticalArrangement = Arrangement.spacedBy(12.dp)) {
         RingAndText(ringColor = FrenchWine, text = "Normal")
         RingAndText(ringColor = PrimaryMidLinkColor, text = "AbNormal")
     }
 }
 @Composable
 fun RingAndText(ringColor: Color, text:String){
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp),) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.wrapContentWidth()) {
         Ring(
             modifier = Modifier.size(10.dp),
             ringColor = ringColor,

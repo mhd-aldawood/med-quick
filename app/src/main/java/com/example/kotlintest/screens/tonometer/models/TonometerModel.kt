@@ -1,5 +1,8 @@
 package com.example.kotlintest.screens.tonometer.models
 
+import androidx.compose.ui.graphics.Color
+import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
+
 @kotlinx.serialization.Serializable
 data class TonometerModel(
     var Root: String? = null,
@@ -28,3 +31,7 @@ data class Info(
     var TotalCount: Int? = null
 
 )
+enum class TonometerUnit(val unit:String){
+    MMHG(unit = "mm Hg"),BPM(unit = "bpm")
+}
+data class TonometerCardData(val title:String,val cardUnit: TonometerUnit,val value:String,val range:String,val cardColor: Color= PrimaryMidLinkColor,val cardUnitColor:Color=Color.White)
