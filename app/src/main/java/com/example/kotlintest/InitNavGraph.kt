@@ -13,6 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
+import com.example.kotlintest.features_autentication.presentation.screens.AuthScreen
+import com.example.kotlintest.features_splash.presentation.screens.SplashScreen
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
@@ -40,6 +42,13 @@ fun InitNavGraph(
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
+        composable(NavDestination.Auth_Screen) {
+            AuthScreen(navController =navController )
+        }
+        composable(NavDestination.Splash_Screen) {
+            SplashScreen(navController =navController )
+        }
+
         composable(NavDestination.HOME_SCREEN) {
             MainScaffold(
                 icons = listOf(
@@ -143,7 +152,10 @@ fun InitNavGraph(
 
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    device = "spec:width=1280dp,height=800dp,orientation=landscape"
+)
 @Composable
 fun DefaultPreview() {
     KotlinTestTheme {

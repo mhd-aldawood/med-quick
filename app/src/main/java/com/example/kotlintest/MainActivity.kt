@@ -33,7 +33,8 @@ class MainActivity : ComponentActivity() {
                     LocalReviewWaveController provides reviewWaveController,
                     LocalPermissionManager provides permissionManager
                 ) {
-                    InitNavGraph(startDestination = NavDestination.POCT_SCREEN)
+                    //InitNavGraph(startDestination = NavDestination.POCT_SCREEN)
+                    InitNavGraph(startDestination = NavDestination.Splash_Screen)
                 }
             }
         }

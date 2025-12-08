@@ -12,7 +12,6 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -25,6 +24,7 @@
         android:theme="@style/Theme.KotlinTest"
         tools:targetApi="31">
         <profileable android:shell="true" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -24,3 +24,5 @@ val PaleCerulean = Color(0xFFA1B8E6)
 val ShadowBlue = Color(0xFF708db2)
 val SpaceCadet = Color(0xFF122A5A)
 val LaSalleGreen = Color(0xFF146E29)
+
+val deepDarkBlue = Color(0xFF173572)

@@ -1,6 +1,9 @@
 package com.example.kotlintest
 
 object NavDestination{
+
+    const val Splash_Screen = "Splash_Screen"
+    const val Auth_Screen = "Auth_Screen"
     const val POCT_SCREEN = "POCT_SCREEN"
     const val HOME_SCREEN="HOME_SCREEN"
     const val THERMOMETER_SCREEN="THERMOMETER_SCREEN"
