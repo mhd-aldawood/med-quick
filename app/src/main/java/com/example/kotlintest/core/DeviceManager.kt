@@ -20,6 +20,7 @@ class DeviceManager @Inject constructor(val bluetoothScanner: BluetoothScanner) 
     fun setConnectionState(state: ConnectionState) {
         _deviceConfigure.update { it.copy(connectionState = state) }
     }
+
     private var deviceModels: List<String>? = null
 
     fun getDeviceModels(): List<String> = deviceModels!!
@@ -38,6 +39,7 @@ class DeviceManager @Inject constructor(val bluetoothScanner: BluetoothScanner) 
                 "8000GW",
                 "CB100",
             )
+
             DeviceCategory.ElectronicSphygmomanometer -> listOf(
                 "NIBP01",
                 "NIBP03",
@@ -47,6 +49,7 @@ class DeviceManager @Inject constructor(val bluetoothScanner: BluetoothScanner) 
                 "NIBP09",
                 "NIBP11"
             )
+
             DeviceCategory.FIATestingSystemPOCT -> TODO()
             DeviceCategory.Glucometer -> TODO()
             DeviceCategory.HemoglobinTestingSystem -> TODO()
@@ -64,7 +67,16 @@ class DeviceManager @Inject constructor(val bluetoothScanner: BluetoothScanner) 
 
             DeviceCategory.Thermometer -> listOf("HC-08", "TEMP04", "TEMP05")
 
-            DeviceCategory.Spirometer -> TODO()
+            DeviceCategory.Spirometer -> listOf(
+                "PULMO80B",
+                "PULMO70B",
+                "PULMO80BEXP",
+                "PULMO70BEXP",
+                "PULMO01",
+                "PULMO70A",
+                "PULMO80A",
+                "PULMO80BFC1"
+            )
 
             DeviceCategory.UrineAnalyzer -> TODO()
             DeviceCategory.WhiteBloodCellAnalyzer -> listOf("KS-WBC-B01D81E2")

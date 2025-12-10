@@ -11,7 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 
 @dagger.Module
 @InstallIn(ViewModelComponent::class)
-object SdkModuleViewModel{
+object SdkModuleViewModel {
 
     @Provides
     fun providePulseOximeterContecSdk(
@@ -38,5 +38,10 @@ object SdkModuleViewModel{
     @Provides
     fun provideTonometerContecSdk(
     ): com.contec.bp.code.connect.ContecSdk = com.contec.bp.code.connect.ContecSdk()
+
+    @Provides
+    fun provideSpirometer(
+        @ApplicationContext context: Context
+    ) = com.contec.sp.code.connect.ContecSdk(context)
 
 }

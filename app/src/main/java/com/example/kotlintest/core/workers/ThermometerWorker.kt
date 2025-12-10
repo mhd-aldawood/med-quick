@@ -59,6 +59,7 @@ class ThermometerWorker @Inject constructor(
                         sdk.connect(device, callback, object : OnOperateListener {
                             override fun onFail(currentOperate: Int, errorCode: Int) {
                                 Logger.e(TAG, "onFail: mOnOperateListener")
+                                _connected.value = false
                             }
 
                             /**
@@ -124,6 +125,7 @@ class ThermometerWorker @Inject constructor(
                                     text = resultData.error
                                 }
                                 Logger.i(TAG, "onRealtimeDataSuccess: ${text}")
+                                _connected.value = true
                                 text.let { value ->
                                     if (value != null && value.isNotEmpty()) {
                                         val JSONObject = JSONObject()

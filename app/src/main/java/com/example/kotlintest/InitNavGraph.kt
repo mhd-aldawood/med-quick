@@ -20,10 +20,13 @@ import com.example.kotlintest.screens.call.TwoColumnFrontCameraScreen
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
 import com.example.kotlintest.screens.home.HomeScreen
+import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.screens.poct.PoctScreen
 import com.example.kotlintest.screens.poct.PoctViewModel
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterScreen
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterViewModel
+import com.example.kotlintest.screens.spirometer.SpirometerScreen
+import com.example.kotlintest.screens.spirometer.SpirometerViewModel
 import com.example.kotlintest.screens.stethoscope.StethoScopeScreen
 import com.example.kotlintest.screens.stethoscope.StethoScopeViewModel
 import com.example.kotlintest.screens.theremometer.ThermometerScreen
@@ -168,6 +171,23 @@ fun InitNavGraph(
                 TwoColumnFrontCameraScreen()
             }
         }
+        composable(NavDestination.SPIROMETER_SCREEN) {
+            val spirometerViewModel: SpirometerViewModel = hiltViewModel()
+            val uiState by spirometerViewModel.stateFlow.collectAsStateWithLifecycle()
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = uiState.headerDataSection.cancelIcon,
+                cancelText = uiState.headerDataSection.cancelText,
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                SpirometerScreen(
+                    spirometerViewModel,
+                    uiState,
+                )
+            }
+        }
+
     }
 
 }

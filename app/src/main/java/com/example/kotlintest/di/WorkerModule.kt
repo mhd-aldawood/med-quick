@@ -1,12 +1,14 @@
 package com.example.kotlintest.di
 
 import android.content.Context
+import com.contec.sp.code.connect.ContecSdk
 import com.example.kotlintest.core.DeviceManager
 import com.example.kotlintest.core.audio.AudioProcessor
 import com.example.kotlintest.core.bluetooth.WbcBleDevice
 import com.example.kotlintest.core.workers.BloodAnalyzerWorker
 import com.example.kotlintest.core.workers.PoctWorker
 import com.example.kotlintest.core.workers.PulseOximeterWorker
+import com.example.kotlintest.core.workers.SpirometerWorker
 import com.example.kotlintest.core.workers.StethoScopeWorker
 import com.example.kotlintest.core.workers.ThermometerWorker
 import com.example.kotlintest.core.workers.TonometerWorker
@@ -72,6 +74,15 @@ object WorkerModule {
         deviceManager: DeviceManager,
         wbcBleDevice: WbcBleDevice
     ): Worker = BloodAnalyzerWorker(deviceManager = deviceManager, wbcDevice = wbcBleDevice)
+
     @Provides
     fun providePoctWorker(): PoctWorker = PoctWorker()
+
+    @SpirometerQualifier
+    @Provides
+    fun provideSpirometerWorker(
+        @ApplicationContext context: Context,
+        deviceManager: DeviceManager,
+        sdk: ContecSdk
+        ): Worker = SpirometerWorker(context,deviceManager,sdk)
 }
