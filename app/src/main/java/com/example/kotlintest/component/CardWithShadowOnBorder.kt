@@ -8,11 +8,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun CardWithShadowOnBorder(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+fun CardWithShadowOnBorder(modifier: Modifier = Modifier,cardContainerColor: Color= Color.White,content: @Composable () -> Unit) {
     ElevatedCard(
         modifier = modifier, colors = CardDefaults
             .cardColors(
-                containerColor = Color.White
+                containerColor = cardContainerColor
             ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {

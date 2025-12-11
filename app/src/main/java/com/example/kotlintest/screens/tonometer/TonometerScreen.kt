@@ -43,7 +43,7 @@ fun TonometerScreen(viewModel: TonometerViewModel, uiState: TonometerState) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 50.dp),
+        ,
         horizontalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         LampSelectionInfoCard(uiState,
@@ -51,9 +51,9 @@ fun TonometerScreen(viewModel: TonometerViewModel, uiState: TonometerState) {
             onAgeGroupChange = {viewModel.trySendAction(TonometerAction.OnAgeGroupChange(it))},
             onSittingPosChange = {positionType->viewModel.trySendAction(TonometerAction.OnSittingPosChange(positionType))})
         PressureInfoCard(
-            pressureValue = uiState.pressureValue,
+            pressureValue = uiState.pressure,
             systolicPressure = uiState.systolicPressure,
-            pulseRate = uiState.pulseRate,
+            pulseRate = uiState.pulse,
             pressureIcon = uiState.pressureIcon
         )
     }

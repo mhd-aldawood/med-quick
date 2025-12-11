@@ -15,6 +15,8 @@ import com.example.kotlintest.screens.tonometer.models.PatientBodyPart
 import com.example.kotlintest.screens.tonometer.models.PatientPosition
 import com.example.kotlintest.screens.tonometer.models.PositionType
 import com.example.kotlintest.screens.tonometer.models.SelectStatus
+import com.example.kotlintest.screens.tonometer.models.TonometerCardData
+import com.example.kotlintest.screens.tonometer.models.TonometerUnit
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.update
@@ -78,9 +80,17 @@ data class TonometerState(
 
 
     val systolicPressure: Double = 0.0,//Todo group them in class
-    val pulseRate: Double = 0.0,
-    val pressureValue: String = "",
     val pressureIcon: Int = R.mipmap.ic_s_d_blood_pressure,
+    val pressure:TonometerCardData = TonometerCardData(
+        title = "Pressure",
+        cardUnit = TonometerUnit.MMHG,
+        value = "150 / 60",
+        range = "Mean 100 mm Hg"),
+    val pulse:TonometerCardData = TonometerCardData(
+        title = "Pulse",
+        cardUnit = TonometerUnit.BPM,
+        value = "75",
+        range = "Norms 65 - 80"),
 
     )
 
@@ -229,10 +239,10 @@ class TonometerViewModel @Inject constructor(
             if (deviceManager.bluetoothScanner.isBluetoothEnabled()) {
                 worker.startWork { result ->
                     mutableState.update {
+                        it.pressure.copy(value = result.getString("pressureValue"))
+                        it.pulse.copy(value = result.getString("pulseRate"))
                         it.copy(
-                            pressureValue = result.getString("pressureValue"),
                             systolicPressure = result.getDouble("systolicPressure"),
-                            pulseRate = result.getDouble("pulseRate")
                         )
                     }
 

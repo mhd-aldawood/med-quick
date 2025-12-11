@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.kotlintest.ui.theme.LavenderGray
+import com.example.kotlintest.ui.theme.Lotion
 import com.example.kotlintest.ui.theme.rhDisplayBlack
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.rhDisplaySemiBold
@@ -30,11 +31,15 @@ fun NormalRangeCard(
     title: String,
     normalRange: String,
     boxModifier: Modifier = Modifier,
-    valueFontSize: Int = 50
+    valueFontSize: Int = 50,
+    normalRangeFontSize: Int = 22,
+    unitFontSize:Int=18,
+    valueTextAlignment: Alignment = Alignment.Center
 ) {
     CardWithShadowOnBorder(
         modifier = Modifier
-            .wrapContentWidth()
+            .wrapContentWidth(),
+        cardContainerColor = Lotion
     ) {
         Box(
             modifier = boxModifier
@@ -59,7 +64,7 @@ fun NormalRangeCard(
                 ),
                 modifier = Modifier
                     .horizontalPadding(10)
-                    .align(Alignment.Center),
+                    .align(valueTextAlignment),
                 textAlign = TextAlign.Center
             )
 
@@ -69,28 +74,16 @@ fun NormalRangeCard(
                     .align(Alignment.BottomStart),
             )
             {
-                NestedCirclesWithCustomRadius(circleText = unit, circleColor = cardGeneralColor)
-                Column(
+                NestedCirclesWithCustomRadius(circleText = unit, circleColor = cardGeneralColor, unitFontSize = unitFontSize)
+                Text(
+                    text = normalRange,
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(bottom = 10.dp, end = 10.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Norms", style = MaterialTheme
-                            .typography
-                            .rhDisplayBold
-                            .copy(fontSize = 22.sp, color = LavenderGray)
-                    )
-                    Text(
-                        text = normalRange, style = MaterialTheme
-                            .typography
-                            .rhDisplayBold
-                            .copy(fontSize = 22.sp, color = LavenderGray)
-                    )
-
-                }
-
+                        .padding(bottom = 10.dp, end = 10.dp), style = MaterialTheme
+                        .typography
+                        .rhDisplayBold
+                        .copy(fontSize = normalRangeFontSize.sp, color = LavenderGray)
+                )
             }
         }
     }

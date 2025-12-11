@@ -87,7 +87,7 @@ class TonometerWorker @Inject constructor(
                                             val jsonObject = JSONObject()
                                             jsonObject.put(
                                                 "pressureValue",
-                                                "${latestScan?.SystolicPressure} / ${latestScan?.PulseRate}"
+                                                "${latestScan?.SystolicPressure} / ${latestScan?.SystolicPressure}"
                                             )
                                             jsonObject.put(
                                                 "systolicPressure",

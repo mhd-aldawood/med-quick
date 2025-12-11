@@ -28,6 +28,7 @@ import com.example.kotlintest.ui.theme.rhDisplayBlack
 fun NestedCirclesWithCustomRadius(
     circleColor: Color,
     circleText: String = "Hello",
+    unitFontSize:Int=18,
     boxModifier: Modifier = Modifier
 ) {
     var textWidthPx by remember { mutableFloatStateOf(0f) }
@@ -81,7 +82,7 @@ fun NestedCirclesWithCustomRadius(
             text = circleText,
             color = Color.White,
             style = MaterialTheme.typography.rhDisplayBlack.copy(
-                fontSize = 18.sp
+                fontSize = unitFontSize.sp
             ),
             textAlign = TextAlign.Center,
             modifier = Modifier

@@ -2,6 +2,7 @@ package com.example.kotlintest.screens.tonometer.views
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,7 @@ import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.rhDisplaySemiBold
 
 @Composable
-fun RowScope.SDValuesAndText(pressureValue: String)
+fun ColumnScope.SDValuesAndText(pressureValue: String)
 {
     ElevatedCard(
         modifier = Modifier

@@ -25,7 +25,6 @@ import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.screens.home.views.AddDeviceWithPatientInfo
 import com.example.kotlintest.screens.home.views.DeviceListSection
 import com.example.kotlintest.screens.home.views.DevicesSection
-import com.example.kotlintest.ui.theme.locals.LocalPermissionManager
 import com.example.kotlintest.util.PermissionManager.checkPermissions
 
 @Composable
@@ -35,8 +34,6 @@ fun HomeScreen(
     onCallClicked: () -> Unit
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
-    val permissionManager = LocalPermissionManager.current
-
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH_SCAN,

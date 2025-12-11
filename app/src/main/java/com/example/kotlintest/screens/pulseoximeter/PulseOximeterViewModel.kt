@@ -51,14 +51,14 @@ data class PulseOximeterState(
             cardColor = PrimaryMidLinkColor,
             title = "Pulse",
             cardUnit = "bpm",
-            normalRange = "65 - 80"
+            normalRange = "Norms\n65 - 80"
         ),
         PulseOximeterCard(
             value = "94",
             cardColor = FrenchWine,
             title = "SpO2",
             cardUnit = "%",
-            normalRange = "95 - 100"
+            normalRange = "Norms\n95 - 100"
         )
     )
 )
