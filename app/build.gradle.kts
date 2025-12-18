@@ -96,6 +96,7 @@ dependencies {
     implementation (files("libs/ecgsdk_library-release-1.8.7_202406191047.aar"))
     implementation(files("libs/minttisdk_v2.1.2-beta.jar"))
     implementation(files("libs/wbclib.jar"))
+    implementation(files("libs/contec_bc_ble_sdk_v1.6.aar"))
 
     // Architecture Components
     implementation(libs.room.runtime)

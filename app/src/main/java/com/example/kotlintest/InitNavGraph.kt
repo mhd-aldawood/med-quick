@@ -30,6 +30,8 @@ import com.example.kotlintest.screens.theremometer.ThermometerScreen
 import com.example.kotlintest.screens.theremometer.ThermometerViewModel
 import com.example.kotlintest.screens.tonometer.TonometerScreen
 import com.example.kotlintest.screens.tonometer.TonometerViewModel
+import com.example.kotlintest.screens.urineanalyzer.UrineAnalyzerScreen
+import com.example.kotlintest.screens.urineanalyzer.UrineAnalyzerViewModel
 import com.example.kotlintest.ui.theme.KotlinTestTheme
 import kotlinx.coroutines.CoroutineScope
 
@@ -166,6 +168,22 @@ fun InitNavGraph(
                 onCancelClick = { navController.popBackStack() },
             ) {
                 TwoColumnFrontCameraScreen()
+            }
+        }
+        composable(NavDestination.URINE_ANALYZER_SCREEN) {
+            val analyzerViewModel: UrineAnalyzerViewModel = hiltViewModel()
+            val uiState by analyzerViewModel.stateFlow.collectAsStateWithLifecycle()
+            DeviceMainScreen(
+                title = uiState.headerDataSection.title,
+                titleIcon = uiState.headerDataSection.titleIcon,
+                cancelIcon = R.drawable.ic_cancel,
+                cancelText = "Cancel",
+                onCancelClick = { navController.popBackStack() },
+            ) {
+                UrineAnalyzerScreen(
+                    viewModel = analyzerViewModel,
+                    uiState = uiState,
+                    onCheckClicked = { navController.popBackStack() })
             }
         }
     }

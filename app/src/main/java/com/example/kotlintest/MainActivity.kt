@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
                     LocalReviewWaveController provides reviewWaveController,
                     LocalPermissionManager provides permissionManager
                 ) {
-                    InitNavGraph(startDestination = NavDestination.HOME_SCREEN)
+                    InitNavGraph(startDestination = NavDestination.URINE_ANALYZER_SCREEN)
                 }
             }
         }

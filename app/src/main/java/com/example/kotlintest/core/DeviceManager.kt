@@ -66,7 +66,7 @@ class DeviceManager @Inject constructor(val bluetoothScanner: BluetoothScanner) 
 
             DeviceCategory.Spirometer -> TODO()
 
-            DeviceCategory.UrineAnalyzer -> TODO()
+            DeviceCategory.UrineAnalyzer -> listOf("BC01")
             DeviceCategory.WhiteBloodCellAnalyzer -> listOf("KS-WBC-B01D81E2")
         }
 

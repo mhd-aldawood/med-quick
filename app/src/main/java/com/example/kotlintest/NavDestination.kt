@@ -1,5 +1,7 @@
 package com.example.kotlintest
 
+import com.example.kotlintest.core.workers.UrineAnalyzerWorker
+
 object NavDestination {
     const val CALL_SCREEN = "CALL_SCREEN"
     const val POCT_SCREEN = "POCT_SCREEN"
@@ -10,4 +12,5 @@ object NavDestination {
     const val ECG_SCREEN = "ECG_SCREEN"
     const val STETHOSCOPE_SCREEN = "STETHOSCOPE_SCREEN"
     const val WHITE_BLOOD_CELL_ANALYZER_SCREEN = "WHITE_BLOOD_CELL_ANALYZER_SCREEN"
+    const val URINE_ANALYZER_SCREEN = "URINE_ANALYZER_SCREEN"
 }

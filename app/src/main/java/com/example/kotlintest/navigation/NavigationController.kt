@@ -8,9 +8,9 @@ import com.example.kotlintest.NavDestination.PULSE_OXIMETER_SCREEN
 import com.example.kotlintest.NavDestination.STETHOSCOPE_SCREEN
 import com.example.kotlintest.NavDestination.THERMOMETER_SCREEN
 import com.example.kotlintest.NavDestination.TONOMETER_SCREEN
+import com.example.kotlintest.NavDestination.URINE_ANALYZER_SCREEN
 import com.example.kotlintest.NavDestination.WHITE_BLOOD_CELL_ANALYZER_SCREEN
 import com.example.kotlintest.screens.home.models.DeviceCategory
-
 fun NavController.safeNavigate(
     destination: String
 ) {
@@ -41,8 +41,7 @@ fun NavController.navigateSelectedDevice(deviceCategory: DeviceCategory) {
         DeviceCategory.PulseOximeter -> safeNavigate(PULSE_OXIMETER_SCREEN)
         DeviceCategory.Spirometer -> TODO()
         DeviceCategory.Thermometer -> safeNavigate(THERMOMETER_SCREEN)
-
-        DeviceCategory.UrineAnalyzer -> TODO()
+        DeviceCategory.UrineAnalyzer -> safeNavigate(URINE_ANALYZER_SCREEN)
         DeviceCategory.WhiteBloodCellAnalyzer -> safeNavigate(WHITE_BLOOD_CELL_ANALYZER_SCREEN)
     }
 }
