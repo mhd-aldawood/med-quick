@@ -9,6 +9,9 @@ data class ScheduleItemResponse(
     @SerialName("scheduleDate")
     var scheduleDate:String= "",
 
+    @SerialName("totalSlotsCount")
+    var totalSlotsCount:Int= 0,
+
     @SerialName("doctors")
     var doctors:ArrayList<DoctorSlotsItemResponse> = ArrayList<DoctorSlotsItemResponse>()
 )

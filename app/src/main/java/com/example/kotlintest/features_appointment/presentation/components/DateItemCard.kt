@@ -69,7 +69,7 @@ fun DateItemCardContent(
 
         ) {
             Text(
-                text = CustomDateTimeFormatter.formatFullDate(dateTime),
+                text = CustomDateTimeFormatter.formatDate(dateTime),
                 style = MaterialTheme.typography.rhDisplayBold.copy(
                     color = YankeesBlue,
                     fontSize = 11.sp

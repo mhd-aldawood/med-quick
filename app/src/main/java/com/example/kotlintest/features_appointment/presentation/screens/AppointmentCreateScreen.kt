@@ -24,14 +24,20 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -73,12 +79,14 @@ import com.example.kotlintest.features_appointment.presentation.components.SlotI
 import com.example.kotlintest.features_appointment.presentation.components.SpecialtyItemCard
 import com.example.kotlintest.features_appointment.presentation.components.SwitchState
 import com.example.kotlintest.features_appointment.presentation.events.AppointmentCreateScreenEvent
+import com.example.kotlintest.features_appointment.presentation.events.AppointmentCreateUiEvent
 import com.example.kotlintest.features_appointment.presentation.states.AppointmentCreateScreenState
 import com.example.kotlintest.features_appointment.presentation.viewmodel.AppointmentViewModel
 import com.example.kotlintest.ui.theme.FrenchWine
 import com.example.kotlintest.ui.theme.LavenderGray
 import com.example.kotlintest.ui.theme.Periwinkle
 import com.example.kotlintest.ui.theme.Platinum
+import com.example.kotlintest.ui.theme.DarkSilver
 import com.example.kotlintest.ui.theme.YankeesBlue
 import com.example.kotlintest.ui.theme.rhDisplayMedium
 import com.example.kotlintest.util.data.model.DateOfBirth
@@ -89,44 +97,127 @@ fun AppointmentCreateScreen(
     navController: NavController,
 ) {
     val appointmentCreateScreenState by viewModel.createAppointmentScreenScreenState.collectAsState()
-    AppointmentCreateContainer (
-        navController = navController,
-        appointmentCreateScreenState = appointmentCreateScreenState,
-        onPatientNameChanged = { patientName ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientNameChangedEvent(patientName)) },
 
-        onPatientDateOfBirthChanged = { patientDateOfBirth ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientDateOfBirthChangedEvent(patientDateOfBirth)) },
+    val snackBarHostState = remember { SnackbarHostState() }
 
-        onPatientGenderChanged = { patientGender ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientGenderChangedEvent(patientGender)) },
+    LaunchedEffect(Unit) {
+        viewModel.appointmentCreateUiEvent.collect { event ->
+            when (event) {
+                is AppointmentCreateUiEvent.ShowSnackBar -> {
+                    snackBarHostState.showSnackbar(
+                        message =  event.message,
+                        duration = SnackbarDuration.Short
+                    )
+                }
 
-        onPatientComplaintChanged = { patientComplaint ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientComplaintChangedEvent(patientComplaint)) },
+                is AppointmentCreateUiEvent.ShowSnackBarAndPop -> {
 
-        onPatientMedicalHistoryChanged = { patientMedicalHistory ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientMedicalHistoryChangedEvent(patientMedicalHistory)) },
+                    // Show snackbar
+                    snackBarHostState.showSnackbar(
+                        message =  event.message,
+                        duration = SnackbarDuration.Short
+                    )
 
-        onPatientNotesChanged = { patientNotes ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientNotesChangedEvent(patientNotes)) },
-
-        onSpecialtySelected = { specialty ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedSpecialtyEvent(specialty = specialty)) },
-
-        onSelectedSchedule = { schedule  ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedScheduleEvent(schedule = schedule)) },
-
-        onSelectedDoctor = { doctor  ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedDoctorEvent(doctor = doctor)) },
-
-        onSelectedSlot = { slot  ->
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedSlotEvent(slot = slot)) },
-
-        onCreateAppointment = {
-            viewModel.onEvent(AppointmentCreateScreenEvent.OnCreateAppointmentEvent)
+                    // Pop back stack AFTER snackbar
+                    navController.popBackStack()
+                }
+            }
         }
+    }
+    Scaffold(
+        modifier = Modifier.background(Lotion),
+        snackbarHost = { SnackbarHost(snackBarHostState){ snackbarData ->
+            Card(
+                shape = RoundedCornerShape(10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = DarkSilver
+                ),
+                modifier = Modifier
+                    .padding(vertical = 35.dp, horizontal = 100.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = snackbarData.visuals.message,
+                    style = MaterialTheme.typography.rhDisplayMedium.copy(
+                        color = Lotion,
+                        fontSize = 20.sp
+                    ),
+                    modifier = Modifier.padding(20.dp),
+                    textAlign = TextAlign.Start
+                )
+            }
+        } }
+    ) {
+
+        AppointmentCreateContainer(
+            navController = navController,
+            appointmentCreateScreenState = appointmentCreateScreenState,
+            onPatientNameChanged = { patientName ->
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnPatientNameChangedEvent(patientName))
+            },
+
+            onPatientDateOfBirthChanged = { patientDateOfBirth ->
+                viewModel.onEvent(
+                    AppointmentCreateScreenEvent.OnPatientDateOfBirthChangedEvent(
+                        patientDateOfBirth
+                    )
+                )
+            },
+
+            onPatientGenderChanged = { patientGender ->
+                viewModel.onEvent(
+                    AppointmentCreateScreenEvent.OnPatientGenderChangedEvent(
+                        patientGender
+                    )
+                )
+            },
+
+            onPatientComplaintChanged = { patientComplaint ->
+                viewModel.onEvent(
+                    AppointmentCreateScreenEvent.OnPatientComplaintChangedEvent(
+                        patientComplaint
+                    )
+                )
+            },
+
+            onPatientMedicalHistoryChanged = { patientMedicalHistory ->
+                viewModel.onEvent(
+                    AppointmentCreateScreenEvent.OnPatientMedicalHistoryChangedEvent(
+                        patientMedicalHistory
+                    )
+                )
+            },
+
+            onPatientNotesChanged = { patientNotes ->
+                viewModel.onEvent(
+                    AppointmentCreateScreenEvent.OnPatientNotesChangedEvent(
+                        patientNotes
+                    )
+                )
+            },
+
+            onSpecialtySelected = { specialty ->
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedSpecialtyEvent(specialty = specialty))
+            },
+
+            onSelectedSchedule = { schedule ->
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedScheduleEvent(schedule = schedule))
+            },
+
+            onSelectedDoctor = { doctor ->
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedDoctorEvent(doctor = doctor))
+            },
+
+            onSelectedSlot = { slot ->
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnSelectedSlotEvent(slot = slot))
+            },
+
+            onCreateAppointment = {
+                viewModel.onEvent(AppointmentCreateScreenEvent.OnCreateAppointmentEvent)
+            }
 
         )
+    }
 }
 
 
@@ -157,7 +248,8 @@ fun AppointmentCreateContainer (
 
 ){
     Column(
-        modifier = Modifier.fillMaxSize()) {
+        modifier = Modifier.fillMaxSize()
+            .background(Lotion),) {
         Row(modifier = Modifier.fillMaxWidth()
             .height(scalePxToDp(85f)),
             verticalAlignment = Alignment.CenterVertically) {
@@ -166,6 +258,7 @@ fun AppointmentCreateContainer (
                 onCreateAppointment = onCreateAppointment)
         }
         Box(modifier = Modifier.fillMaxSize()
+            .background(Lotion)
             .padding(top=20.dp)
             .weight(1f)) {
             AppointmentCreateContentSection(
@@ -194,15 +287,12 @@ fun AppointmentCreateContainer (
             CircularProgressIndicator(
                 modifier = Modifier.size(scalePxToDp(500f)),
                 color = PrimaryMidLinkColor,
-                strokeWidth = 25.dp,
+                strokeWidth = 18.dp,
                 trackColor = Platinum
             )
         }
     }
-    else if (appointmentCreateScreenState.createAppointmentRequest.isSuccess)
-    {
-        navController.popBackStack()
-    }
+
 
 }
 @Composable
@@ -864,7 +954,7 @@ fun DatesList(dates: List<ScheduleItemResponse> , onSelectDate: (ScheduleItemRes
 
             DateItemCard(
                 dateTime = date.scheduleDate,
-                slotsNum = date.doctors.size,
+                slotsNum = date.totalSlotsCount,
                 selected = (dateSelectedItem == date),
                 onClick = {onSelectDate(date)  },
             )

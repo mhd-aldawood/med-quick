@@ -2,9 +2,11 @@ package com.example.kotlintest.util
 
 import com.example.kotlintest.util.data.model.DateOfBirth
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.OffsetTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -17,6 +19,11 @@ object CustomDateTimeFormatter {
 
     private val fullDateFormatter =
         DateTimeFormatter.ofPattern("dd LLL, E", Locale.ENGLISH)
+
+
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+
+
 
     private val dayFormatter =
         DateTimeFormatter.ofPattern("E", Locale.ENGLISH)
@@ -133,4 +140,73 @@ object CustomDateTimeFormatter {
     ):String{
         return date.year + "-"+date.month + "-"+date.day
     }
+
+
+    fun formatDate(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("dd MMM, EEE", Locale.ENGLISH)
+
+        val dateTime = LocalDateTime.parse(input, inputFormatter)
+        return dateTime.format(outputFormatter).uppercase()
+    }
+
+    fun formatDateDayOnly(input: String): String {
+        val inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        val outputFormatter = DateTimeFormatter.ofPattern("EEE", Locale.ENGLISH)
+
+        val dateTime = LocalDateTime.parse(input, inputFormatter)
+        return dateTime.format(outputFormatter).uppercase()
+    }
+
+    fun convertUtcTimeToLocal(
+        utcDateTime: String, // "2025-12-20T00:00:00"
+        utcTime: String      // "13:20:00"
+    ): String {
+
+        val zoneId = ZoneId.systemDefault()
+
+        // Parse the UTC date-time
+        val utcDate = LocalDateTime.parse(
+            utcDateTime,
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        )
+
+        // Get offset for that date (handles DST correctly)
+        val offset = zoneId.rules.getOffset(utcDate)
+
+        // Parse the UTC time
+        val time = LocalTime.parse(utcTime)
+
+        // Apply offset
+        val localTime = time.plusSeconds(offset.totalSeconds.toLong())
+
+        // Format output
+        val outputFormatter =
+            DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH)
+
+        return localTime.format(outputFormatter)
+    }
+
+    fun combineUtcDateAndTime(
+        utcDateTime: String, // "2025-12-20T00:00:00"
+        utcTime: String      // "13:00:00"
+    ): String {
+
+        val date = LocalDateTime.parse(
+            utcDateTime,
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
+        ).toLocalDate()
+
+        val time = LocalTime.parse(utcTime)
+
+        val combined = LocalDateTime.of(date, time)
+
+        val instant = combined.toInstant(ZoneOffset.UTC)
+
+        return DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .withZone(ZoneOffset.UTC)
+            .format(instant)
+    }
+
 }

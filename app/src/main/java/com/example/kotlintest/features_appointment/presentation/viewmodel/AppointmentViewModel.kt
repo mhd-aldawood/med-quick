@@ -16,19 +16,25 @@ import com.example.kotlintest.features_appointment.domain.usecase.CreateAppointm
 import com.example.kotlintest.features_appointment.domain.usecase.GetDoctorsAvailabilityUseCase
 import com.example.kotlintest.features_appointment.domain.usecase.GetSpecialtiesUseCase
 import com.example.kotlintest.features_appointment.presentation.events.AppointmentCreateScreenEvent
+import com.example.kotlintest.features_appointment.presentation.events.AppointmentCreateUiEvent
 import com.example.kotlintest.features_appointment.presentation.states.AppointmentCreateScreenState
 import com.example.kotlintest.util.CustomDateTimeFormatter.combineDateAndTimeToUtc
+import com.example.kotlintest.util.CustomDateTimeFormatter.combineUtcDateAndTime
 import com.example.kotlintest.util.CustomDateTimeFormatter.getDateOnly
 import com.example.kotlintest.util.data.local.SharedPreferanceRepository
+import com.example.kotlintest.util.data.model.DateOfBirth
 import com.example.kotlintest.util.data.model.MainResources
 import com.example.kotlintest.util.data.model.RequestStates
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 @HiltViewModel
 class AppointmentViewModel @Inject constructor(
@@ -38,6 +44,9 @@ class AppointmentViewModel @Inject constructor(
     private val createAppointmentUseCase: CreateAppointmentUseCase
 
 ):ViewModel() {
+
+    private val _appointmentCreateUiEvent = MutableSharedFlow<AppointmentCreateUiEvent>()
+    val appointmentCreateUiEvent = _appointmentCreateUiEvent.asSharedFlow()
     private val _createAppointmentScreenScreenState = MutableStateFlow(AppointmentCreateScreenState())
     val createAppointmentScreenScreenState: StateFlow<AppointmentCreateScreenState> = _createAppointmentScreenScreenState.asStateFlow()
 
@@ -97,7 +106,11 @@ class AppointmentViewModel @Inject constructor(
             }
             ////////////  CreateAppointment  /////////////////////
             is AppointmentCreateScreenEvent.OnCreateAppointmentEvent->{
-                createAppointment()
+                viewModelScope.launch {
+                    if (validateCreateAppointment()) {
+                        createAppointment()
+                    }
+                }
             }
 
             else->{}
@@ -190,9 +203,9 @@ class AppointmentViewModel @Inject constructor(
                     notesForDoctor = _createAppointmentScreenScreenState.value.patientNotes
                 ),
                 doctorId = _createAppointmentScreenScreenState.value.doctorSelectedItem.doctorId,
-                scheduleDateAndTime = combineDateAndTimeToUtc(
-                    dateTimeWithOffset = _createAppointmentScreenScreenState.value.scheduleSelectedItem.scheduleDate,
-                    timeOnly = _createAppointmentScreenScreenState.value.slotSelectedItem.startTime
+                scheduleDateAndTime = combineUtcDateAndTime(
+                    utcDateTime = _createAppointmentScreenScreenState.value.scheduleSelectedItem.scheduleDate,
+                    utcTime = _createAppointmentScreenScreenState.value.slotSelectedItem.startTime
                 )
             )
         ).onEach {
@@ -203,6 +216,13 @@ class AppointmentViewModel @Inject constructor(
                             createAppointmentRequest =RequestStates(isSuccess = true, data = it.data?: CreateAppointmentResponse())
                         )
                     }
+
+                    //  SUCCESS SNACKBAR
+                    _appointmentCreateUiEvent.emit(
+                        AppointmentCreateUiEvent.ShowSnackBarAndPop(
+                            message = "Appointment created successfully"
+                        )
+                    )
                 }
                 is MainResources.isLoading->{
                     _createAppointmentScreenScreenState.update { currentState ->
@@ -217,11 +237,60 @@ class AppointmentViewModel @Inject constructor(
                             createAppointmentRequest =RequestStates(isError = true , error = it.message?:"",data = CreateAppointmentResponse())
                         )
                     }
+                    // ERROR SNACKBAR
+                    _appointmentCreateUiEvent.emit(
+                        AppointmentCreateUiEvent.ShowSnackBar(
+                            it.message ?: "Failed to create appointment"
+                        )
+                    )
                 }
                 else->{
 
                 }
             }
         }.launchIn(viewModelScope)
+    }
+
+    private suspend fun validateCreateAppointment(): Boolean {
+        val state = _createAppointmentScreenScreenState.value
+
+        return when {
+            state.patientName.isBlank() -> {
+                _appointmentCreateUiEvent.emit(
+                    AppointmentCreateUiEvent.ShowSnackBar("Patient name is required")
+                )
+                false
+            }
+
+            state.patientDateOfBirth == DateOfBirth() -> {
+                _appointmentCreateUiEvent.emit(
+                    AppointmentCreateUiEvent.ShowSnackBar("Please select patient Date Of Birth")
+                )
+                false
+            }
+
+            state.patientGender == 0 -> {
+                _appointmentCreateUiEvent.emit(
+                    AppointmentCreateUiEvent.ShowSnackBar("Please select patient gender")
+                )
+                false
+            }
+
+            state.doctorSelectedItem.doctorId == null -> {
+                _appointmentCreateUiEvent.emit(
+                    AppointmentCreateUiEvent.ShowSnackBar("Please select a doctor")
+                )
+                false
+            }
+
+            state.slotSelectedItem.startTime.isNullOrBlank() -> {
+                _appointmentCreateUiEvent.emit(
+                    AppointmentCreateUiEvent.ShowSnackBar("Please select a time slot")
+                )
+                false
+            }
+
+            else -> true
+        }
     }
 }

@@ -31,7 +31,7 @@ import com.example.kotlintest.util.scalePxToDp
 
 @Composable
 fun SlotItemCard(
-    slotDateTime: String = "2025-12-16T00:00:00+03:00",
+    slotDateTime: String = "2025-12-16T00:00:00",
     slotTime: String = "19:32:48.1368880",
     slotCharge: Int = 140,
     slotChargeCurrency:String ="",
@@ -87,7 +87,7 @@ fun SlotItemCardContent(
                         shape = RoundedCornerShape(5.dp)),
                 contentAlignment = Alignment.Center,){
                 Text(
-                text = CustomDateTimeFormatter.formatDay(slotDateTime),
+                text = CustomDateTimeFormatter.formatDateDayOnly(slotDateTime),
                 style = MaterialTheme.typography.rhDisplayBold.copy(
                     color = White,
                     fontSize = 10.sp
@@ -97,7 +97,7 @@ fun SlotItemCardContent(
             Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = CustomDateTimeFormatter.formatTimeAmPmWithOffset(slotDateTime, slotTime),
+                    text = CustomDateTimeFormatter.convertUtcTimeToLocal(slotDateTime, slotTime),
                     style = MaterialTheme.typography.rhDisplayBold.copy(
                         color = YankeesBlue,
                         fontSize = 13.sp
