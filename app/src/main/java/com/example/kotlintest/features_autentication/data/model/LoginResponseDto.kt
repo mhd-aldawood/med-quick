@@ -6,13 +6,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LoginResponseDto(
     @SerialName("access_token")
-    var accessToken:String="",
+    var access_token:String="",
     @SerialName("expires_in")
-    var expiresIn:Int= 0,
+    var expires_in:Int= 0,
     @SerialName("token_type")
-    var tokenType:String="",
+    var token_type:String="",
     @SerialName("refresh_token")
-    var refreshToken:String="",
+    var refresh_token:String="",
     @SerialName("scope")
     var scope:String=""
 )

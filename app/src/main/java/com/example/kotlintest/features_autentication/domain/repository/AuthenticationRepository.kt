@@ -7,7 +7,7 @@ import com.example.kotlintest.features_autentication.data.model.UserNameAvailabi
 import com.example.kotlintest.features_autentication.domain.model.LoginReq
 import com.example.kotlintest.features_autentication.domain.model.ResendOtpCodeReq
 import com.example.kotlintest.features_autentication.domain.model.ResetPasswordReq
-import com.example.kotlintest.features_autentication.utils.data.model.MainResponse
+import com.example.kotlintest.util.data.model.MainResponse
 
 
 interface AuthenticationRepository {

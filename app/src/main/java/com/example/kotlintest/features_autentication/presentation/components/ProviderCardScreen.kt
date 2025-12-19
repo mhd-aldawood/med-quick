@@ -38,8 +38,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.kotlintest.ui.theme.KotlinTestTheme
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.SpaceCadet
 import com.example.kotlintest.ui.theme.YankeesBlue
@@ -47,18 +45,14 @@ import com.example.kotlintest.ui.theme.rhDisplayBlack
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.util.scalePxToDp
 import androidx.compose.material3.TextField
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.kotlintest.features_autentication.data.model.ClinicItemResponse
 import com.example.kotlintest.features_autentication.presentation.states.AuthScreenState
-import com.example.kotlintest.features_autentication.utils.data.model.RequestStates
 import com.example.kotlintest.ui.theme.LavenderGray
 import com.example.kotlintest.ui.theme.Lotion
 import com.example.kotlintest.ui.theme.Platinum
-import com.example.kotlintest.features_autentication.presentation.viewmodel.AuthViewModel
 
 
 @Composable

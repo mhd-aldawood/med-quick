@@ -4,8 +4,6 @@ import com.example.kotlintest.features_autentication.data.model.ClinicItemRespon
 import com.example.kotlintest.features_autentication.presentation.components.AuthCardScreen
 
 sealed class AuthScreenEvent {
-    object ClinicListUpdated : AuthScreenEvent()
-
     class SaveSelectedProviderEvent(val provider: ClinicItemResponse)  : AuthScreenEvent()
 
     class ChangeAuthScreenCardEvent(val screenCard : AuthCardScreen) : AuthScreenEvent()

@@ -20,7 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.kotlintest.NavDestination
 import com.example.kotlintest.R
-import com.example.kotlintest.features_autentication.utils.data.model.AppAuthState
+import com.example.kotlintest.util.data.model.AppAuthState
 import com.example.kotlintest.features_splash.presentation.viewmodel.SplashViewModel
 import com.example.kotlintest.navigation.safeNavigate
 import com.example.kotlintest.ui.theme.KotlinTestTheme
@@ -32,15 +32,20 @@ fun SplashScreen(navController: NavController, viewModel: SplashViewModel =  hil
 
     val splashScreenState by viewModel.splashScreenState .collectAsState()
 
-    LaunchedEffect(splashScreenState) {
-        if (splashScreenState.appAuthState == AppAuthState.FirstTime) {
-            navController.safeNavigate(NavDestination.Auth_Screen)
-        }
-        else if (splashScreenState.appAuthState == AppAuthState.LogedIn)
-        {
-            navController.safeNavigate(NavDestination.POCT_SCREEN)
+    LaunchedEffect(splashScreenState.appAuthState) {
+        when (splashScreenState.appAuthState) {
+            AppAuthState.LogedIn -> {
+                navController.safeNavigate(NavDestination.HOME_SCREEN)
+            }
+            AppAuthState.FirstTime -> {
+                navController.safeNavigate(NavDestination.Auth_Screen)
+            }
+            else -> {
+                // do nothing for Loading or default state
+            }
         }
     }
+
 
     // UI
     Box(

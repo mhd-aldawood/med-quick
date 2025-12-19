@@ -1,17 +1,23 @@
 package com.example.kotlintest.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -30,10 +36,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.R
 import com.example.kotlintest.ui.theme.Lotion
 import com.example.kotlintest.ui.theme.Platinum
+import com.example.kotlintest.ui.theme.White
 import com.example.kotlintest.ui.theme.rhDisplayRegular
 import com.example.kotlintest.util.scalePxToDp
 
@@ -43,11 +51,13 @@ fun CustomTopBar(
     onLeftClick: () -> Unit,
     onCenterIconClick: ((Int) -> Unit)? = null,
     rightText: String,
-    icons: List<Int>? = null
+    icons: List<Int>? = null,
+    titles : List<String>? =null
 ) {
     TopAppBar(
         navigationIcon = {
-            Box(modifier = Modifier.fillMaxHeight()) {
+            Box(modifier = Modifier.fillMaxHeight(),
+                ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_med_link_logo),
                     contentDescription = "Menu",
@@ -62,39 +72,71 @@ fun CustomTopBar(
         },
         title = {
             // Center group of 5 icons
-            var selectedIndex by rememberSaveable { mutableStateOf(2) }
+            var selectedIndex by rememberSaveable { mutableStateOf(0) }
             icons.let {
                 Row(
                     modifier = Modifier
                         .fillMaxSize(),
                     horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     it?.forEachIndexed { index, icon ->
-                        val horizontalPadding = if (index == 2) 5.dp else 15.dp
+                        val horizontalPadding = if (index == selectedIndex) 5.dp else 15.dp
+                        Column( modifier = Modifier.width(IntrinsicSize.Min)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(icon),
+                                    contentDescription = "Center icon $index",
+                                    tint = if (index == selectedIndex) White else Lotion,
+                                    modifier = Modifier
+                                        .padding(horizontal = horizontalPadding)
+                                        .size(scalePxToDp(48f))
+                                        .clickable {
+                                            selectedIndex = index
+                                            onCenterIconClick?.invoke(index)
+                                        }
+                                )
+                                if ( index ==selectedIndex) {
+                                    Text(
+                                        text = titles?.get(selectedIndex) ?: "",
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.rhDisplayRegular.copy(color = Lotion, fontSize = 24.sp),
+                                        modifier = Modifier
+                                            .padding(start = 10.dp, end = 10.dp)
+                                            .align(alignment = Alignment.Bottom),
 
-                        Icon(
-                            painter = painterResource(icon),
-                            contentDescription = "Center icon $index",
-                            tint = if (index == selectedIndex) Platinum else Lotion,
-                            modifier = Modifier
-                                .padding(horizontal = horizontalPadding)
-                                .size(24.dp)
-                                .clickable {
-                                    selectedIndex = index
-                                    onCenterIconClick?.invoke(index)
+                                    )
                                 }
-                        )
-                        if (index == 2) {
-                            Text(
-                                text = "Examination",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.rhDisplayRegular.copy(color = Lotion),
-                                modifier = Modifier
-                                    .padding(end = 25.dp)
+                            }
+                            if (index ==selectedIndex)
+                            {
+                                //Spacer(Modifier.height(5.dp))
+                                HorizontalDivider(
+                                    modifier = Modifier
+                                        .align(Alignment.Start)
+                                        .padding(start = 5.dp, end = 10.dp),
+                                    color = White,
+                                    thickness = scalePxToDp(9f)
+                                )
 
-                            )
+                            }
+
+                            else
+                            {
+                                Spacer(Modifier.height(5.dp))
+                                Box(
+                                    modifier = Modifier.width(scalePxToDp(10f))
+                                        .height(scalePxToDp(9f))
+                                        .background(Lotion)
+                                        .align(Alignment.CenterHorizontally)){}
+                            }
+
+
                         }
+
+
 
                     }
                 }
@@ -125,7 +167,7 @@ fun CustomTopBar(
             ),
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp)
+            .height(60.dp)
             .clip(shape = RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp))
     )
 }

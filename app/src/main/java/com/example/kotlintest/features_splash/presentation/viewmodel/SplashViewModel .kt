@@ -2,9 +2,9 @@ package com.example.kotlintest.features_splash.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.kotlintest.features_autentication.utils.Const
-import com.example.kotlintest.features_autentication.utils.data.local.SharedPreferanceRepository
-import com.example.kotlintest.features_autentication.utils.data.model.AppAuthState
+import com.example.kotlintest.util.Const
+import com.example.kotlintest.util.data.local.SharedPreferanceRepository
+import com.example.kotlintest.util.data.model.AppAuthState
 import com.example.kotlintest.features_splash.presentation.states.SplashScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -27,13 +27,14 @@ class SplashViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             delay(1500)              // simulate loading
-            sharedPreferanceRepository.getBoolean(Const.FIRST_TIME,false)
-            val currentAppState =sharedPreferanceRepository.getObjectFromSharedPreferences<AppAuthState>(Const.App_Auth_State,
-                AppAuthState::class.java)?:AppAuthState.FirstTime
+            //sharedPreferanceRepository.getBoolean(Const.FIRST_TIME,false)
+
 
             _splashScreenState.update { currentState ->
+
                 currentState.copy(
-                    appAuthState = currentAppState
+                    appAuthState = sharedPreferanceRepository.getObjectFromSharedPreferences<AppAuthState>(Const.App_Auth_State,
+                        AppAuthState::class.java)?:AppAuthState.FirstTime
                 )
             }
 

@@ -1,10 +1,8 @@
 package com.example.kotlintest.features_autentication.presentation.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.features_autentication.data.model.CheckOtpRequest
-import com.example.kotlintest.features_autentication.data.model.ClinicItemResponse
 import com.example.kotlintest.features_autentication.data.model.LoginResponse
 import com.example.kotlintest.features_autentication.data.model.UserNameAvailabilityResponse
 import com.example.kotlintest.features_autentication.domain.model.CheckOtpReq
@@ -21,12 +19,12 @@ import com.example.kotlintest.features_autentication.domain.usecase.ResetPasswor
 import com.example.kotlintest.features_autentication.presentation.components.AuthCardScreen
 import com.example.kotlintest.features_autentication.presentation.events.AuthScreenEvent
 import com.example.kotlintest.features_autentication.presentation.states.AuthScreenState
-import com.example.kotlintest.features_autentication.utils.Const
-import com.example.kotlintest.features_autentication.utils.data.local.SharedPreferanceRepository
-import com.example.kotlintest.features_autentication.utils.data.model.AppAuthState
-import com.example.kotlintest.features_autentication.utils.data.model.MainResources
-import com.example.kotlintest.features_autentication.utils.data.model.RequestStates
-import com.example.kotlintest.features_autentication.utils.data.model.ResendCodeType
+import com.example.kotlintest.util.Const
+import com.example.kotlintest.util.data.local.SharedPreferanceRepository
+import com.example.kotlintest.util.data.model.AppAuthState
+import com.example.kotlintest.util.data.model.MainResources
+import com.example.kotlintest.util.data.model.RequestStates
+import com.example.kotlintest.util.data.model.ResendCodeType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,10 +44,6 @@ class AuthViewModel @Inject constructor(
     private val sharedPreferanceRepository: SharedPreferanceRepository
 
 ):ViewModel() {
-//    private val _clinicListReq =  MutableLiveData<RequestStates<ArrayList<ClinicItemResponse>>>(
-//        RequestStates(data = ArrayList()))
-//    val clinicListReq = _clinicListReq
-
     private val _authScreenState = MutableStateFlow(AuthScreenState())
     val authScreenState: StateFlow<AuthScreenState> = _authScreenState.asStateFlow()
 
@@ -62,7 +56,7 @@ class AuthViewModel @Inject constructor(
                 if (currentAppState == AppAuthState.FirstTime) {
                     _authScreenState.update {
                         it.copy(
-                            screen = AuthCardScreen.CheckUserNameScreen
+                            screen = AuthCardScreen.SignInScreen
                         )
                     }
                 }
@@ -71,6 +65,15 @@ class AuthViewModel @Inject constructor(
                     _authScreenState.update {
                         it.copy(
                             screen = AuthCardScreen.SignInScreen
+                        )
+                    }
+
+                }
+                else if (currentAppState == AppAuthState.LogedIn)
+                {
+                    _authScreenState.update {
+                        it.copy(
+                            screen = AuthCardScreen.HomeScreen
                         )
                     }
 
@@ -347,15 +350,15 @@ class AuthViewModel @Inject constructor(
                 }
                 is MainResources.Sucess->{
                     if(it.data?.userNameAvailability?.isAvailable == false && it.data.userNameAvailability.isAccountActive){
-                        sharedPreferanceRepository.saveObjectToSharedPreferences(Const.App_Auth_State,AppAuthState.LogedIn)
-                        sharedPreferanceRepository.saveString(Const.TOKEN,it.data.loginResponse.accessToken)
-                        sharedPreferanceRepository.saveString(Const.REFRESH_TOKEN,it.data.loginResponse.refreshToken)
-                        sharedPreferanceRepository.saveInt(Const.EXPIRE_DATE,it.data.loginResponse.expiresIn)
+                        sharedPreferanceRepository.saveString(Const.TOKEN,it.data.loginResponse.access_token)
+                        sharedPreferanceRepository.saveString(Const.REFRESH_TOKEN,it.data.loginResponse.refresh_token)
+                        sharedPreferanceRepository.saveInt(Const.EXPIRE_DATE,it.data.loginResponse.expires_in)
                         sharedPreferanceRepository.saveObjectToSharedPreferences(Const.USER,it.data.user)
                     }
                     if(it.data?.isBasicInfoFilled==true){
                         sharedPreferanceRepository.saveBoolean(Const.COMPLETE,true)
                     }
+                    sharedPreferanceRepository.saveObjectToSharedPreferences(Const.App_Auth_State,AppAuthState.LogedIn)
                     _authScreenState.update { currentState ->
                         currentState.copy(
                             signInRequset = RequestStates(isSuccess = true,isSubmit = true, data = it.data?:LoginResponse()),

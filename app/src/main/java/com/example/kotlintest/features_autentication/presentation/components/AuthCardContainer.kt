@@ -28,7 +28,6 @@ fun AuthCardContainer(
     val authScreenState by viewModel.authScreenState.collectAsState()
     Box(modifier = modifier) {
         AnimatedCustomCard(
-            authViewModel = viewModel,
             navController = navController,
             authScreenState = authScreenState,
             modifier = modifier,

@@ -31,7 +31,6 @@ import kotlin.jvm.java
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun AnimatedCustomCard(
-    authViewModel: AuthViewModel,
     navController: NavController,
     authScreenState : AuthScreenState,
     modifier: Modifier = Modifier,
@@ -109,7 +108,7 @@ fun AnimatedCustomCard(
             is AuthCardScreen.HomeScreen -> {
 //                val intent = Intent(context, MainActivity::class.java)
 //                context.startActivity(intent)
-                navController.safeNavigate(NavDestination.POCT_SCREEN)
+                navController.safeNavigate(NavDestination.HOME_SCREEN)
             }
 
         }

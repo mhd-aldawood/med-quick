@@ -8,8 +8,8 @@ import com.example.kotlintest.features_autentication.domain.model.LoginReq
 import com.example.kotlintest.features_autentication.domain.model.ResendOtpCodeReq
 import com.example.kotlintest.features_autentication.domain.model.ResetPasswordReq
 import com.example.kotlintest.features_autentication.domain.repository.AuthenticationRepository
-import com.example.kotlintest.features_autentication.utils.data.model.MainResponse
-import com.example.kotlintest.features_autentication.utils.data.remote.MedLinkApi
+import com.example.kotlintest.util.data.model.MainResponse
+import com.example.kotlintest.util.data.remote.MedLinkApi
 import javax.inject.Inject
 
 class AuthenticationRepositoryImpl @Inject constructor(

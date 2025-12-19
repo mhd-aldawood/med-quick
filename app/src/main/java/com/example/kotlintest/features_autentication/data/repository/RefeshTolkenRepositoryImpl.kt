@@ -2,7 +2,7 @@ package com.example.kotlintest.features_autentication.data.repository
 
 import com.example.kotlintest.features_autentication.data.model.LoginResponseDto
 import com.example.kotlintest.features_autentication.domain.repository.RefeshTolkenRepository
-import com.example.kotlintest.features_autentication.utils.data.remote.TokenApi
+import com.example.kotlintest.util.data.remote.TokenApi
 import javax.inject.Inject
 
 class RefeshTolkenRepositoryImpl @Inject constructor(private val api: TokenApi):

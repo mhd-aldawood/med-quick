@@ -2,11 +2,10 @@ package com.example.kotlintest.features_autentication.domain.usecase
 
 import com.example.kotlintest.features_autentication.data.model.LoginResponseDto
 import com.example.kotlintest.features_autentication.domain.repository.RefeshTolkenRepository
-import com.example.kotlintest.features_autentication.utils.Const
-import com.example.kotlintest.features_autentication.utils.data.model.MainResources
+import com.example.kotlintest.util.Const
+import com.example.kotlintest.util.data.model.MainResources
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException

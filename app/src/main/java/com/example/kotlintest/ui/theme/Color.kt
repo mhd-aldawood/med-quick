@@ -26,3 +26,5 @@ val SpaceCadet = Color(0xFF122A5A)
 val LaSalleGreen = Color(0xFF146E29)
 
 val deepDarkBlue = Color(0xFF173572)
+val White = Color(0xFFFFFFFF)
+val yellow = Color(0xFFFCB31C)

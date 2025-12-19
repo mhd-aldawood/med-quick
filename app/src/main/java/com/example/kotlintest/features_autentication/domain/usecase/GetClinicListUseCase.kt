@@ -2,8 +2,8 @@ package com.example.kotlintest.features_autentication.domain.usecase
 
 import com.example.kotlintest.features_autentication.data.model.ClinicItemResponse
 import com.example.kotlintest.features_autentication.domain.repository.AuthenticationRepository
-import com.example.kotlintest.features_autentication.utils.data.BaseUseCase
-import com.example.kotlintest.features_autentication.utils.data.model.MainResponse
+import com.example.kotlintest.util.data.BaseUseCase
+import com.example.kotlintest.util.data.model.MainResponse
 import javax.inject.Inject
 
 class GetClinicListUseCase @Inject constructor(
