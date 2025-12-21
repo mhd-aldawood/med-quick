@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -30,7 +31,8 @@ import com.example.kotlintest.util.PermissionManager.checkPermissions
 @Composable
 fun ExaminationScreen(
     viewModel: ExaminationViewModel = hiltViewModel(),
-    navigateToSelectedDevice: (DeviceCategory) -> Unit
+    navigateToSelectedDevice: (DeviceCategory) -> Unit,
+    onCallClicked: () -> Unit
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     val permissionManager = LocalPermissionManager.current

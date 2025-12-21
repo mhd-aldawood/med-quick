@@ -2,8 +2,6 @@ package com.example.kotlintest
 
 object NavDestination {
     const val CALL_SCREEN = "CALL_SCREEN"
-object NavDestination{
-
     const val Splash_Screen = "Splash_Screen"
     const val Auth_Screen = "Auth_Screen"
     const val POCT_SCREEN = "POCT_SCREEN"
