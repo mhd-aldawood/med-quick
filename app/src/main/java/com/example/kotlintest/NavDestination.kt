@@ -2,6 +2,10 @@ package com.example.kotlintest
 
 object NavDestination {
     const val CALL_SCREEN = "CALL_SCREEN"
+object NavDestination{
+
+    const val Splash_Screen = "Splash_Screen"
+    const val Auth_Screen = "Auth_Screen"
     const val POCT_SCREEN = "POCT_SCREEN"
     const val HOME_SCREEN = "HOME_SCREEN"
     const val THERMOMETER_SCREEN = "THERMOMETER_SCREEN"
@@ -9,5 +13,8 @@ object NavDestination {
     const val TONOMETER_SCREEN = "TONOMETER_SCREEN"
     const val ECG_SCREEN = "ECG_SCREEN"
     const val STETHOSCOPE_SCREEN = "STETHOSCOPE_SCREEN"
+
+    const val EXAMINATION_SCREEN = "EXAMINATION_SCREEN"
+    const val APPOINTMENT_CREATE_SCREEN = "APPOINTMENT_CREATE_SCREEN"
     const val WHITE_BLOOD_CELL_ANALYZER_SCREEN = "WHITE_BLOOD_CELL_ANALYZER_SCREEN"
 }

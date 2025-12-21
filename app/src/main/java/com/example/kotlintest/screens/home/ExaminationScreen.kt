@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -25,15 +24,17 @@ import com.example.kotlintest.screens.home.models.DeviceCategory
 import com.example.kotlintest.screens.home.views.AddDeviceWithPatientInfo
 import com.example.kotlintest.screens.home.views.DeviceListSection
 import com.example.kotlintest.screens.home.views.DevicesSection
+import com.example.kotlintest.ui.theme.locals.LocalPermissionManager
 import com.example.kotlintest.util.PermissionManager.checkPermissions
 
 @Composable
-fun HomeScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
-    navigateToSelectedDevice: (DeviceCategory) -> Unit,
-    onCallClicked: () -> Unit
+fun ExaminationScreen(
+    viewModel: ExaminationViewModel = hiltViewModel(),
+    navigateToSelectedDevice: (DeviceCategory) -> Unit
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
+    val permissionManager = LocalPermissionManager.current
+
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH_SCAN,
@@ -66,7 +67,7 @@ fun HomeScreen(
     // Call EventsEffect and handle permission checks and request
     EventsEffect(viewModel) { events ->
         when (events) {
-            is HomeEvents.SelectedDevice -> {
+            is ExaminationEvents.SelectedDevice -> {
                 // Store the selected device category
                 deviceCategory.value = events.deviceCategory
 
@@ -98,7 +99,7 @@ fun HomeScreen(
 
             DevicesSection(uiState.dataHolder.cardList, onCardClick = { i ->
                 viewModel.trySendAction(
-                    HomeAction.OnCardClick(i)
+                    ExaminationAction.OnCardClick(i)
                 )
             })
         }
@@ -122,7 +123,6 @@ fun HomeScreen(
                 uiState.dataHolder.patentInfo.insuranceInfo.number
             )
         }
-
 
     }
 

@@ -9,16 +9,19 @@ plugins {
 
 android {
     namespace = "com.example.kotlintest"
-    compileSdk = 34
+    compileSdk = 35//34
 
     defaultConfig {
         applicationId = "com.example.kotlintest"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 31//24
+        targetSdk = 35//34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    configurations.all {
+        exclude(group= "com.google.firebase", module= "firebase-ml-vision-barcode-model")
     }
     signingConfigs {
         // Important: change the keystore for a production deployment
@@ -88,6 +91,8 @@ android {
 
 dependencies {
 
+    implementation("com.google.firebase:firebase-messaging:24.0.1")
+
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
     implementation(files("libs/contec_spo2_ble_sdk_v2.0.jar"))
@@ -100,6 +105,12 @@ dependencies {
     // Architecture Components
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit)
     ksp(libs.room.compiler)
     implementation(libs.androidx.lifecycle.runtimeCompose)
     implementation(libs.androidx.lifecycle.viewModelCompose)
@@ -138,7 +149,23 @@ dependencies {
     implementation(libs.io.ktor.serialization.kotlinx.json)
     implementation(libs.io.ktor.logging)
     implementation(libs.kotlinx.serialization.json)
-    //testing
+
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.okio:okio:3.1.0")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.8")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.6.1")
+
+    implementation ("com.google.android.recaptcha:recaptcha:18.7.0-beta01")
+
+    //secure sharedpreferance
+    implementation ("androidx.security:security-crypto:1.1.0-alpha06")
+
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.1")
+
+//testing
     // Dependencies for local unit tests
     testImplementation(composeBom)
     testImplementation(libs.junit4)
