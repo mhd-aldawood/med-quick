@@ -4,7 +4,7 @@ import com.konsung.lib.wbc.KSWbc
 import kotlinx.serialization.Serializable
 
 // ---------- Frame building ----------
-
+//TODO move this file from here to appropriate file
 private fun checksum(bytes: ByteArray): Byte {
     // Sum bytes[2]..bytes[8] (len to last parameter), & 0xFF
     var sum = 0

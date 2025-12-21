@@ -8,7 +8,7 @@ import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import javax.inject.Inject
-
+//TODO move this class from here
 class AuscultationRecordLoader @Inject constructor(
     private val context: Context
 ) {
