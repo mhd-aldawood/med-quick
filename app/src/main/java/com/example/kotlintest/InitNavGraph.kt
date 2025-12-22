@@ -13,13 +13,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
+import com.example.kotlintest.features_autentication.presentation.screens.AuthScreen
+import com.example.kotlintest.features_appointment.presentation.screens.AppointmentCreateScreen
+import com.example.kotlintest.features_home.presentation.screens.HomeScreen
+import com.example.kotlintest.features_splash.presentation.screens.SplashScreen
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerScreen
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerViewModel
 import com.example.kotlintest.screens.call.TwoColumnFrontCameraScreen
 import com.example.kotlintest.screens.ecg.EcgScreen
 import com.example.kotlintest.screens.ecg.EcgViewModel
-import com.example.kotlintest.screens.home.HomeScreen
+import com.example.kotlintest.screens.home.ExaminationScreen
 import com.example.kotlintest.screens.poct.PoctScreen
 import com.example.kotlintest.screens.poct.PoctViewModel
 import com.example.kotlintest.screens.pulseoximeter.PulseOximeterScreen
@@ -43,7 +47,40 @@ fun InitNavGraph(
     NavHost(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
+        composable(NavDestination.Splash_Screen) {
+            SplashScreen(navController =navController )
+        }
+        composable(NavDestination.Auth_Screen) {
+            AuthScreen(navController =navController )
+        }
+        composable(NavDestination.APPOINTMENT_CREATE_SCREEN) {
+            MainScaffold(
+            ) {
+                AppointmentCreateScreen(navController = navController)
+            }
+        }
         composable(NavDestination.HOME_SCREEN) {
+            MainScaffold(
+                icons = listOf(
+                    R.drawable.ic_med_calender,
+                    R.drawable.ic_med_devices,
+                    R.drawable.ic_med_examiniation,
+                    R.drawable.ic_med_profile,
+                    R.drawable.ic_med_settings
+                ),
+                titles =listOf(
+                    "Home",
+                    "Devices",
+                    "Examination",
+                    "Profile",
+                    "Settings",
+                )
+            ) {
+                HomeScreen(navController = navController)
+            }
+        }
+
+        composable(NavDestination.EXAMINATION_SCREEN) {
             MainScaffold(
                 icons = listOf(
                     R.drawable.ic_med_home,
@@ -53,7 +90,7 @@ fun InitNavGraph(
                     R.drawable.ic_med_settings
                 )
             ) {
-                HomeScreen(navigateToSelectedDevice = { selectedDevice ->
+                ExaminationScreen(navigateToSelectedDevice = { selectedDevice ->
                     navController.navigateSelectedDevice(selectedDevice)
                 }, onCallClicked = { navController.navigate(NavDestination.CALL_SCREEN) })
             }
@@ -172,7 +209,10 @@ fun InitNavGraph(
 
 }
 
-@Preview(showBackground = true)
+@Preview(
+    showBackground = true,
+    device = "spec:width=1280dp,height=800dp,orientation=landscape"
+)
 @Composable
 fun DefaultPreview() {
     KotlinTestTheme {

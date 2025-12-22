@@ -1,5 +1,6 @@
 package com.example.kotlintest.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.kotlintest.ui.theme.Lotion
+import com.example.kotlintest.ui.theme.PaleCerulean
 import com.example.kotlintest.util.pixelsToDp
 import com.example.kotlintest.util.pxToDp
 import com.example.kotlintest.util.scalePxToDp
@@ -23,6 +26,7 @@ fun MainScaffold(
     onCenterIconClick: ((Int) -> Unit)? = null,
     rightText: String = "Demo Version 0.2",
     icons: List<Int>? = null,
+    titles : List<String>? =null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -31,13 +35,15 @@ fun MainScaffold(
                 onLeftClick = onLeftClick,
                 onCenterIconClick = onCenterIconClick,
                 rightText = rightText,
-                icons = icons
+                icons = icons,
+                titles = titles
             )
         },
         content = { innerPadding ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .background(Lotion)
 //                    .padding(innerPadding)
 //                    .padding(horizontal = 50.dp)
 //                    .padding(top = pixelsToDp(60F)),
