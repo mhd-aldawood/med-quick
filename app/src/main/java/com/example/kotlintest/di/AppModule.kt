@@ -6,6 +6,7 @@ import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.example.kotlintest.data.source.network.AuthInterceptor
 import com.example.kotlintest.features_autentication.data.repository.RefeshTolkenRepositoryImpl
 import com.example.kotlintest.features_autentication.domain.repository.RefeshTolkenRepository
 import com.example.kotlintest.features_autentication.domain.usecase.RefreshTokenUseCase
@@ -61,10 +62,11 @@ object AppModule {
     }
     @Provides
     @Singleton
-    fun getHttpClient(authenticator: TokenAuthenticator): OkHttpClient {
+    fun getHttpClient(authenticator: TokenAuthenticator,authInterceptor:AuthInterceptor): OkHttpClient {
         val interceptor = HttpLoggingInterceptor()
        interceptor.level = HttpLoggingInterceptor.Level.BODY
         val httpClient = OkHttpClient.Builder()
+        httpClient.addInterceptor(authInterceptor)
         httpClient.addInterceptor(interceptor)
         httpClient.authenticator(authenticator)
         httpClient.callTimeout(Const.CALL_TIMEOUT.toLong(), TimeUnit.MINUTES)
@@ -73,6 +75,12 @@ object AppModule {
             .writeTimeout(Const.WRITE_TIMEOUT.toLong(), TimeUnit.SECONDS)
         return httpClient.build()
     }
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(sharedPreferanceRepository: SharedPreferanceRepository): AuthInterceptor {
+        return AuthInterceptor(sharedPreferanceRepository)
+    }
+
     @Provides
     @Singleton
     fun getMedLinkApi(httpClient: OkHttpClient): MedLinkApi {

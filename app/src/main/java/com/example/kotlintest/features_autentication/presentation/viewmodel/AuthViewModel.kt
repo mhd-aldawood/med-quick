@@ -20,6 +20,7 @@ import com.example.kotlintest.features_autentication.presentation.components.Aut
 import com.example.kotlintest.features_autentication.presentation.events.AuthScreenEvent
 import com.example.kotlintest.features_autentication.presentation.states.AuthScreenState
 import com.example.kotlintest.util.Const
+import com.example.kotlintest.util.Logger
 import com.example.kotlintest.util.data.local.SharedPreferanceRepository
 import com.example.kotlintest.util.data.model.AppAuthState
 import com.example.kotlintest.util.data.model.MainResources
@@ -44,6 +45,7 @@ class AuthViewModel @Inject constructor(
     private val sharedPreferanceRepository: SharedPreferanceRepository
 
 ):ViewModel() {
+    private val TAG = "AuthViewModel"
     private val _authScreenState = MutableStateFlow(AuthScreenState())
     val authScreenState: StateFlow<AuthScreenState> = _authScreenState.asStateFlow()
 
@@ -350,6 +352,7 @@ class AuthViewModel @Inject constructor(
                 }
                 is MainResources.Sucess->{
                     if(it.data?.userNameAvailability?.isAvailable == false && it.data.userNameAvailability.isAccountActive){
+                        Logger.i(TAG,it.data.loginResponse.access_token)
                         sharedPreferanceRepository.saveString(Const.TOKEN,it.data.loginResponse.access_token)
                         sharedPreferanceRepository.saveString(Const.REFRESH_TOKEN,it.data.loginResponse.refresh_token)
                         sharedPreferanceRepository.saveInt(Const.EXPIRE_DATE,it.data.loginResponse.expires_in)
