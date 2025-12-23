@@ -12,4 +12,5 @@ data class CalendarAppointmentCardModel(
     val gender: Gender,
     val selected: Boolean,
     override val calendarStatus: List<CalendarCardStatus>,
-) : CalendarCard(calendarStatus, )
+    val endDate: String,
+) : CalendarCard(calendarStatus )

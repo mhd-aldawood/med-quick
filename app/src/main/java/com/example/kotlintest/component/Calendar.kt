@@ -45,6 +45,7 @@ val AppointmentList: List<CalendarCard> = listOf(
         age = "age",
         calendarStatus = listOf(CalendarCardStatus.Notification, CalendarCardStatus.Selected),
         selected = false,
+        endDate = ""
     ), CalendarAppointmentCardModel(
         id = "1",
         patientName = "patientName",
@@ -56,6 +57,7 @@ val AppointmentList: List<CalendarCard> = listOf(
         age = "age",
         calendarStatus = listOf(CalendarCardStatus.Selected),
         selected = false,
+        endDate = ""
     ), CalendarAppointmentCardModel(
         id = "2",
         patientName = "patientName",
@@ -67,6 +69,7 @@ val AppointmentList: List<CalendarCard> = listOf(
         age = "age",
         calendarStatus = listOf(CalendarCardStatus.Warning),
         selected = false,
+        endDate = ""
     ), CalendarAppointmentCardModel(
         id = "3",
         patientName = "patientName",
@@ -78,6 +81,7 @@ val AppointmentList: List<CalendarCard> = listOf(
         age = "age",
         calendarStatus = listOf(CalendarCardStatus.NotSelected),
         selected = true,
+        endDate = ""
     ),
     CalendarMoreCardModel(
         count = "4",
@@ -314,14 +318,15 @@ fun DynamicCalendar(
 
                 // ----- EVENTS -----
                 positionedCards.forEach { card ->
-                    CalendarEventCard(
-                        card = card,
-                        dayWidth = dayWidths[card.dayIndex],
-                        dayXOffset = dayXOffsets[card.dayIndex],
-                        hourHeight = hourHeight,
-                        startHour = startHour,
-                        lanesMax = maxVisibleLanes
-                    )
+//                    CalendarEventCard(
+//                        card = card,
+//                        dayWidth = dayWidths[card.dayIndex],
+//                        dayXOffset = dayXOffsets[card.dayIndex],
+//                        hourHeight = hourHeight,
+//                        startHour = startHour,
+//                        lanesMax = maxVisibleLanes
+//                    )
+
                 }
             }
         }

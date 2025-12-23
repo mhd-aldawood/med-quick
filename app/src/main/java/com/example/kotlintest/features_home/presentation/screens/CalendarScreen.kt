@@ -38,11 +38,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.kotlintest.NavDestination
 import com.example.kotlintest.component.DynamicCalendar
 import com.example.kotlintest.component.calendarSampleEvents
 import com.example.kotlintest.features_home.presentation.components.FilterChipGroup
+import com.example.kotlintest.features_home.presentation.screens.views.MainHeaderSection
 import com.example.kotlintest.navigation.safeNavigate
 import com.example.kotlintest.ui.theme.ChineseYellow
 import com.example.kotlintest.ui.theme.Lotion
@@ -55,7 +58,8 @@ import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.yellow
 
 @Composable
-fun CalendarScreen(navController: NavController) {
+fun CalendarScreen(navController: NavController, viewModel: CalendarViewModel = hiltViewModel()) {
+    val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     Box(
         modifier = Modifier.fillMaxSize(),
 
@@ -85,8 +89,8 @@ fun CalendarScreen(navController: NavController) {
                 {
                     Box(modifier = Modifier.fillMaxSize()) {
                         DynamicCalendar(
-                            endHour = 22,        // calendar ends at 10 PM
-                            endDays = 5,         // today + next 5 days
+                            endHour = 24,        // calendar ends at 12 PM
+                            endDays = 7,         // today + next 7 days
                             events = calendarSampleEvents(),
                             modifier = Modifier.fillMaxSize()
                         )
@@ -122,136 +126,6 @@ fun CalendarScreen(navController: NavController) {
             }
         }
     }
-}
-
-@Composable
-fun MainHeaderSection(navController: NavController) {
-    Text(
-        text = "Calender",
-        style = MaterialTheme.typography.rhDisplayBlack.copy(
-            color = PrimaryMidLinkColor,
-            fontSize = 28.sp
-        )
-    )
-    Spacer(Modifier.width(15.dp))
-    Row() {
-        var onlyMeBtnEnabled by remember { mutableStateOf(true) }
-        var thisKitBtnEnabled by remember { mutableStateOf(true) }
-        OutlinedButton(
-            onClick = { onlyMeBtnEnabled = !onlyMeBtnEnabled },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (onlyMeBtnEnabled) PrimaryMidLinkColor else White,
-                contentColor = Lotion,
-                disabledContainerColor = Color.White,
-                disabledContentColor = PrimaryMidLinkColor
-            ),
-            contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(7.dp),
-            border = BorderStroke(1.dp, deepDarkBlue),
-            modifier = Modifier
-                .height(scalePxToDp(67f))
-                .width(if (onlyMeBtnEnabled) scalePxToDp(190f) else scalePxToDp(160f))
-
-        ) {
-            Text(
-                text = "Only Me",
-                style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = if (onlyMeBtnEnabled) White else PrimaryMidLinkColor,
-                    fontSize = 13.sp
-                )
-            )
-            if (onlyMeBtnEnabled) {
-                Spacer(Modifier.width(3.dp))
-                Icon(
-                    painter = painterResource(R.drawable.ic_med_check_circle),
-                    contentDescription = "Menu",
-                    tint = ChineseYellow,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(scalePxToDp(32f))
-                )
-            }
-        }
-        Spacer(Modifier.width(10.dp))
-        OutlinedButton(
-            onClick = { thisKitBtnEnabled = !thisKitBtnEnabled },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = if (thisKitBtnEnabled) PrimaryMidLinkColor else White,
-                contentColor = Lotion,
-                disabledContainerColor = Color.White,
-                disabledContentColor = PrimaryMidLinkColor
-            ),
-            contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(7.dp),
-            border = BorderStroke(1.dp, deepDarkBlue),
-            modifier = Modifier
-                .height(scalePxToDp(67f))
-                .width(if (thisKitBtnEnabled) scalePxToDp(190f) else scalePxToDp(160f))
-
-        ) {
-            Text(
-                text = "This Kit",
-                style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = if (thisKitBtnEnabled) White else PrimaryMidLinkColor,
-                    fontSize = 13.sp
-                )
-            )
-            if (thisKitBtnEnabled) {
-                Spacer(Modifier.width(3.dp))
-                Icon(
-                    painter = painterResource(R.drawable.ic_med_check_circle),
-                    contentDescription = "Menu",
-                    tint = ChineseYellow,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .size(scalePxToDp(32f))
-                )
-            }
-        }
-    }
-    Row() {
-        Spacer(modifier = Modifier.weight(1f))
-        FilterChipGroup()
-        Spacer(Modifier.width(10.dp))
-        OutlinedButton(
-            onClick = {
-                navController.safeNavigate(NavDestination.APPOINTMENT_CREATE_SCREEN)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryMidLinkColor,
-                contentColor = Lotion,
-                disabledContainerColor = Color.White,
-                disabledContentColor = PrimaryMidLinkColor
-            ),
-            contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(20.dp),
-            border = BorderStroke(1.dp, White),
-            modifier = Modifier
-                .height(scalePxToDp(70f))
-                .width(scalePxToDp(420f))
-
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_med_create_icon),
-                contentDescription = "Menu",
-                tint = Color.Unspecified,
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .size(scalePxToDp(70f))
-            )
-            Spacer(Modifier.weight(1f))
-            Text(
-                text = "Create Appointment",
-                style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = Lotion,
-                    fontSize = 14.sp
-                )
-            )
-            Spacer(Modifier.width(10.dp))
-        }
-    }
-
-
 }
 
 
