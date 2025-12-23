@@ -1,4 +1,4 @@
-package com.example.kotlintest.features_home.presentation.domin.model
+package com.example.kotlintest.features_home.presentation.data.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
