@@ -40,6 +40,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.kotlintest.NavDestination
+import com.example.kotlintest.component.DynamicCalendar
+import com.example.kotlintest.component.calendarSampleEvents
 import com.example.kotlintest.features_home.presentation.components.FilterChipGroup
 import com.example.kotlintest.navigation.safeNavigate
 import com.example.kotlintest.ui.theme.ChineseYellow
@@ -53,42 +55,66 @@ import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.yellow
 
 @Composable
-fun HomeScreen(navController: NavController)
-{
+fun CalendarScreen(navController: NavController) {
     Box(
         modifier = Modifier.fillMaxSize(),
 
         ) {
         Row() {
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(end = 40.dp)
-                .weight(13f),) {
-                Row(modifier = Modifier.fillMaxWidth()
-                    .height(scalePxToDp(85f)),
-                    verticalAlignment = Alignment.CenterVertically) {
+                    .weight(13f),
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(scalePxToDp(85f)),
+                    verticalAlignment = Alignment.CenterVertically
+                )
+                {
                     MainHeaderSection(navController = navController)
                 }
-                Row(modifier = Modifier.fillMaxWidth()
-                    .padding(top=20.dp)
-                    .weight(1f),) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp)
+                        .weight(1f),
+                )
+                {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        CalenderSection()
-                        }
+                        DynamicCalendar(
+                            endHour = 22,        // calendar ends at 10 PM
+                            endDays = 5,         // today + next 5 days
+                            events = calendarSampleEvents(),
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
-            Column(modifier = Modifier.fillMaxSize()
-                .padding( end = 20.dp)
-                .weight(3f)) {
-                Row(modifier = Modifier.fillMaxWidth()
-                    .height(scalePxToDp(85f)),
-                    verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(end = 20.dp)
+                    .weight(3f)
+            )
+            {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(scalePxToDp(85f)),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     RightHeaderSection()
                 }
-                Row(modifier = Modifier.fillMaxWidth()
-                    .padding(top=20.dp)
-                    .weight(1f)
-                    .background(PaleCerulean),) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp)
+                        .weight(1f)
+                        .background(PaleCerulean),
+                ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         RightContentSection()
                     }
@@ -99,8 +125,7 @@ fun HomeScreen(navController: NavController)
 }
 
 @Composable
-fun MainHeaderSection(navController: NavController)
-{
+fun MainHeaderSection(navController: NavController) {
     Text(
         text = "Calender",
         style = MaterialTheme.typography.rhDisplayBlack.copy(
@@ -113,9 +138,9 @@ fun MainHeaderSection(navController: NavController)
         var onlyMeBtnEnabled by remember { mutableStateOf(true) }
         var thisKitBtnEnabled by remember { mutableStateOf(true) }
         OutlinedButton(
-            onClick =  {onlyMeBtnEnabled = !onlyMeBtnEnabled},
+            onClick = { onlyMeBtnEnabled = !onlyMeBtnEnabled },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (onlyMeBtnEnabled)PrimaryMidLinkColor else White,
+                containerColor = if (onlyMeBtnEnabled) PrimaryMidLinkColor else White,
                 contentColor = Lotion,
                 disabledContainerColor = Color.White,
                 disabledContentColor = PrimaryMidLinkColor
@@ -131,12 +156,11 @@ fun MainHeaderSection(navController: NavController)
             Text(
                 text = "Only Me",
                 style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = if (onlyMeBtnEnabled) White else PrimaryMidLinkColor ,
+                    color = if (onlyMeBtnEnabled) White else PrimaryMidLinkColor,
                     fontSize = 13.sp
                 )
             )
-            if (onlyMeBtnEnabled)
-            {
+            if (onlyMeBtnEnabled) {
                 Spacer(Modifier.width(3.dp))
                 Icon(
                     painter = painterResource(R.drawable.ic_med_check_circle),
@@ -150,9 +174,9 @@ fun MainHeaderSection(navController: NavController)
         }
         Spacer(Modifier.width(10.dp))
         OutlinedButton(
-            onClick =  {thisKitBtnEnabled = !thisKitBtnEnabled},
+            onClick = { thisKitBtnEnabled = !thisKitBtnEnabled },
             colors = ButtonDefaults.buttonColors(
-                containerColor = if (thisKitBtnEnabled)PrimaryMidLinkColor else White,
+                containerColor = if (thisKitBtnEnabled) PrimaryMidLinkColor else White,
                 contentColor = Lotion,
                 disabledContainerColor = Color.White,
                 disabledContentColor = PrimaryMidLinkColor
@@ -168,12 +192,11 @@ fun MainHeaderSection(navController: NavController)
             Text(
                 text = "This Kit",
                 style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = if (thisKitBtnEnabled) White else PrimaryMidLinkColor ,
+                    color = if (thisKitBtnEnabled) White else PrimaryMidLinkColor,
                     fontSize = 13.sp
                 )
             )
-            if (thisKitBtnEnabled)
-            {
+            if (thisKitBtnEnabled) {
                 Spacer(Modifier.width(3.dp))
                 Icon(
                     painter = painterResource(R.drawable.ic_med_check_circle),
@@ -186,61 +209,16 @@ fun MainHeaderSection(navController: NavController)
             }
         }
     }
-Row() {
-    Spacer(modifier = Modifier.weight(1f))
-    FilterChipGroup()
-    Spacer(Modifier.width(10.dp))
-    OutlinedButton(
-        onClick =  {
-            navController.safeNavigate(NavDestination.APPOINTMENT_CREATE_SCREEN)
-        },
-        colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryMidLinkColor ,
-            contentColor = Lotion,
-            disabledContainerColor = Color.White,
-            disabledContentColor = PrimaryMidLinkColor
-        ),
-        contentPadding = PaddingValues(0.dp),
-        shape = RoundedCornerShape(20.dp),
-        border = BorderStroke(1.dp, White),
-        modifier = Modifier
-            .height(scalePxToDp(70f))
-            .width( scalePxToDp(420f))
-
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_med_create_icon),
-            contentDescription = "Menu",
-            tint = Color.Unspecified ,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .size(scalePxToDp(70f))
-        )
-        Spacer(Modifier.weight(1f))
-        Text(
-            text = "Create Appointment",
-            style = MaterialTheme.typography.rhDisplayBold.copy(
-                color = Lotion ,
-                fontSize = 14.sp
-            )
-        )
-        Spacer(Modifier.width(10.dp))
-    }
-}
-
-
-
-}
-
-
-@Composable
-fun RightHeaderSection()
-{
     Row() {
+        Spacer(modifier = Modifier.weight(1f))
+        FilterChipGroup()
+        Spacer(Modifier.width(10.dp))
         OutlinedButton(
-            onClick =  {},
+            onClick = {
+                navController.safeNavigate(NavDestination.APPOINTMENT_CREATE_SCREEN)
+            },
             colors = ButtonDefaults.buttonColors(
-                containerColor = yellow ,
+                containerColor = PrimaryMidLinkColor,
                 contentColor = Lotion,
                 disabledContainerColor = Color.White,
                 disabledContentColor = PrimaryMidLinkColor
@@ -250,13 +228,56 @@ fun RightHeaderSection()
             border = BorderStroke(1.dp, White),
             modifier = Modifier
                 .height(scalePxToDp(70f))
-                .width( scalePxToDp(310f))
+                .width(scalePxToDp(420f))
+
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_med_create_icon),
+                contentDescription = "Menu",
+                tint = Color.Unspecified,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(scalePxToDp(70f))
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                text = "Create Appointment",
+                style = MaterialTheme.typography.rhDisplayBold.copy(
+                    color = Lotion,
+                    fontSize = 14.sp
+                )
+            )
+            Spacer(Modifier.width(10.dp))
+        }
+    }
+
+
+}
+
+
+@Composable
+fun RightHeaderSection() {
+    Row() {
+        OutlinedButton(
+            onClick = {},
+            colors = ButtonDefaults.buttonColors(
+                containerColor = yellow,
+                contentColor = Lotion,
+                disabledContainerColor = Color.White,
+                disabledContentColor = PrimaryMidLinkColor
+            ),
+            contentPadding = PaddingValues(0.dp),
+            shape = RoundedCornerShape(20.dp),
+            border = BorderStroke(1.dp, White),
+            modifier = Modifier
+                .height(scalePxToDp(70f))
+                .width(scalePxToDp(310f))
 
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_med_ongoing_visit_icon),
                 contentDescription = "Menu",
-                tint = Color.Unspecified ,
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .size(scalePxToDp(70f))
@@ -265,7 +286,7 @@ fun RightHeaderSection()
             Text(
                 text = "Ongoing Visit",
                 style = MaterialTheme.typography.rhDisplayBold.copy(
-                    color = Lotion ,
+                    color = Lotion,
                     fontSize = 14.sp
                 )
             )
@@ -275,7 +296,7 @@ fun RightHeaderSection()
         Icon(
             painter = painterResource(R.drawable.ic_med_notification_icon),
             contentDescription = "Menu",
-            tint = Color.Unspecified ,
+            tint = Color.Unspecified,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .size(scalePxToDp(70f))
@@ -286,25 +307,26 @@ fun RightHeaderSection()
 }
 
 @Composable
-fun RightContentSection()
-{}
+fun RightContentSection() {
+}
 
 @Composable
-fun CalenderSection()
-{Image(
-    painter = painterResource(R.drawable.calender_screen_bg),
-    contentDescription = null,
-    modifier = Modifier.fillMaxSize(),
-    contentScale = ContentScale.FillBounds
+fun CalenderSection() {
+    Image(
+        painter = painterResource(R.drawable.calender_screen_bg),
+        contentDescription = null,
+        modifier = Modifier.fillMaxSize(),
+        contentScale = ContentScale.FillBounds
 
-)}
+    )
+}
 
 @Composable
-fun HomeScreenPrev()
-{
-    HomeScreen(  navController = NavController(LocalContext.current) )
+fun HomeScreenPrev() {
+    CalendarScreen(navController = NavController(LocalContext.current))
 
 }
+
 @Preview(
     showBackground = true,
     device = "spec:width=1280dp,height=800dp,orientation=landscape"

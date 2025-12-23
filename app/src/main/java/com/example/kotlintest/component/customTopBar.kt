@@ -95,7 +95,7 @@ fun CustomTopBar(
                                         .size(scalePxToDp(48f))
                                         .clickable {
                                             selectedIndex = index
-                                            onCenterIconClick?.invoke(index)
+                                            onCenterIconClick?.invoke(icon)
                                         }
                                 )
                                 if ( index ==selectedIndex) {

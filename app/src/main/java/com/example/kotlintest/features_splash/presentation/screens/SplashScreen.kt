@@ -35,10 +35,10 @@ fun SplashScreen(navController: NavController, viewModel: SplashViewModel =  hil
     LaunchedEffect(splashScreenState.appAuthState) {
         when (splashScreenState.appAuthState) {
             AppAuthState.LogedIn -> {
-                navController.safeNavigate(NavDestination.HOME_SCREEN)
+                navController.safeNavigate(NavDestination.CALENDAR_SCREEN)
             }
             AppAuthState.FirstTime -> {
-                navController.safeNavigate(NavDestination.Auth_Screen)
+                navController.safeNavigate(NavDestination.AUTH_SCREEN)
             }
             else -> {
                 // do nothing for Loading or default state

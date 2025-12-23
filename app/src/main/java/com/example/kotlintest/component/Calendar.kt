@@ -136,7 +136,7 @@ fun DynamicCalendar(
 ) {
     // ---- Layout constants ----
     val hourHeight = 130.dp
-    val baseEventWidth = 180.dp           // ✅ width of ONE event slot
+    val baseEventWidth = 180.dp           // ✅ width of ONE event slot/
     val timeColumnWidth = 64.dp
     val headerHeight = 48.dp
     val subSlotsPerHour = 3
@@ -517,54 +517,55 @@ private fun assignLanesGreedy(
 }
 fun calendarSampleEvents(): List<CalendarEvent> {
     val today = LocalDate.now()
+    val now = LocalTime.now()
 
     return listOf(
         // 1:00 – 2:00 (full hour)
         CalendarEvent(
             id = "1",
             eventName = "music Event",
-            startDate = today.atTime(13, 0),
-            endDate = today.atTime(14, 0)
+            startDate = today.atTime(now.hour, 0),
+            endDate = today.atTime(now.hour+1, 0)
         ),
 
         // 1:00 – 1:20 (overlaps with long)
         CalendarEvent(
             id = "2",
             eventName = "dance event",
-            startDate = today.atTime(13, 0),
-            endDate = today.atTime(13, 20)
+            startDate = today.atTime(now.hour, 0),
+            endDate = today.atTime(now.hour, 20)
         ),
 
         // 1:20 – 1:40 (stacked under Short A)
         CalendarEvent(
             id = "3",
             eventName = "science Event",
-            startDate = today.atTime(13, 20),
-            endDate = today.atTime(13, 40)
+            startDate = today.atTime(now.hour, 20),
+            endDate = today.atTime(now.hour, 40)
         ),
 
         // 1:40 – 2:00 (stacked under Short B)
         CalendarEvent(
             id = "4",
             eventName = "bio event",
-            startDate = today.atTime(13, 40),
-            endDate = today.atTime(14, 0)
+            startDate = today.atTime(now.hour, 40),
+            endDate = today.atTime(now.hour+1, 0)
         ),
 
         // Extra overlap → should go into +N
         CalendarEvent(
             id = "5",
             eventName = "Extra Overlap",
-            startDate = today.atTime(13, 10),
-            endDate = today.atTime(13, 50)
+            startDate = today.atTime(now.hour, 10),
+            endDate = today.atTime(now.hour, 50)
         ),
 
         // Event in another hour
         CalendarEvent(
             id = "6",
             eventName = "Later Event",
-            startDate = today.atTime(15, 0),
-            endDate = today.atTime(16, 0)
+            startDate = today.atTime(now.hour+2, 0),
+            endDate = today.atTime(now.hour+3, 0)
         )
     )
 }

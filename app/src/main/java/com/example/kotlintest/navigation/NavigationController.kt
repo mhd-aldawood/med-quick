@@ -1,6 +1,7 @@
 package com.example.kotlintest.navigation
 
 import androidx.navigation.NavController
+import com.example.kotlintest.NavDestination
 import com.example.kotlintest.NavDestination.CALL_SCREEN
 import com.example.kotlintest.NavDestination.ECG_SCREEN
 import com.example.kotlintest.NavDestination.POCT_SCREEN
@@ -9,6 +10,7 @@ import com.example.kotlintest.NavDestination.STETHOSCOPE_SCREEN
 import com.example.kotlintest.NavDestination.THERMOMETER_SCREEN
 import com.example.kotlintest.NavDestination.TONOMETER_SCREEN
 import com.example.kotlintest.NavDestination.WHITE_BLOOD_CELL_ANALYZER_SCREEN
+import com.example.kotlintest.R
 import com.example.kotlintest.screens.home.models.DeviceCategory
 
 fun NavController.safeNavigate(
@@ -46,6 +48,15 @@ fun NavController.navigateSelectedDevice(deviceCategory: DeviceCategory) {
         DeviceCategory.WhiteBloodCellAnalyzer -> safeNavigate(WHITE_BLOOD_CELL_ANALYZER_SCREEN)
     }
 }
-fun NavController.NavigateToCallScreen() {
+fun NavController.navigateToCallScreen() {
     safeNavigate(CALL_SCREEN)
+}
+fun NavController.navigateThroughTopBar(index: Int) {
+    when(index){
+        R.drawable.ic_med_calender -> safeNavigate(NavDestination.CALENDAR_SCREEN)
+        R.drawable.ic_med_devices->{}
+        R.drawable.ic_med_examiniation->safeNavigate(NavDestination.EXAMINATION_SCREEN)
+        R.drawable.ic_med_profile->{}
+        R.drawable.ic_med_settings->{}
+    }
 }
