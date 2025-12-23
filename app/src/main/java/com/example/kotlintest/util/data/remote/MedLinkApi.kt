@@ -11,6 +11,8 @@ import com.example.kotlintest.features_appointment.data.model.CreateAppointmentR
 import com.example.kotlintest.features_appointment.data.model.DoctorsAvailabilityItemResponse
 import com.example.kotlintest.features_appointment.data.model.SpecialtiesResponse
 import com.example.kotlintest.features_appointment.domain.model.CreateAppointmentReq
+import com.example.kotlintest.features_home.presentation.data.model.AppointmentResponse
+import com.example.kotlintest.features_home.presentation.domin.model.CreateCalendarReq
 import com.example.kotlintest.util.data.model.MainResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -49,4 +51,13 @@ interface MedLinkApi {
     @POST("v1/Appointments/BookAppointment")
     suspend fun bookAppointment(@Header("Authorization") token:String,@Header("culture") lang:String,@Body req: CreateAppointmentReq):MainResponse<CreateAppointmentResponse>
 
+    //Calendar
+    @GET("v1/Appointments/GetCalender")
+    suspend fun getCalendar(@Header("Authorization") token:String,
+                            @Query("FromDate") fromDate: String,
+                            @Query("ToDate") toDate: String,
+                            @Query("OnlyMe") onlyMe: Boolean?,
+                            @Query("SerialNumber") serialNumber: String?,
+                            @Query("Status") status: Int?,
+                            @Query("culture") culture: String?): MainResponse<List<AppointmentResponse>>
 }
