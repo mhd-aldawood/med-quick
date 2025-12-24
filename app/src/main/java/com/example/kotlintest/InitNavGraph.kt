@@ -8,9 +8,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.kotlintest.component.DeviceMainScreen
 import com.example.kotlintest.component.MainScaffold
 import com.example.kotlintest.features_autentication.presentation.screens.AuthScreen
@@ -20,6 +22,7 @@ import com.example.kotlintest.features_splash.presentation.screens.SplashScreen
 import com.example.kotlintest.navigation.navigateSelectedDevice
 import com.example.kotlintest.navigation.navigateThroughTopBar
 import com.example.kotlintest.navigation.navigateToCallScreen
+import com.example.kotlintest.navigation.navigateToExamination
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerScreen
 import com.example.kotlintest.screens.bloodanalyzer.BloodAnalyzerViewModel
 import com.example.kotlintest.screens.call.TwoColumnFrontCameraScreen
@@ -50,10 +53,10 @@ fun InitNavGraph(
         navController = navController, startDestination = startDestination, modifier = modifier
     ) {
         composable(NavDestination.SPLASH_SCREEN) {
-            SplashScreen(navController =navController )
+            SplashScreen(navController = navController)
         }
         composable(NavDestination.AUTH_SCREEN) {
-            AuthScreen(navController =navController )
+            AuthScreen(navController = navController)
         }
         composable(NavDestination.APPOINTMENT_CREATE_SCREEN) {
             MainScaffold(
@@ -70,21 +73,31 @@ fun InitNavGraph(
                     R.drawable.ic_med_profile,
                     R.drawable.ic_med_settings
                 ),
-                titles =listOf(
+                titles = listOf(
                     "Calendar",
                     "Devices",
                     "Examination",
                     "Profile",
                     "Settings",
-                ), onCenterIconClick = {index->
+                ), onCenterIconClick = { index ->
                     navController.navigateThroughTopBar(index)
                 }
             ) {
-                CalendarScreen(navController = navController)
+                CalendarScreen(
+                    navController = navController,
+                    onBtnClick = { navController.navigateToExamination(id) })
             }
         }
 
-        composable(NavDestination.EXAMINATION_SCREEN) {
+        composable(
+            route = NavDestination.EXAMINATION_ROUTE,
+            arguments = listOf(
+                navArgument("index") {
+                    type = NavType.StringType
+                }
+            )) {
+            backStackEntry ->
+            val index = backStackEntry.arguments?.getString("index") ?: "-1"
             MainScaffold(
                 icons = listOf(
                     R.drawable.ic_med_calender,
@@ -92,13 +105,16 @@ fun InitNavGraph(
                     R.drawable.ic_med_examiniation,
                     R.drawable.ic_med_profile,
                     R.drawable.ic_med_settings
-                ),onCenterIconClick = {index->
+                ), onCenterIconClick = { index ->
                     navController.navigateThroughTopBar(index)
                 }
             ) {
-                ExaminationScreen(navigateToSelectedDevice = { selectedDevice ->
-                    navController.navigateSelectedDevice(selectedDevice)
-                }, onCallClicked = { navController.navigateToCallScreen() })
+                ExaminationScreen(appointmentId = index,
+                    navigateToSelectedDevice = { selectedDevice ->
+                        navController.navigateSelectedDevice(selectedDevice)
+                    },
+                    onCallClicked = { navController.navigateToCallScreen() },
+                )
             }
         }
         composable(NavDestination.PULSE_OXIMETER_SCREEN) {

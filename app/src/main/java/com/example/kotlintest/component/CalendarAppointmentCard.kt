@@ -40,17 +40,17 @@ import com.example.kotlintest.ui.theme.PaleCerulean
 import com.example.kotlintest.ui.theme.SpaceCadet
 
 @Composable
-fun CalendarAppointmentCard(card: CalendarAppointmentCardModel) {
+fun CalendarAppointmentCard(modifier:Modifier=Modifier,card: CalendarAppointmentCardModel) {
     val selectedColor = if (card.selected) PrimaryMidLinkColor else Lotion//border-patient-startTime
     val notSelectedColor = if (card.selected) Lotion else PrimaryMidLinkColor
     val backgroundColor = if (!card.selected) Periwinkle else Lotion//gender-age-divider
     val locationColor = if (card.selected) Lotion else SpaceCadet
     BoxWithConstraints {
-        val maxWidth = minOf(maxWidth, 335.dp)
+        val maxWidth = minOf(maxWidth, 235.dp)
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .width(maxWidth)
-                .heightIn(min = 100.dp, max = 220.dp)
+                .heightIn(min = 100.dp, max = 150.dp)
                 .border(shape = RoundedCornerShape(12.dp), color = PrimaryMidLinkColor, width = 1.dp)
                 .clip(shape = RoundedCornerShape(12.dp))
                 .background(selectedColor)
@@ -93,7 +93,7 @@ fun CalendarAppointmentCard(card: CalendarAppointmentCardModel) {
                         color = backgroundColor
                     )
                     Text(
-                        text = card.age,
+                        text = card.dateOfBirth,
                         style = MaterialTheme.typography.rhDisplaySemiBold.copy(
                             fontSize = 6.sp,
                             color = backgroundColor

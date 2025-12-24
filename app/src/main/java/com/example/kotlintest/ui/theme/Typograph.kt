@@ -97,3 +97,9 @@ val Typography.poppinsMedium: TextStyle
         fontFamily = PoppinsFont(),
         fontWeight = FontWeight.Medium
     )
+val Typography.rhDisplaySemiBoldItalic: TextStyle
+    @Composable
+    get() = TextStyle(
+        fontFamily = FontRHDisplay(),
+        fontWeight = FontWeight.Medium
+    )

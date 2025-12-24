@@ -4,6 +4,7 @@ package com.example.kotlintest.ui.theme
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import com.example.kotlintest.R
 
@@ -34,7 +35,7 @@ fun FontRHDisplay() = FontFamily(
 //    Font(R.font.sfprodisplayultralightitalic, style = FontStyle.Italic),
 //
 //    Font(R.font.sfprodisplaysemibold, weight = FontWeight.SemiBold, style = FontStyle.Normal),
-//    Font(R.font.sfprodisplaysemibolditalic, weight = FontWeight.SemiBold, style = FontStyle.Italic),
+    Font(R.font.redhat_display_semi_bold_italic, weight = FontWeight.SemiBold, style = FontStyle.Italic),
 
     )
 //

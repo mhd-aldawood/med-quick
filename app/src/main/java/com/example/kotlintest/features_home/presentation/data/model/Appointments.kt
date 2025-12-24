@@ -9,10 +9,10 @@ data class Appointments (
     @SerialName("id"                ) var id                : Int,
     @SerialName("patient"           ) var patient           : Patient,
     @SerialName("status"            ) var status            : Int,
-    @SerialName("address"           ) var address           : Address,
+    @SerialName("address"           ) var address           : Address?,
     @SerialName("time"              ) var time              : String,
     @SerialName("durationInMinutes" ) var durationInMinutes : Int,
-    @SerialName("kitSerial"         ) var kitSerial         : String,
+    @SerialName("kitSerial"         ) var kitSerial         : String?,
     @SerialName("nurseName") var nurseName           : String,
 ){
     fun getStatus(): Boolean=when(status){

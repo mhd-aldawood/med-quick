@@ -32,7 +32,8 @@ import com.example.kotlintest.util.PermissionManager.checkPermissions
 fun ExaminationScreen(
     viewModel: ExaminationViewModel = hiltViewModel(),
     navigateToSelectedDevice: (DeviceCategory) -> Unit,
-    onCallClicked: () -> Unit
+    onCallClicked: () -> Unit,
+    appointmentId: String
 ) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
     val permissionManager = LocalPermissionManager.current

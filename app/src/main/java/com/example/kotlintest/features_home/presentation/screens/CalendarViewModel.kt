@@ -3,9 +3,7 @@ package com.example.kotlintest.features_home.presentation.screens
 import androidx.lifecycle.viewModelScope
 import com.example.kotlintest.core.BaseViewModel
 import com.example.kotlintest.core.model.CalendarAppointmentCardModel
-import com.example.kotlintest.core.model.CalendarCard
 import com.example.kotlintest.core.model.CalendarCardStatus
-import com.example.kotlintest.core.model.CalendarMoreCardModel
 import com.example.kotlintest.features_home.presentation.data.model.AppointmentResponse
 import com.example.kotlintest.features_home.presentation.data.model.Appointments
 import com.example.kotlintest.features_home.presentation.domin.model.CreateCalendarReq
@@ -20,8 +18,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,81 +72,120 @@ class CalendarViewModel @Inject constructor(private val useCase: GetAppointmentU
     }
 
     override fun handleAction(action: CalendarActions) {
-        // TODO: handle actions
+            when(action){
+                is CalendarActions.OnCardClicked -> handleOnCardClicked(action.id)
+                is CalendarActions.BtnClicked -> {
+                    sendEvent(CalendarEvents.NavigateToExamination(action.appointmentId))
+                }
+            }
+    }
+
+    private fun handleOnCardClicked(id: String) {
+        mutableState.update { it ->
+            it.copy(selectedCard=stateFlow.value.appointmentsList.find { it.id == id })
+        }
     }
 }
 
-sealed class CalendarActions {
+sealed class CalendarActions() {
+    data class BtnClicked(val appointmentId: String) : CalendarActions()
 
+    data class OnCardClicked(val id: String) : CalendarActions()
 }
 
 sealed class CalendarEvents {
+    data class NavigateToExamination(val appointmentsId: String) : CalendarEvents()
 
 }
 
-data class CalendarState(val appointmentsList: List<CalendarCard> = listOf())
+data class CalendarState(val appointmentsList: List<CalendarAppointmentCardModel> = listOf(),val selectedCard:CalendarAppointmentCardModel?=null)
 
 fun List<AppointmentResponse>.toCalendarCards(
     maxVisible: Int = 3
-): List<CalendarCard> {
+): List<CalendarAppointmentCardModel> {
 
-    val result = mutableListOf<CalendarCard>()
+    val result = mutableListOf<CalendarAppointmentCardModel>()
 
     forEach { day ->
-        result.addAll(day.toCalendarCards(maxVisible))
+        result.addAll(day.toCalendarCards(maxVisible,day.date))
     }
 
     return result
 }
 
 fun AppointmentResponse.toCalendarCards(
-    maxVisible: Int = 3
-): List<CalendarCard> {
+    maxVisible: Int = 3,
+    date1: String
+): List<CalendarAppointmentCardModel> {
 
-    val cards = mutableListOf<CalendarCard>()
+    val cards = mutableListOf<CalendarAppointmentCardModel>()
 
     val visibleAppointments = appointments.take(maxVisible)
     val remainingCount = appointments.size - maxVisible
-
-    visibleAppointments.forEach { appointment ->
-        cards.add(appointment.toCalendarCard())
+    appointments.forEach { appointment ->
+        cards.add(appointment.toCalendarCard(date1))
     }
-
-    if (remainingCount > 0) {
-        cards.add(
-            CalendarMoreCardModel(
-                count = remainingCount.toString(),
-                calendarStatus = listOf(CalendarCardStatus.NotSelected)
-            )
-        )
-    }
+//    visibleAppointments.forEach { appointment ->
+//        cards.add(appointment.toCalendarCard(date1))
+//    }
+//this part is for the more card disabled temporary
+//    if (remainingCount > 0) {
+//        cards.add(
+//            CalendarMoreCardModel(
+//                count = remainingCount.toString(),
+//                calendarStatus = listOf(CalendarCardStatus.NotSelected)
+//            )
+//        )
+//    }
 
     return cards
 }
 
-fun Appointments.toCalendarCard(): CalendarAppointmentCardModel {
-    val startDateTime = LocalDateTime.parse(time)
+fun Appointments.toCalendarCard(parentDate: String): CalendarAppointmentCardModel {
 
-// Formatter for date only (as you want)
+    val flexibleTimeFormatter = DateTimeFormatterBuilder()
+        .appendPattern("H:mm:ss")
+        .optionalStart()
+        .appendFraction(ChronoField.NANO_OF_SECOND, 1, 9, true)
+        .optionalEnd()
+        .toFormatter()
     val dateFormatter = DateTimeFormatter.ofPattern("M-d-yyyy")
+    val outputTimeFormatter = DateTimeFormatter.ofPattern("H:mm:ss")
 
-// Start date (formatted)
-    val startDateFormatted = startDateTime.format(dateFormatter)
+    val parentLocalDate = LocalDateTime
+        .parse(parentDate) // "2025-12-25T00:00:00"
+        .toLocalDate()
 
-// End date = start + 20 minutes
+// ✅ Works with or without milliseconds
+    val startTime = LocalTime.parse(time, flexibleTimeFormatter)
+
+    val startDateTime = LocalDateTime.of(
+        parentLocalDate,
+        startTime
+    )
+
+// ➕ add 20 minutes
     val endDateTime = startDateTime.plusMinutes(20)
-    val endDateFormatted = endDateTime.format(dateFormatter)
+//    val endDateTime = startDateTime.plusMinutes(durationInMinutes.toLong())
+
+// ✅ Drop milliseconds in output
+    val endAt = endDateTime
+        .toLocalTime()
+        .format(outputTimeFormatter)
+
     return CalendarAppointmentCardModel(
-        id = id.toString(),
+        id = id.toString(),//appointmentId
         patientName = patient.fullName,
-        locationText = address.getFullLocation(),
+        locationText = address?.getFullLocation() ?: "Any Location Here",
         nurseName = nurseName,
-        kitName = kitSerial,
-        date = startDateFormatted,
-        age = patient.dateOfBirth,
+        kitName = kitSerial ?: "Kit Name",
+        date = parentLocalDate.format(dateFormatter),//12-23-2025
+        endAt = endAt,//12-23-2025
+        startAt = startDateTime.toLocalTime()
+            .format(outputTimeFormatter),
+        dateOfBirth = patient.dateOfBirth,
         gender = patient.getGender(),
         selected = getStatus(),
         calendarStatus = listOf(CalendarCardStatus.NotSelected),
-        endDate =endDateFormatted
     )
 }

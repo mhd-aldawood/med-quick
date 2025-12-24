@@ -2,7 +2,6 @@ package com.example.kotlintest.features_home.presentation.screens
 
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,101 +29,106 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.example.kotlintest.NavDestination
-import com.example.kotlintest.component.DynamicCalendar
-import com.example.kotlintest.component.calendarSampleEvents
-import com.example.kotlintest.features_home.presentation.components.FilterChipGroup
+import com.example.kotlintest.component.DynamicCalendarNew
+import com.example.kotlintest.core.EventsEffect
+import com.example.kotlintest.core.model.CalendarAppointmentCardModel
 import com.example.kotlintest.features_home.presentation.screens.views.MainHeaderSection
-import com.example.kotlintest.navigation.safeNavigate
-import com.example.kotlintest.ui.theme.ChineseYellow
+import com.example.kotlintest.features_home.presentation.screens.views.RightContentSection
 import com.example.kotlintest.ui.theme.Lotion
 import com.example.kotlintest.ui.theme.PaleCerulean
 import com.example.kotlintest.ui.theme.PrimaryMidLinkColor
 import com.example.kotlintest.ui.theme.White
-import com.example.kotlintest.ui.theme.deepDarkBlue
-import com.example.kotlintest.ui.theme.rhDisplayBlack
 import com.example.kotlintest.ui.theme.rhDisplayBold
 import com.example.kotlintest.ui.theme.yellow
 
 @Composable
-fun CalendarScreen(navController: NavController, viewModel: CalendarViewModel = hiltViewModel()) {
+fun CalendarScreen(navController: NavController, viewModel: CalendarViewModel = hiltViewModel(),onBtnClick: (String) -> Unit) {
     val uiState by viewModel.stateFlow.collectAsStateWithLifecycle()
-    Box(
-        modifier = Modifier.fillMaxSize(),
-
-        ) {
-        Row() {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 40.dp)
-                    .weight(13f),
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(scalePxToDp(85f)),
-                    verticalAlignment = Alignment.CenterVertically
-                )
-                {
-                    MainHeaderSection(navController = navController)
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp)
-                        .weight(1f),
-                )
-                {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        DynamicCalendar(
-                            endHour = 24,        // calendar ends at 12 PM
-                            endDays = 7,         // today + next 7 days
-                            events = calendarSampleEvents(),
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
-                }
+    EventsEffect(viewModel) {
+        when(it){
+            is CalendarEvents.NavigateToExamination -> {
+               onBtnClick(it.appointmentsId)
             }
-            Column(
+        }
+    }
+
+    Row(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 20.dp)
+                .weight(12f),
+        )
+        {
+            Row(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(end = 20.dp)
-                    .weight(3f)
+                    .fillMaxWidth()
+                    .height(scalePxToDp(85f)),
+                verticalAlignment = Alignment.CenterVertically
             )
             {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(scalePxToDp(85f)),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RightHeaderSection()
+                MainHeaderSection(navController = navController)
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+                    .weight(1f),
+            )
+            {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DynamicCalendarNew(
+                        endHour = 23,        // calendar ends at 12 PM
+                        endDays = 7,         // today + next 7 days
+                        events = uiState.appointmentsList,
+                        modifier = Modifier.fillMaxSize(), onCardClick = { id ->
+                            viewModel.trySendAction(CalendarActions.OnCardClicked(id))
+
+                        }
+                    )
                 }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 20.dp)
-                        .weight(1f)
-                        .background(PaleCerulean),
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        RightContentSection()
+            }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(end = 20.dp)
+                .weight(4f)
+        )
+        {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(scalePxToDp(85f)),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RightHeaderSection()
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+                    .weight(1f),
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    uiState.selectedCard?.let {
+                        RightContentSection(it, onBtnClick = { id ->
+                            viewModel.trySendAction(CalendarActions.BtnClicked(id))
+                        })
                     }
                 }
             }
         }
     }
+
 }
 
 
@@ -180,25 +183,10 @@ fun RightHeaderSection() {
 
 }
 
-@Composable
-fun RightContentSection() {
-}
-
-@Composable
-fun CalenderSection() {
-    Image(
-        painter = painterResource(R.drawable.calender_screen_bg),
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.FillBounds
-
-    )
-}
 
 @Composable
 fun HomeScreenPrev() {
-    CalendarScreen(navController = NavController(LocalContext.current))
-
+    CalendarScreen(navController = NavController(LocalContext.current), onBtnClick = {})
 }
 
 @Preview(

@@ -33,6 +33,7 @@ import com.example.kotlintest.core.model.PositionedAppointmentCardModel
 import java.time.*
 import kotlin.math.max
 import kotlin.math.min
+
 val AppointmentList: List<CalendarCard> = listOf(
     CalendarAppointmentCardModel(
         id = "0",
@@ -40,24 +41,24 @@ val AppointmentList: List<CalendarCard> = listOf(
         locationText = "locationText",
         nurseName = "nurseName",
         kitName = "kitName",
-        date = "1:00 PM",
+        date = "15:00:00",
         gender = Gender.Male,
-        age = "age",
+        dateOfBirth = "age",
         calendarStatus = listOf(CalendarCardStatus.Notification, CalendarCardStatus.Selected),
-        selected = false,
-        endDate = ""
+        selected = false, startAt = "TODO()",
+        endAt = "TODO()",
     ), CalendarAppointmentCardModel(
         id = "1",
         patientName = "patientName",
         locationText = "locationText",
         nurseName = "nurseName",
         kitName = "kitName",
-        date = "1:40 PM",
+        date = "15:16:14.6770000",
         gender = Gender.Male,
-        age = "age",
+        dateOfBirth = "age",
         calendarStatus = listOf(CalendarCardStatus.Selected),
-        selected = false,
-        endDate = ""
+        selected = false,startAt = "TODO()",
+        endAt = "TODO()",
     ), CalendarAppointmentCardModel(
         id = "2",
         patientName = "patientName",
@@ -66,10 +67,10 @@ val AppointmentList: List<CalendarCard> = listOf(
         kitName = "kitName",
         date = "2:00 PM",
         gender = Gender.Male,
-        age = "age",
+        dateOfBirth = "age",
         calendarStatus = listOf(CalendarCardStatus.Warning),
-        selected = false,
-        endDate = ""
+        selected = false, startAt = "TODO()",
+        endAt = "TODO()",
     ), CalendarAppointmentCardModel(
         id = "3",
         patientName = "patientName",
@@ -78,10 +79,10 @@ val AppointmentList: List<CalendarCard> = listOf(
         kitName = "kitName",
         date = "2:40 PM",
         gender = Gender.Female,
-        age = "age",
+        dateOfBirth = "age",
         calendarStatus = listOf(CalendarCardStatus.NotSelected),
-        selected = true,
-        endDate = ""
+        selected = true,startAt = "TODO()",
+        endAt = "TODO()",
     ),
     CalendarMoreCardModel(
         count = "4",
@@ -123,13 +124,8 @@ private fun requiredSlotsForDay(events: List<CalendarEvent>): Int {
         else -> 3
     }
 }
-private fun dayWidthForDay(
-    events: List<CalendarEvent>,
-    baseEventWidth: Dp
-): Dp {
-    val slots = requiredSlotsForDay(events)
-    return baseEventWidth * slots
-}
+
+
 // ---------- Public Composable ----------
 @Composable
 fun DynamicCalendar(
